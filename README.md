@@ -1,13 +1,13 @@
-# Mixed Warehouses 0.2.0
+# MixedStorage 0.2.0
 
 Percentage allocations for Timberborn 1.1.2.4 warehouses and piles.
 
 ## Downloads
 
-**[Download v0.2.0 from Releases](https://github.com/kramsey458/MixedWarehouses/releases/tag/v0.2.0).**
+**[Download v0.2.0 from Releases](https://github.com/kramsey458/MixedStorage/releases/tag/v0.2.0).**
 
-- **MixedWarehouses-v0.2.0.zip**: the main mod, required for both single-player and multiplayer.
-- **MixedWarehouses-BeaverBuddies-v0.2.0.zip**: the multiplayer addon; install alongside the main mod and BeaverBuddies on every computer.
+- **MixedStorage-v0.2.0.zip**: the main mod, required for both single-player and multiplayer.
+- **MixedStorage-BeaverBuddies-v0.2.0.zip**: the multiplayer addon; install alongside the main mod and BeaverBuddies on every computer.
 
 Download these compiled ZIPs rather than GitHub's automatically generated source-code archives.
 
@@ -26,9 +26,9 @@ The native 3D contents and banner still show a representative good, not separate
 
 ## Install / upgrade
 
-Extract MixedWarehouses into Documents/Timberborn/Mods, replacing the existing MixedWarehouses folder's files. Enable it and Harmony, then restart Timberborn. Existing allocation save keys and mod IDs are unchanged.
+Extract MixedStorage into Documents/Timberborn/Mods, replacing the existing MixedStorage folder's files. Enable it and Harmony, then restart Timberborn. Uses MixedStorage mod IDs and allocation save keys.
 
-For multiplayer, also extract and enable MixedWarehouses-BeaverBuddies. All computers must use version 0.2.0 of both packages and matching BeaverBuddies versions. The addon sends allocation commands through BeaverBuddies replay events. Its assembly and event type names are unchanged from 0.1.x.
+For multiplayer, also extract and enable MixedStorage-BeaverBuddies. All computers must use version 0.2.0 of both packages and matching BeaverBuddies versions. The addon sends allocation commands through BeaverBuddies replay events. All players must use the same MixedStorage assemblies.
 
 ## Validation
 
@@ -36,7 +36,7 @@ Compiled against Timberborn 1.1.2.4 assemblies. 10,034 allocation assertions cov
 
 ## Build
 
-Use .NET SDK 8 and run `dotnet build multiplayer/MixedWarehouses.BeaverBuddies.csproj -c Release`. Override GameDir, HarmonyPath and BeaverBuddiesPath via MSBuild properties if needed. Run the allocation checks with `dotnet run --project tests/AllocationTests.csproj -c Release`. Game and third-party DLLs are referenced locally, not distributed in these packages.
+Use .NET SDK 8 and run `dotnet build multiplayer/MixedStorage.BeaverBuddies.csproj -c Release`. Override GameDir, HarmonyPath and BeaverBuddiesPath via MSBuild properties if needed. Run the allocation checks with `dotnet run --project tests/AllocationTests.csproj -c Release`. Game and third-party DLLs are referenced locally, not distributed in these packages.
 
 On Windows, `build.ps1` builds, tests and packages both mods:
 

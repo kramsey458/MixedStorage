@@ -8,7 +8,7 @@ using Timberborn.Carrying;
 using Timberborn.InventorySystem;
 using Timberborn.StockpilePrioritySystem;
 
-namespace MixedWarehouses
+namespace MixedStorage
 {
     [HarmonyPatch]
     internal static class ObtainPatch
@@ -18,7 +18,7 @@ namespace MixedWarehouses
 
         static bool Prefix(BaseComponent __instance, BehaviorAgent agent, ref Decision __result)
         {
-            var state = WarehouseState.Get(__instance);
+            var state = StorageState.Get(__instance);
             if (state?.Active != true) return true;
             __result = Decision.ReleaseNow();
             if (!state.Inventory.Enabled || !__instance.GetComponent<GoodObtainer>().IsObtaining) return false;
@@ -47,7 +47,7 @@ namespace MixedWarehouses
     {
         static bool Prefix(SupplyGoodWorkplaceBehavior __instance, BehaviorAgent agent, ref Decision __result)
         {
-            var state = WarehouseState.Get(__instance);
+            var state = StorageState.Get(__instance);
             if (state?.Active != true) return true;
             __result = Decision.ReleaseNow();
             if (!state.Inventory.Enabled || !__instance.GetComponent<GoodSupplier>().IsSupplying) return false;
@@ -75,7 +75,7 @@ namespace MixedWarehouses
         static MethodBase TargetMethod() => AccessTools.Method("Timberborn.StockpilesUI.StockpileDropdownProvider:FormatDisplayText");
         static bool Prefix(BaseComponent __instance, bool selected, ref string __result)
         {
-            var state = WarehouseState.Get(__instance);
+            var state = StorageState.Get(__instance);
             if (!selected || state?.Active != true) return true;
             __result = "Mixed (" + state.Shares.Count + " goods) — edit storage panel";
             return false;

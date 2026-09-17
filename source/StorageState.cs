@@ -11,12 +11,12 @@ using Timberborn.Stockpiles;
 using Timberborn.TemplateSystem;
 using Timberborn.WorldPersistence;
 
-namespace MixedWarehouses
+namespace MixedStorage
 {
-    internal sealed class WarehouseState
+    internal sealed class StorageState
     {
-        private static readonly ConditionalWeakTable<SingleGoodAllower, WarehouseState> States = new ConditionalWeakTable<SingleGoodAllower, WarehouseState>();
-        private static readonly ComponentKey SaveKey = new ComponentKey("MixedWarehouses.Allocation");
+        private static readonly ConditionalWeakTable<SingleGoodAllower, StorageState> States = new ConditionalWeakTable<SingleGoodAllower, StorageState>();
+        private static readonly ComponentKey SaveKey = new ComponentKey("MixedStorage.Allocation");
         private static readonly PropertyKey<string> SharesKey = new PropertyKey<string>("Shares");
         private static readonly MethodInfo NotifyGood = AccessTools.Method(typeof(SingleGoodAllower), "InvokeDisallowedGoodsChangedEvent");
         private static readonly HashSet<string> SupportedTemplates = new HashSet<string>(StringComparer.Ordinal)
@@ -40,19 +40,19 @@ namespace MixedWarehouses
         public bool LastSuccess;
         public int MessageRevision;
 
-        private WarehouseState(SingleGoodAllower allower, Inventory inventory) { Allower = allower; Inventory = inventory; }
+        private StorageState(SingleGoodAllower allower, Inventory inventory) { Allower = allower; Inventory = inventory; }
 
         public static void Attach(SingleGoodAllower allower, Inventory inventory)
         {
             var template = allower.GetComponent<TemplateSpec>();
             if (template != null && SupportedTemplates.Contains(template.TemplateName))
-                States.GetValue(allower, _ => new WarehouseState(allower, inventory));
+                States.GetValue(allower, _ => new StorageState(allower, inventory));
         }
 
-        public static WarehouseState Get(SingleGoodAllower allower) =>
+        public static StorageState Get(SingleGoodAllower allower) =>
             allower != null && States.TryGetValue(allower, out var state) ? state : null;
 
-        public static WarehouseState Get(BaseComponent entity) => Get(entity.GetComponent<SingleGoodAllower>());
+        public static StorageState Get(BaseComponent entity) => Get(entity.GetComponent<SingleGoodAllower>());
 
         public int Limit(string good)
         {
@@ -123,7 +123,7 @@ namespace MixedWarehouses
             }
         }
 
-        public void Duplicate(WarehouseState source)
+        public void Duplicate(StorageState source)
         {
             if (source != null && source.Active) TryApply(source.Shares, out _);
         }

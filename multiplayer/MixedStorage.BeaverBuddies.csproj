@@ -7,7 +7,7 @@
     <BeaverBuddiesPath Condition="'$(BeaverBuddiesPath)' == ''">$(UserProfile)\Documents\Timberborn\Mods\BeaverBuddies-StabilityPreview\version-1.1\BeaverBuddies.dll</BeaverBuddiesPath>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../source/MixedWarehouses.csproj" Private="false" />
+    <ProjectReference Include="../source/MixedStorage.csproj" Private="false" />
     <Reference Include="$(BeaverBuddiesPath)" Private="false" />
     <Reference Include="$(GameDir)\Timberborn_Data\Managed\Timberborn.*.dll" Private="false" />
     <Reference Include="$(GameDir)\Timberborn_Data\Managed\UnityEngine*.dll" Private="false" />

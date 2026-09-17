@@ -5,11 +5,11 @@ using Timberborn.Goods;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace MixedWarehouses
+namespace MixedStorage
 {
-    internal sealed class WarehouseView
+    internal sealed class StorageView
     {
-        private static WeakReference<WarehouseView> _activeView;
+        private static WeakReference<StorageView> _activeView;
         internal static bool IsEditingText
         {
             get
@@ -53,7 +53,7 @@ namespace MixedWarehouses
         private readonly ScrollView _scroll;
         private readonly Button _apply;
         private readonly List<Row> _rows = new List<Row>();
-        private WarehouseState _state;
+        private StorageState _state;
         private Dictionary<string, int> _draft;
         private Dictionary<string, int> _preview;
         private int _revision;
@@ -61,13 +61,13 @@ namespace MixedWarehouses
         private float _nextRefresh;
         public VisualElement Root { get; }
 
-        public WarehouseView(IGoodService goods, VisualElement vanilla)
+        public StorageView(IGoodService goods, VisualElement vanilla)
         {
             _goods = goods;
             _vanilla = vanilla;
-            Root = new VisualElement { name = "MixedWarehousesRoot" };
+            Root = new VisualElement { name = "MixedStorageRoot" };
             Root.Add(vanilla);
-            _panel = new VisualElement { name = "MixedWarehousesPanel" };
+            _panel = new VisualElement { name = "MixedStoragePanel" };
             _panel.style.display = DisplayStyle.None;
             _panel.style.paddingLeft = _panel.style.paddingRight = 10;
             _panel.style.paddingTop = _panel.style.paddingBottom = 8;
@@ -80,7 +80,7 @@ namespace MixedWarehouses
             _summary = Text("", 13);
             _panel.Add(_summary);
 
-            _search = new TextField { name = "MixedWarehouseSearch", tooltip = "Search the goods allowed in this storage building." };
+            _search = new TextField { name = "MixedStorageSearch", tooltip = "Search the goods allowed in this storage building." };
             _search.label = "Search";
             _search.style.marginTop = 6;
             _search.RegisterValueChangedCallback(_ => Filter());
@@ -140,10 +140,10 @@ namespace MixedWarehouses
             _scroll.RegisterCallback<WheelEvent>(evt => evt.StopPropagation());
         }
 
-        public void Show(WarehouseState state)
+        public void Show(StorageState state)
         {
             _state = state;
-            _activeView = state == null ? null : new WeakReference<WarehouseView>(this);
+            _activeView = state == null ? null : new WeakReference<StorageView>(this);
             _panel.style.display = state == null ? DisplayStyle.None : DisplayStyle.Flex;
             if (state == null) return;
             _vanilla.style.display = DisplayStyle.None;

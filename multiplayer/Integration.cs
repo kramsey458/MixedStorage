@@ -5,14 +5,14 @@ using Timberborn.InventorySystem;
 using Timberborn.ModManagerScene;
 using UnityEngine;
 
-namespace MixedWarehouses.Multiplayer
+namespace MixedStorage.Multiplayer
 {
     public sealed class MultiplayerStarter : IModStarter
     {
         public void StartMod(IModEnvironment environment)
         {
             AllocationCommands.MultiplayerSubmit = Submit;
-            Debug.Log("[MixedWarehouses] BeaverBuddies synchronized allocation events enabled.");
+            Debug.Log("[MixedStorage] BeaverBuddies synchronized allocation events enabled.");
         }
 
         private static SubmissionResult Submit(SingleGoodAllower allower, string payload)
@@ -29,7 +29,7 @@ namespace MixedWarehouses.Multiplayer
                 AllocationCommands.Report(allower, false, "Multiplayer is not ready. Wait until synchronization completes.");
                 return SubmissionResult.Rejected;
             }
-            var command = new WarehouseAllocationEvent
+            var command = new StorageAllocationEvent
             {
                 entityID = ReplayEvent.GetEntityID(allower),
                 allocation = payload,
@@ -48,8 +48,8 @@ namespace MixedWarehouses.Multiplayer
         }
     }
 
-    // Newtonsoft type metadata includes this assembly; all players must install this same addon.
-    public sealed class WarehouseAllocationEvent : ReplayEvent
+    // Replay type metadata uses the MixedStorage addon assembly on every player.
+    public sealed class StorageAllocationEvent : ReplayEvent
     {
         public string entityID;
         public string allocation;

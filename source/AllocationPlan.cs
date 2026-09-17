@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace MixedWarehouses
+namespace MixedStorage
 {
     // Integer hundredths of a percent: validation never depends on float tolerances.
     public static class AllocationPlan

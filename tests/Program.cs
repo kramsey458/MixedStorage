@@ -1,4 +1,4 @@
-using MixedWarehouses;
+using MixedStorage;
 using System.Globalization;
 
 int assertions = 0;

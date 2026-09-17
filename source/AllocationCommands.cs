@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Timberborn.InventorySystem;
 
-namespace MixedWarehouses
+namespace MixedStorage
 {
     public enum SubmissionResult { Applied, Queued, Rejected }
 
@@ -11,7 +11,7 @@ namespace MixedWarehouses
     {
         public static Func<SingleGoodAllower, string, SubmissionResult> MultiplayerSubmit;
 
-        internal static SubmissionResult Submit(WarehouseState state, string payload)
+        internal static SubmissionResult Submit(StorageState state, string payload)
         {
             if (MultiplayerSubmit != null) return MultiplayerSubmit(state.Allower, payload);
             // Do not fall back to local mutations when BB is present without the integration mod.
@@ -19,7 +19,7 @@ namespace MixedWarehouses
             var io = bb?.GetType("BeaverBuddies.IO.EventIO");
             if (io != null && !(bool)io.GetProperty("IsNull").GetValue(null))
             {
-                Report(state.Allower, false, "Enable Mixed Warehouses – BeaverBuddies on every player before applying allocations.");
+                Report(state.Allower, false, "Enable MixedStorage – BeaverBuddies on every player before applying allocations.");
                 return SubmissionResult.Rejected;
             }
             bool applied = ApplyReplay(state.Allower, payload, out string message);
@@ -29,7 +29,7 @@ namespace MixedWarehouses
 
         public static bool ApplyReplay(SingleGoodAllower allower, string payload, out string message)
         {
-            var state = WarehouseState.Get(allower);
+            var state = StorageState.Get(allower);
             if (state == null) { message = "Storage no longer exists or is unsupported."; return false; }
             if (!state.TryApply(AllocationPlan.Deserialize(payload), out message)) return false;
             message = "Applied. Excess stock is preserved and can be hauled out.";
@@ -38,7 +38,7 @@ namespace MixedWarehouses
 
         public static void Report(SingleGoodAllower allower, bool success, string message)
         {
-            var state = WarehouseState.Get(allower);
+            var state = StorageState.Get(allower);
             if (state == null) return;
             state.Pending = false;
             state.LastMessage = message;

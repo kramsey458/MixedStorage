@@ -2,7 +2,7 @@ using System;
 using HarmonyLib;
 using Timberborn.InputSystem;
 
-namespace MixedWarehouses
+namespace MixedStorage
 {
     // Timberborn polls shortcuts outside UI Toolkit's event propagation. Use its native
     // blocker only during this update; text editing continues through UI Toolkit normally.
@@ -11,7 +11,7 @@ namespace MixedWarehouses
     {
         static void Prefix(InputBlocker ____inputBlocker, out bool __state)
         {
-            __state = WarehouseView.IsEditingText;
+            __state = StorageView.IsEditingText;
             if (__state) ____inputBlocker.Block();
         }
 

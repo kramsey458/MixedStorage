@@ -2,6 +2,8 @@
 
 ## v0.2.0
 
+- Use MixedStorage naming throughout the mod, multiplayer addon, assemblies, IDs, UI identifiers and allocation save data.
+
 - Add Folktails small, large and underground piles.
 - Add Iron Teeth small and large industrial piles.
 - Preserve each storage building's native accepted goods and capacity.
