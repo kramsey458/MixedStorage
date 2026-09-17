@@ -1,0 +1,11 @@
+{
+  "Name": "Mixed Warehouses – BeaverBuddies",
+  "Version": "0.2.0",
+  "Id": "kyler.mixedwarehouses.beaverbuddies",
+  "MinimumGameVersion": "1.1.2.4",
+  "Description": "Sends Mixed Warehouses allocation changes through BeaverBuddies replay events. Every player must enable both Mixed Warehouses mods. Preview build.",
+  "RequiredMods": [
+    { "Id": "kyler.mixedwarehouses", "MinimumVersion": "0.2.0" },
+    { "Id": "beaverbuddies" }
+  ]
+}
