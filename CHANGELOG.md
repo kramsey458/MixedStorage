@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.5.2
+
+- Use a single scrolling body, removing stacked scrollbar gutters from the summary and goods list.
+- Align percentage controls and limits with their headers; wrap the capacity summary and reduce horizontal padding.
+- Widen the editor to 440 UI units, bounded by the viewport, expanding left from the sidebar edge. Preserve the fixed Apply/Revert/total footer and screen-height cap.
+
+
 ## v0.5.1
 
 - Bound the allocation panel to available screen height and scroll its content independently.

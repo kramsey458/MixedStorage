@@ -80,7 +80,7 @@ namespace MixedStorage
             Root.Add(vanilla);
             _panel = new VisualElement { name = "MixedStoragePanel" };
             _panel.style.display = DisplayStyle.None;
-            _panel.style.paddingLeft = _panel.style.paddingRight = 10;
+            _panel.style.paddingLeft = _panel.style.paddingRight = 8;
             _panel.style.paddingTop = _panel.style.paddingBottom = 8;
             _panel.style.backgroundColor = new Color(.13f, .23f, .22f, .96f);
             _panel.style.color = Cream;
@@ -90,17 +90,17 @@ namespace MixedStorage
             _panel.Add(title);
             _summary = Text("", 16);
             _summary.style.unityFontStyleAndWeight = FontStyle.Bold;
+            _summary.style.whiteSpace = WhiteSpace.Normal;
             _panel.Add(_summary);
             _contentsSummary = new ScrollView(ScrollViewMode.Vertical);
-            _contentsSummary.style.maxHeight = 210;
             _contentsSummary.style.flexShrink = 0;
             _contentsSummary.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
-            _contentsSummary.verticalScrollerVisibility = ScrollerVisibility.Auto;
+            _contentsSummary.verticalScrollerVisibility = ScrollerVisibility.Hidden;
+            CompactScroll(_contentsSummary);
             _contentsSummary.style.marginTop = 4;
             _contentsSummary.style.marginBottom = 4;
             _contentsSummary.tooltip = "Applied allocation percentage and current stored quantity / item limit. Includes incoming and excess goods, regardless of search or filters.";
             _panel.Add(_contentsSummary);
-            _contentsSummary.RegisterCallback<WheelEvent>(evt => evt.StopPropagation());
             _contentsEmpty = Text("No goods allocated or stored.", 15);
 
             _search = new TextField { name = "MixedStorageSearch", tooltip = "Search the goods allowed in this storage building." };
@@ -125,17 +125,19 @@ namespace MixedStorage
             _count.style.color = Muted;
             _panel.Add(_count);
             var header = Horizontal();
-            var goodsHeader = Text("GOOD / STOCK + INCOMING", 11);
+            var goodsHeader = Text("GOOD / STOCK", 11);
             goodsHeader.style.flexGrow = 1;
+            goodsHeader.style.flexBasis = 0;
+            goodsHeader.style.minWidth = 0;
             header.Add(goodsHeader);
-            var percentHeader = Text("% / RESET / MAX", 11); percentHeader.style.width = 128; header.Add(percentHeader);
-            var limitHeader = Text("LIMIT", 11); limitHeader.style.width = 44; header.Add(limitHeader);
+            var percentHeader = Text("% / RESET / MAX", 11); percentHeader.style.width = 122; percentHeader.style.flexShrink = 0; header.Add(percentHeader);
+            var limitHeader = Text("LIMIT", 11); limitHeader.style.width = 40; limitHeader.style.marginLeft = 6; limitHeader.style.flexShrink = 0; limitHeader.style.unityTextAlign = TextAnchor.MiddleRight; header.Add(limitHeader);
             header.style.marginTop = 5;
             _panel.Add(header);
             _scroll = new ScrollView(ScrollViewMode.Vertical);
-            _scroll.style.height = 240;
             _scroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
-            _scroll.verticalScrollerVisibility = ScrollerVisibility.AlwaysVisible;
+            _scroll.verticalScrollerVisibility = ScrollerVisibility.Hidden;
+            CompactScroll(_scroll);
             _scroll.style.marginTop = 3;
             _panel.Add(_scroll);
 
@@ -174,16 +176,20 @@ namespace MixedStorage
             _body.style.flexGrow = 1;
             _body.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             _body.verticalScrollerVisibility = ScrollerVisibility.Auto;
+            CompactScroll(_body);
+            _body.verticalScroller.style.width = 12;
+            _body.verticalScroller.style.minWidth = 12;
+            _body.verticalScroller.style.marginLeft = 4;
             foreach (var child in _panel.Children().ToArray())
                 if (child != title && child != _total && child != actions) _body.Add(child);
             _panel.Insert(1, _body);
             title.style.flexShrink = _total.style.flexShrink = actions.style.flexShrink = 0;
             _total.style.whiteSpace = WhiteSpace.Normal;
             _panel.style.minHeight = 0;
+            Root.style.alignSelf = Align.FlexEnd;
             _panel.RegisterCallback<GeometryChangedEvent>(_ => FitPanel());
             // Keep typing and scrolling within the editor instead of bubbling to shortcuts/panel scrolling.
             _panel.RegisterCallback<KeyDownEvent>(evt => { if (evt.target is TextElement || evt.target is TextField) evt.StopPropagation(); });
-            _scroll.RegisterCallback<WheelEvent>(evt => evt.StopPropagation());
         }
 
         public void Show(StorageState state)
@@ -234,6 +240,7 @@ namespace MixedStorage
                 row.Root.Add(icon);
                 var details = new VisualElement();
                 details.style.flexGrow = 1;
+                details.style.flexBasis = 0;
                 details.style.flexShrink = 1;
                 details.style.minWidth = 0;
                 var name = Text(row.Name, 13);
@@ -244,7 +251,10 @@ namespace MixedStorage
                 details.Add(row.Stock);
                 row.Root.Add(details);
                 row.Percent = new TextField { name = "Percent_" + id, tooltip = "0–100%, up to two decimal places. Changes are drafts until Apply." };
-                row.Percent.style.width = 62;
+                row.Percent.style.width = 58;
+                row.Percent.style.minWidth = 58;
+                row.Percent.style.marginLeft = 0;
+                row.Percent.style.marginRight = 4;
                 row.Percent.style.flexShrink = 0;
                 row.Percent.style.fontSize = 13;
                 row.Percent.style.marginTop = row.Percent.style.marginBottom = 0;
@@ -272,6 +282,8 @@ namespace MixedStorage
                 reset.style.minHeight = 22;
                 reset.style.flexShrink = 0;
                 reset.style.marginTop = reset.style.marginBottom = 0;
+                reset.style.marginLeft = 0;
+                reset.style.marginRight = 4;
                 reset.style.paddingLeft = reset.style.paddingRight = 0;
                 row.Root.Add(reset);
                 var max = ActionButton("Max", () => SetDraft(
@@ -283,10 +295,12 @@ namespace MixedStorage
                 max.style.fontSize = 11;
                 max.style.flexShrink = 0;
                 max.style.marginTop = max.style.marginBottom = 0;
+                max.style.marginLeft = max.style.marginRight = 0;
                 max.style.paddingLeft = max.style.paddingRight = 0;
                 row.Root.Add(max);
                 row.Limit = Text("", 13);
-                row.Limit.style.width = 44;
+                row.Limit.style.width = 40;
+                row.Limit.style.marginLeft = 6;
                 row.Limit.style.flexShrink = 0;
                 row.Limit.style.unityTextAlign = TextAnchor.MiddleRight;
                 row.Root.Add(row.Limit);
@@ -422,6 +436,10 @@ namespace MixedStorage
             float top = _panel.worldBound.yMin;
             if (float.IsNaN(bottom) || float.IsNaN(top) || bottom <= 0) return;
             float height = Mathf.Clamp(bottom - Mathf.Max(0, top) - 16, 80, 520);
+            // Expand leftwards from the sidebar's right edge and respect UI scaling.
+            float width = Mathf.Min(440, viewport.worldBound.width - 24);
+            if (width > 0 && Mathf.Abs(Root.resolvedStyle.width - width) > 1)
+                Root.style.width = width;
             if (Mathf.Abs(_panel.resolvedStyle.height - height) > 1)
                 _panel.style.height = height;
         }
@@ -529,6 +547,15 @@ namespace MixedStorage
             label.style.marginTop = label.style.marginBottom = 0;
             label.style.paddingTop = label.style.paddingBottom = 0;
             return label;
+        }
+        private static void CompactScroll(ScrollView view)
+        {
+            view.style.minWidth = 0;
+            view.contentViewport.style.minWidth = 0;
+            view.contentViewport.style.marginLeft = view.contentViewport.style.marginRight = 0;
+            view.contentContainer.style.minWidth = 0;
+            view.contentContainer.style.marginLeft = view.contentContainer.style.marginRight = 0;
+            view.contentContainer.style.paddingLeft = view.contentContainer.style.paddingRight = 0;
         }
         private static VisualElement Horizontal()
         {
