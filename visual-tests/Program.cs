@@ -23,3 +23,20 @@ for(int run=0;run<1000;run++) {
 }
 Console.WriteLine($"PASS: {count} mesh clipping assertions.");
 GameApiTests.Run(args.Length > 0 ? args[0] : @"C:\Program Files (x86)\Steam\steamapps\common\Timberborn");
+var cellPoints = new[] { new Vector3(-1,0,0), new Vector3(1,0,0), new Vector3(1,1,0), new Vector3(-1,1,0) };
+var cellPattern = new[] {0,1,2,0,2,3};
+var wholePoints = Enumerable.Range(0,10).SelectMany(i => cellPoints.Select(p => p + new Vector3(i*2,0,0))).ToArray();
+var wholeIndices = Enumerable.Range(0,10).SelectMany(i => cellPattern.Select(n => n+i*4)).ToArray();
+for(int split=0;split<=200;split++)
+{
+ float boundary=-1+split*.1f;
+ var first=WholeCellGeometry.Select(wholePoints,wholeIndices,new[]{cellPattern},new[]{4},-1,boundary,false);
+ var second=WholeCellGeometry.Select(wholePoints,wholeIndices,new[]{cellPattern},new[]{4},boundary,19,true);
+ Check(first.Length+second.Length==wholeIndices.Length,"All whole cells assigned exactly once");
+ Check(!first.Intersect(second).Any(),"Boundary cell has only one owner");
+ foreach(var section in new[]{first,second})
+  foreach(var group in section.GroupBy(i=>i/4))
+   Check(group.SequenceEqual(cellPattern.Select(i=>i+group.Key*4)),"Complete cell topology retained across arbitrary boundary");
+}
+Check(WholeCellGeometry.Select(wholePoints,new[]{0,2,1},new[]{cellPattern},new[]{4},-1,19,true)==null,"Unrecognized topology requires whole-mesh fallback");
+Console.WriteLine("PASS: 201 whole-cell partitions, exact boundary ownership, complete topology, and unknown-topology fallback.");

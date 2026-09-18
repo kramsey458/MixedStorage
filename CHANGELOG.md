@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.4.3
+
+- Replace triangle clipping with complete native cell selection at allocation boundaries.
+- Validate primary/secondary mesh topology before selecting cells. Fit continuous or unrecognized meshes into their sections without cutting faces.
+- Keep exact gameplay limits; visual proportions approximate whole cells. Add partition and topology regression checks.
+
+
 ## v0.4.2
 
 - Replace the small inline contents summary with readable cards: 30px goods icons, bold names, 19px stored/limit counts, allocation percentages and stock fill bars.

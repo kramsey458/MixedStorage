@@ -12,7 +12,7 @@ using UnityEngine.Rendering;
 namespace MixedStorage
 {
     // Sample the native visualizers without creating components or consuming simulation RNG.
-    // Clip their geometry into stable, allocation-sized strips in finished-model space.
+    // Select complete native cells within allocation-sized strips in finished-model space.
     internal sealed class MixedContentsRenderer
     {
         private static readonly ConditionalWeakTable<StockpileVisualizers, MixedContentsRenderer> Instances = new ConditionalWeakTable<StockpileVisualizers, MixedContentsRenderer>();
@@ -137,6 +137,7 @@ namespace MixedStorage
                         Call(visualizer, "UpdateAmount", amount);
                         samples.Add(new Sample
                         {
+                            Cells = NativeCells(visualizer),
                             Mesh = filter.sharedMesh,
                             Matrix = parent.worldToLocalMatrix * nativeObject.transform.localToWorldMatrix,
                             Material = new Material(_nativeRenderer.sharedMaterial),
@@ -150,7 +151,7 @@ namespace MixedStorage
                         var sample = samples[index];
                         if (sample != null)
                         {
-                            var mesh = StorageMeshClipper.Clip(sample.Mesh, sample.Matrix, cursor, end);
+                            var mesh = WholeCellGeometry.Build(sample.Mesh, sample.Matrix, sample.Cells, cursor, end, index == shares.Length - 1);
                             var obj = new GameObject("MixedStorageContents_" + sample.Id);
                             obj.layer = nativeObject.layer;
                             obj.transform.SetParent(parent, false);
@@ -190,10 +191,19 @@ namespace MixedStorage
 
         private sealed class Sample
         {
+            public Mesh[] Cells;
             public Mesh Mesh;
             public Matrix4x4 Matrix;
             public Material Material;
             public string Id;
+        }
+
+        private static Mesh[] NativeCells(object visualizer)
+        {
+            var property = AccessTools.Property(visualizer.GetType(), "CurrentVisualization");
+            var spec = property?.GetValue(visualizer) as GoodVisualizationSpec;
+            if (spec == null) return Array.Empty<Mesh>();
+            return new[] { spec.PrimaryMesh?.Asset, spec.SecondaryMesh?.Asset };
         }
     }
 

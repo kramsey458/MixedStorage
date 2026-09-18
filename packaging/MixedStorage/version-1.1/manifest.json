@@ -1,6 +1,6 @@
 {
   "Name": "MixedStorage",
-  "Version": "0.4.2",
+  "Version": "0.4.3",
   "Id": "kyler.mixedstorage",
   "MinimumGameVersion": "1.1.2.4",
   "Description": "Per-good percentage allocations for warehouses and small, large, industrial and underground piles. Uses each building's allowed goods. Search, set exact percentages, and apply only when the total is 100%.",
