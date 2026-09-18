@@ -19,7 +19,7 @@ namespace MixedStorage
             var io = bb?.GetType("BeaverBuddies.IO.EventIO");
             if (io != null && !(bool)io.GetProperty("IsNull").GetValue(null))
             {
-                Report(state.Allower, false, "Enable MixedStorage – BeaverBuddies on every player before applying allocations.");
+                Report(state.Allower, false, "MixedStorage multiplayer integration is unavailable. Install the same complete MixedStorage release on every player and restart.");
                 return SubmissionResult.Rejected;
             }
             bool applied = ApplyReplay(state.Allower, payload, out string message);

@@ -17,8 +17,9 @@ namespace MixedStorage
     {
         public void StartMod(IModEnvironment environment)
         {
+            OptionalMultiplayer.Initialize();
             new Harmony("kyler.mixedstorage").PatchAll(typeof(ModStarter).Assembly);
-            Debug.Log("[MixedStorage] 0.4.3 loaded; warehouse and pile allocations for Timberborn 1.1.2.4.");
+            Debug.Log("[MixedStorage] 0.5.0 loaded; warehouse and pile allocations for Timberborn 1.1.2.4.");
         }
     }
 

@@ -4,13 +4,14 @@
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
     <AssemblyName>MixedStorage</AssemblyName>
-    <Version>0.4.3</Version>
+    <Version>0.5.0</Version>
     <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Timberborn</GameDir>
     <HarmonyPath Condition="'$(HarmonyPath)' == ''">C:\Program Files (x86)\Steam\steamapps\workshop\content\1062090\3284904751\0Harmony.dll</HarmonyPath>
     <Managed>$(GameDir)\Timberborn_Data\Managed</Managed>
     <RestoreIgnoreFailedSources>true</RestoreIgnoreFailedSources>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="../multiplayer/bin/$(Configuration)/netstandard2.1/MixedStorage.MultiplayerBridge.dll" LogicalName="MixedStorage.OptionalMultiplayer" Condition="'$(BootstrapBuild)' != 'true'" />
     <Reference Include="$(Managed)\Timberborn.*.dll" Private="false" />
     <Reference Include="$(Managed)\UnityEngine*.dll" Private="false" />
     <Reference Include="$(Managed)\System.Collections.Immutable.dll" Private="false" />

@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.5.0
+
+- One MixedStorage download and mod entry for single-player and multiplayer.
+- Embed the optional BeaverBuddies bridge and activate it only when BeaverBuddies is loaded.
+- Reject the obsolete separate addon with clear upgrade instructions. Preserve allocation save keys.
+- Add isolated loading tests with and without BeaverBuddies and legacy-addon detection.
+
+
 ## v0.4.3
 
 - Replace triangle clipping with complete native cell selection at allocation boundaries.

@@ -7,12 +7,11 @@ using UnityEngine;
 
 namespace MixedStorage.Multiplayer
 {
-    public sealed class MultiplayerStarter : IModStarter
+    public static class MultiplayerStarter
     {
-        public void StartMod(IModEnvironment environment)
+        public static void Initialize()
         {
             AllocationCommands.MultiplayerSubmit = Submit;
-            Debug.Log("[MixedStorage] BeaverBuddies synchronized allocation events enabled.");
         }
 
         private static SubmissionResult Submit(SingleGoodAllower allower, string payload)
@@ -48,7 +47,7 @@ namespace MixedStorage.Multiplayer
         }
     }
 
-    // Replay type metadata uses the MixedStorage addon assembly on every player.
+    // Replay type metadata uses the bundled bridge assembly on every player.
     public sealed class StorageAllocationEvent : ReplayEvent
     {
         public string entityID;
