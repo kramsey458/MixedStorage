@@ -1,13 +1,13 @@
-# MixedStorage 0.3.0
+# MixedStorage 0.3.1
 
 Percentage allocations for Timberborn 1.1.2.4 warehouses and piles.
 
 ## Downloads
 
-**[Download v0.3.0 from Releases](https://github.com/kramsey458/MixedStorage/releases/tag/v0.3.0).**
+**[Download v0.3.1 from Releases](https://github.com/kramsey458/MixedStorage/releases/tag/v0.3.1).**
 
-- **MixedStorage-v0.3.0.zip**: the main mod, required for both single-player and multiplayer.
-- **MixedStorage-BeaverBuddies-v0.3.0.zip**: the multiplayer addon; install alongside the main mod and BeaverBuddies on every computer.
+- **MixedStorage-v0.3.1.zip**: the main mod, required for both single-player and multiplayer.
+- **MixedStorage-BeaverBuddies-v0.3.1.zip**: the multiplayer addon; install alongside the main mod and BeaverBuddies on every computer.
 
 Download these compiled ZIPs rather than GitHub's automatically generated source-code archives.
 
@@ -28,7 +28,7 @@ The native 3D contents and banner still show a representative good, not separate
 
 Extract MixedStorage into Documents/Timberborn/Mods, replacing the existing MixedStorage folder's files. Enable it and Harmony, then restart Timberborn. Uses MixedStorage mod IDs and allocation save keys.
 
-For multiplayer, also extract and enable MixedStorage-BeaverBuddies. All computers must use version 0.3.0 of both packages and matching BeaverBuddies versions. The addon sends allocation commands through BeaverBuddies replay events. All players must use the same MixedStorage assemblies.
+For multiplayer, also extract and enable MixedStorage-BeaverBuddies. All computers must use version 0.3.1 of both packages and matching BeaverBuddies versions. The addon sends allocation commands through BeaverBuddies replay events. All players must use the same MixedStorage assemblies.
 
 ## Validation
 
@@ -49,3 +49,5 @@ The packages are written to `dist/`. Use dependency paths from your own installa
 ## Quick allocation controls
 
 Each good has a Max button: set it to 100% and all other goods to zero, then Apply. Copy allocations copies a valid draft; select another storage building, Paste allocations, then Apply. Percentages remain exact and limits scale to the destination capacity. Incompatible goods reject the entire paste without changing the draft. The clipboard is local to the game process; Apply synchronizes through BeaverBuddies. Hauling mode and hauler priority are not copied.
+
+The top contents summary shows each allocated or stocked good's applied percentage and stored quantity / limit, plus incoming deliveries and excess stock. It updates live and is independent of search, filters and unapplied draft edits.

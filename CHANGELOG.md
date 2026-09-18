@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.1
+
+- Add a live top summary of applied percentages, stored quantities and limits for all allocated or stocked goods.
+- Include incoming deliveries and excess stock, independently of search and filters.
+
+
 ## v0.3.0
 
 - Add per-good Max buttons to assign 100% with one click.

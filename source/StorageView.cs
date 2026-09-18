@@ -45,6 +45,7 @@ namespace MixedStorage
         private readonly VisualElement _vanilla;
         private readonly VisualElement _panel;
         private readonly Label _summary;
+        private readonly Label _contentsSummary;
         private readonly Label _total;
         private readonly Label _message;
         private readonly Label _count;
@@ -82,6 +83,12 @@ namespace MixedStorage
             _panel.Add(title);
             _summary = Text("", 13);
             _panel.Add(_summary);
+            _contentsSummary = Text("", 12);
+            _contentsSummary.style.whiteSpace = WhiteSpace.Normal;
+            _contentsSummary.style.marginTop = 4;
+            _contentsSummary.style.marginBottom = 4;
+            _contentsSummary.tooltip = "Applied allocation percentage and current stored quantity / item limit. Includes incoming and excess goods, regardless of search or filters.";
+            _panel.Add(_contentsSummary);
 
             _search = new TextField { name = "MixedStorageSearch", tooltip = "Search the goods allowed in this storage building." };
             _search.label = "Search";
@@ -386,14 +393,23 @@ namespace MixedStorage
             var inventory = _state.Inventory;
             _summary.text = inventory.TotalAmountInStock + " / " + inventory.Capacity + " items · " +
                 (_state.Active ? _state.Shares.Count + " goods allocated" : "Single-good settings active");
+            var contents = new List<string>();
             foreach (var row in _rows)
             {
                 int stock = inventory.AmountInStock(row.Id), incoming = inventory.ReservedCapacity(row.Id);
                 int liveLimit = _state.Active ? _state.Limit(row.Id) : inventory.LimitedAmount(row.Id);
+                int share = 0;
+                if (_state.Active) _state.Shares.TryGetValue(row.Id, out share);
+                else if (_state.Allower.HasAllowedGood && _state.Allower.AllowedGood == row.Id) share = AllocationPlan.Total;
+                if (share > 0 || stock > 0 || incoming > 0)
+                    contents.Add(row.Name + " " + AllocationPlan.Format(share) + "%: " + stock + "/" + liveLimit +
+                        (incoming > 0 ? " (+" + incoming + " incoming)" : "") + (stock > liveLimit ? " excess" : ""));
                 row.Stock.text = stock + " stored" + (incoming > 0 ? " + " + incoming + " incoming" : "") +
                     (stock > liveLimit ? " · excess" : "");
                 row.Stock.style.color = stock > liveLimit ? Error : Muted;
             }
+            _contentsSummary.text = contents.Count == 0 ? "No goods allocated or stored." :
+                "Applied % · stored / limit\n" + string.Join("  •  ", contents);
         }
 
         private static Label Text(string value, int size)
