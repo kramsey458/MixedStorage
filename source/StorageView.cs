@@ -10,6 +10,7 @@ namespace MixedStorage
     internal sealed class StorageView
     {
         private static WeakReference<StorageView> _activeView;
+        private static Dictionary<string, int> _copiedAllocation;
         internal static bool IsEditingText
         {
             get
@@ -52,6 +53,8 @@ namespace MixedStorage
         private readonly Toggle _allocatedOnly;
         private readonly ScrollView _scroll;
         private readonly Button _apply;
+        private readonly Button _copy;
+        private readonly Button _paste;
         private readonly List<Row> _rows = new List<Row>();
         private StorageState _state;
         private Dictionary<string, int> _draft;
@@ -105,7 +108,7 @@ namespace MixedStorage
             var goodsHeader = Text("GOOD / STOCK + INCOMING", 11);
             goodsHeader.style.flexGrow = 1;
             header.Add(goodsHeader);
-            var percentHeader = Text("% / RESET", 11); percentHeader.style.width = 90; header.Add(percentHeader);
+            var percentHeader = Text("% / RESET / MAX", 11); percentHeader.style.width = 128; header.Add(percentHeader);
             var limitHeader = Text("LIMIT", 11); limitHeader.style.width = 44; header.Add(limitHeader);
             header.style.marginTop = 5;
             _panel.Add(header);
@@ -127,6 +130,14 @@ namespace MixedStorage
             _message = Text("", 12);
             _message.style.whiteSpace = WhiteSpace.Normal;
             _panel.Add(_message);
+            var clipboardActions = Horizontal();
+            _copy = ActionButton("Copy allocations", CopyAllocation);
+            _copy.tooltip = "Copy this valid 100% draft. Stock, hauling mode and hauler priority are not copied.";
+            _paste = ActionButton("Paste allocations", PasteAllocation);
+            _paste.tooltip = "Paste copied percentages into this draft, then Apply. All allocated goods must be accepted here.";
+            clipboardActions.Add(_copy);
+            clipboardActions.Add(_paste);
+            _panel.Add(clipboardActions);
             var actions = Horizontal();
             actions.style.marginTop = 6;
             actions.Add(ActionButton("Clear all", ClearDraft));
@@ -224,6 +235,17 @@ namespace MixedStorage
                 reset.style.marginTop = reset.style.marginBottom = 0;
                 reset.style.paddingLeft = reset.style.paddingRight = 0;
                 row.Root.Add(reset);
+                var max = ActionButton("Max", () => SetDraft(
+                    AllocationPlan.Max(_draft.Keys, row.Id), row.Name + " set to 100%. Press Apply."));
+                max.tooltip = "Set " + row.Name + " to 100% and all other goods to 0% (draft only)";
+                max.style.width = 34;
+                max.style.minWidth = 34;
+                max.style.minHeight = 22;
+                max.style.fontSize = 11;
+                max.style.flexShrink = 0;
+                max.style.marginTop = max.style.marginBottom = 0;
+                max.style.paddingLeft = max.style.paddingRight = 0;
+                row.Root.Add(max);
                 row.Limit = Text("", 13);
                 row.Limit.style.width = 44;
                 row.Limit.style.flexShrink = 0;
@@ -245,6 +267,8 @@ namespace MixedStorage
             long total = _draft.Values.Sum(x => (long)x);
             bool valid = validFields && AllocationPlan.IsValid(_draft) && _draft.All(x => x.Value == 0 || _state.Inventory.Takes(x.Key));
             _apply.SetEnabled(valid && !_state.Pending);
+            _copy.SetEnabled(valid);
+            _paste.SetEnabled(_copiedAllocation != null && !_state.Pending);
             _total.text = !validFields ? "Enter valid percentages (0–100, 2 decimals)" :
                 total == AllocationPlan.Total ? "100% / 100% allocated" :
                 (total / 100m).ToString("0.##") + "% / 100% — " + (Math.Abs(total - AllocationPlan.Total) / 100m).ToString("0.##") + (total < AllocationPlan.Total ? "% remaining" : "% over");
@@ -285,6 +309,43 @@ namespace MixedStorage
             _message.text = "Draft cleared. Existing allocations remain active until Apply.";
             _message.style.color = Muted;
             Validate(); Filter();
+        }
+
+        private void SetDraft(Dictionary<string, int> draft, string message)
+        {
+            // Keep every row, including filtered-out goods, consistent with the new draft.
+            foreach (var row in _rows)
+            {
+                _draft[row.Id] = draft.TryGetValue(row.Id, out var value) ? value : 0;
+                row.Valid = true;
+                row.Percent.SetValueWithoutNotify(AllocationPlan.Format(_draft[row.Id]));
+                row.Percent.style.backgroundColor = new StyleColor(StyleKeyword.Null);
+            }
+            _message.text = message;
+            _message.style.color = Muted;
+            Validate();
+            Filter();
+        }
+
+        private void CopyAllocation()
+        {
+            if (_rows.Any(x => !x.Valid) || !AllocationPlan.IsValid(_draft)) return;
+            _copiedAllocation = new Dictionary<string, int>(_draft, StringComparer.Ordinal);
+            _message.text = "Allocations copied. Select another storage building and Paste.";
+            _message.style.color = Green;
+            Validate();
+        }
+
+        private void PasteAllocation()
+        {
+            if (_state.Pending) return;
+            if (!AllocationPlan.TryPaste(_copiedAllocation, _draft.Keys.Where(x => _state.Inventory.Takes(x)), out var draft))
+            {
+                _message.text = "Cannot paste: this building does not accept all copied goods. Draft unchanged.";
+                _message.style.color = Error;
+                return;
+            }
+            SetDraft(draft, "Allocations pasted. Limits use this building's capacity. Press Apply.");
         }
 
         private void Apply()

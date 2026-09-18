@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.3.0
+
+- Add per-good Max buttons to assign 100% with one click.
+- Add Copy allocations and Paste allocations between compatible storage buildings.
+- Preserve exact percentages and recalculate limits for each destination capacity.
+- Reject incompatible pastes atomically; apply changes through the existing multiplayer event path.
+
+
 ## v0.2.0
 
 - Use MixedStorage naming throughout the mod, multiplayer addon, assemblies, IDs, UI identifiers and allocation save data.

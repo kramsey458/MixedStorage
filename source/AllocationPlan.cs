@@ -10,6 +10,26 @@ namespace MixedStorage
     {
         public const int Total = 10000;
 
+        public static Dictionary<string, int> Max(IEnumerable<string> goods, string selected)
+        {
+            var result = goods.Distinct(StringComparer.Ordinal).ToDictionary(x => x, _ => 0, StringComparer.Ordinal);
+            if (!result.ContainsKey(selected)) throw new ArgumentException("Good is unavailable.");
+            result[selected] = Total;
+            return result;
+        }
+
+        public static bool TryPaste(IReadOnlyDictionary<string, int> copied, IEnumerable<string> allowed,
+            out Dictionary<string, int> draft)
+        {
+            draft = null;
+            if (!IsValid(copied)) return false;
+            var result = allowed.Distinct(StringComparer.Ordinal).ToDictionary(x => x, _ => 0, StringComparer.Ordinal);
+            if (copied.Any(x => x.Value > 0 && !result.ContainsKey(x.Key))) return false;
+            foreach (var item in copied.Where(x => x.Value > 0)) result[item.Key] = item.Value;
+            draft = result;
+            return true;
+        }
+
         public static bool TryParsePercent(string text, out int units)
         {
             units = 0;
