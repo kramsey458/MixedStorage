@@ -1,12 +1,12 @@
-# MixedStorage 0.5.0
+# MixedStorage 0.5.1
 
 Percentage allocations for Timberborn 1.1.2.4 warehouses and piles.
 
 ## Downloads
 
-**[Download v0.5.0 visual prototype from Releases](https://github.com/kramsey458/MixedStorage/releases/tag/v0.5.0).**
+**[Download v0.5.1 visual prototype from Releases](https://github.com/kramsey458/MixedStorage/releases/tag/v0.5.1).**
 
-**MixedStorage-v0.5.0.zip** is the only package for single-player and multiplayer. BeaverBuddies support is bundled and activates automatically when BeaverBuddies is enabled.
+**MixedStorage-v0.5.1.zip** is the only package for single-player and multiplayer. BeaverBuddies support is bundled and activates automatically when BeaverBuddies is enabled.
 
 Download this compiled ZIP rather than GitHub's automatically generated source-code archives.
 
@@ -33,7 +33,7 @@ For multiplayer, enable BeaverBuddies separately and install the same MixedStora
 
 ## Validation
 
-Compiled against Timberborn 1.1.2.4 assemblies. 10,043 allocation assertions cover capacities 20, 30, 180, 200, 1000 and 1200, invalid percentages, persistence, delivery guards, and 2,000 randomized splits with up to 100 goods. All 11 supported template names and storage categories were checked against the game's Blueprints.zip. Native rendering API signature checks guard against the ambiguous method lookup that broke v0.4.0. The new mesh clipper passes 15,689 offline assertions, including 1,000 randomized section partitions. Earlier versions were used successfully in game; v0.5.0 mixed visuals have not been tested in game or multiplayer. Appearance, lifecycle behavior and performance still need live verification.
+Compiled against Timberborn 1.1.2.4 assemblies. 10,043 allocation assertions cover capacities 20, 30, 180, 200, 1000 and 1200, invalid percentages, persistence, delivery guards, and 2,000 randomized splits with up to 100 goods. All 11 supported template names and storage categories were checked against the game's Blueprints.zip. Native rendering API signature checks guard against the ambiguous method lookup that broke v0.4.0. The new mesh clipper passes 15,689 offline assertions, including 1,000 randomized section partitions. Earlier versions were used successfully in game; v0.5.1 mixed visuals have not been tested in game or multiplayer. Appearance, lifecycle behavior and performance still need live verification.
 
 ## Build
 

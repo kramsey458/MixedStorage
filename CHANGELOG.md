@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.5.1
+
+- Bound the allocation panel to available screen height and scroll its content independently.
+- Keep allocation totals and Apply/Clear/Revert controls outside the scrolling body.
+
+
 ## v0.5.0
 
 - One MixedStorage download and mod entry for single-player and multiplayer.

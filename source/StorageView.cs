@@ -49,6 +49,7 @@ namespace MixedStorage
         private readonly IGoodService _goods;
         private readonly VisualElement _vanilla;
         private readonly VisualElement _panel;
+        private readonly ScrollView _body;
         private readonly Label _summary;
         private readonly ScrollView _contentsSummary;
         private readonly Label _contentsEmpty;
@@ -165,6 +166,21 @@ namespace MixedStorage
             _apply.style.flexGrow = 1;
             actions.Add(_apply);
             _panel.Add(actions);
+            // Keep the total and Apply outside the scrolling content. The game window
+            // includes other fragments above us, so budget from this fragment's actual top.
+            _body = new ScrollView(ScrollViewMode.Vertical);
+            _body.style.minHeight = 0;
+            _body.style.flexShrink = 1;
+            _body.style.flexGrow = 1;
+            _body.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            _body.verticalScrollerVisibility = ScrollerVisibility.Auto;
+            foreach (var child in _panel.Children().ToArray())
+                if (child != title && child != _total && child != actions) _body.Add(child);
+            _panel.Insert(1, _body);
+            title.style.flexShrink = _total.style.flexShrink = actions.style.flexShrink = 0;
+            _total.style.whiteSpace = WhiteSpace.Normal;
+            _panel.style.minHeight = 0;
+            _panel.RegisterCallback<GeometryChangedEvent>(_ => FitPanel());
             // Keep typing and scrolling within the editor instead of bubbling to shortcuts/panel scrolling.
             _panel.RegisterCallback<KeyDownEvent>(evt => { if (evt.target is TextElement || evt.target is TextField) evt.StopPropagation(); });
             _scroll.RegisterCallback<WheelEvent>(evt => evt.StopPropagation());
@@ -389,12 +405,25 @@ namespace MixedStorage
         public void Refresh()
         {
             if (_state == null) return;
+            FitPanel();
             _vanilla.style.display = DisplayStyle.None;
             if (_revision != _state.Revision) LoadDraft();
             if (_messageRevision != _state.MessageRevision) { ShowResult(); Validate(); }
             if (Time.unscaledTime < _nextRefresh) return;
             _nextRefresh = Time.unscaledTime + .4f;
             RefreshStock();
+        }
+
+        private void FitPanel()
+        {
+            var viewport = _panel.panel?.visualTree;
+            if (viewport == null) return;
+            float bottom = viewport.worldBound.yMax;
+            float top = _panel.worldBound.yMin;
+            if (float.IsNaN(bottom) || float.IsNaN(top) || bottom <= 0) return;
+            float height = Mathf.Clamp(bottom - Mathf.Max(0, top) - 16, 80, 520);
+            if (Mathf.Abs(_panel.resolvedStyle.height - height) > 1)
+                _panel.style.height = height;
         }
 
         private void ShowResult()
