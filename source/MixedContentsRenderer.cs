@@ -77,13 +77,15 @@ namespace MixedStorage
         }
 
         private static object Field(object value, string name) => AccessTools.Field(value.GetType(), name).GetValue(value);
-        private static void Call(object value, string name, params object[] args) => AccessTools.Method(value.GetType(), name).Invoke(value, args);
+        // BaseComponent also defines Initialize; name-only lookup is ambiguous.
+        private static void Call(object value, string name, params object[] args) =>
+            AccessTools.Method(value.GetType(), name, args.Select(arg => arg.GetType()).ToArray()).Invoke(value, args);
 
         private void Fail(Exception ex)
         {
             _failed = true;
             Release();
-            Debug.LogWarning("[MixedStorage] Mixed visuals unavailable for this building; using native visuals. " + ex.GetBaseException().Message);
+            Debug.LogWarning("[MixedStorage] Mixed visuals unavailable for this building; using native visuals. " + ex.GetBaseException());
         }
 
         private void Render(StockpileVisualizers owner, StorageState state)
@@ -220,7 +222,7 @@ namespace MixedStorage
             if (OwnedMesh != null) Destroy(OwnedMesh);
             if (OwnedMaterial != null)
             {
-                try { AccessTools.Method(EntityMaterials.GetType(), "DestroyMaterial").Invoke(EntityMaterials, new object[] { OwnedMaterial }); }
+                try { AccessTools.Method(EntityMaterials.GetType(), "DestroyMaterial", new[] { typeof(Material) }).Invoke(EntityMaterials, new object[] { OwnedMaterial }); }
                 catch { Destroy(OwnedMaterial); }
             }
         }

@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.4.1 (visual prototype fix)
+
+- Fix ambiguous native method lookup that caused mixed visuals to fall back to one good.
+- Resolve rendering methods by their argument types and validate nine native API signatures against the installed game assemblies.
+- Include full exception details in rendering fallback warnings.
+
+
 ## v0.4.0 (visual prototype)
 
 - Divide native goods meshes into deterministic allocation-sized sections, filling each from its actual stock.

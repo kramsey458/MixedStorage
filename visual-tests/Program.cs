@@ -22,3 +22,4 @@ for(int run=0;run<1000;run++) {
  Check(Math.Abs(sum-2)<1e-5,"Random partitions conserve total area");
 }
 Console.WriteLine($"PASS: {count} mesh clipping assertions.");
+GameApiTests.Run(args.Length > 0 ? args[0] : @"C:\Program Files (x86)\Steam\steamapps\common\Timberborn");
