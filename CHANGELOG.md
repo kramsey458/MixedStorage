@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.4.0 (visual prototype)
+
+- Divide native goods meshes into deterministic allocation-sized sections, filling each from its actual stock.
+- Preserve native materials and icons, with lifecycle cleanup and native visual fallback.
+- Coalesce visual updates to at most five rebuilds per building per second.
+- Add offline mesh-clipping tests. In-game appearance and performance remain unverified.
+
+
 ## v0.3.1
 
 - Add a live top summary of applied percentages, stored quantities and limits for all allocated or stocked goods.

@@ -11,6 +11,8 @@ dotnet build (Join-Path $PSScriptRoot 'multiplayer\MixedStorage.BeaverBuddies.cs
 if ($LASTEXITCODE -ne 0) { throw 'Mod build failed.' }
 dotnet run --project (Join-Path $PSScriptRoot 'tests\AllocationTests.csproj') -c Release
 if ($LASTEXITCODE -ne 0) { throw 'Allocation tests failed.' }
+dotnet run --project (Join-Path $PSScriptRoot 'visual-tests\VisualTests.csproj') -c Release "-p:GameDir=$GameDir"
+if ($LASTEXITCODE -ne 0) { throw 'Visual geometry tests failed.' }
 $dist = Join-Path $PSScriptRoot 'dist'
 foreach ($name in @('MixedStorage', 'MixedStorage-BeaverBuddies')) {
     $versionDirectory = Join-Path $dist "$name\version-1.1"

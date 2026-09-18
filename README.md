@@ -1,13 +1,13 @@
-# MixedStorage 0.3.1
+# MixedStorage 0.4.0
 
 Percentage allocations for Timberborn 1.1.2.4 warehouses and piles.
 
 ## Downloads
 
-**[Download v0.3.1 from Releases](https://github.com/kramsey458/MixedStorage/releases/tag/v0.3.1).**
+**[Download v0.4.0 visual prototype from Releases](https://github.com/kramsey458/MixedStorage/releases/tag/v0.4.0).**
 
-- **MixedStorage-v0.3.1.zip**: the main mod, required for both single-player and multiplayer.
-- **MixedStorage-BeaverBuddies-v0.3.1.zip**: the multiplayer addon; install alongside the main mod and BeaverBuddies on every computer.
+- **MixedStorage-v0.4.0.zip**: the main mod, required for both single-player and multiplayer.
+- **MixedStorage-BeaverBuddies-v0.4.0.zip**: the multiplayer addon; install alongside the main mod and BeaverBuddies on every computer.
 
 Download these compiled ZIPs rather than GitHub's automatically generated source-code archives.
 
@@ -22,17 +22,17 @@ Select a building, set percentages and press Apply at exactly 100%. Values allow
 
 Whole-item limits use largest-remainder rounding, with stable good-ID ordering for ties. Very small allocations can round to zero, especially in small piles. The UI previews the final item limits. Incoming deliveries count toward limits; conflicting reductions are rejected until deliveries finish. Existing excess goods are preserved and can be hauled out. Accept, Obtain, Supply and Empty use the native inventory/hauling system, with mixed-good support for Obtain and Supply.
 
-The native 3D contents and banner still show a representative good, not separate visual stacks for every allocation. Use the allocation panel for per-good counts.
+Mixed 3D contents use allocation-sized sections of native good meshes, filled from actual per-good inventory. Empty allocations leave their section empty. Banners still show a representative good; the panel gives exact counts. This rendering prototype has not been tested in game. Section edges can cut through models, and very small shares may be difficult to see. Excess stock is visually capped at the allocated section; goods with no allocated section remain listed in the panel. Unsupported or unreadable native meshes fall back to the original visualizer.
 
 ## Install / upgrade
 
 Extract MixedStorage into Documents/Timberborn/Mods, replacing the existing MixedStorage folder's files. Enable it and Harmony, then restart Timberborn. Uses MixedStorage mod IDs and allocation save keys.
 
-For multiplayer, also extract and enable MixedStorage-BeaverBuddies. All computers must use version 0.3.1 of both packages and matching BeaverBuddies versions. The addon sends allocation commands through BeaverBuddies replay events. All players must use the same MixedStorage assemblies.
+For multiplayer, also extract and enable MixedStorage-BeaverBuddies. All computers must use version 0.4.0 of both packages and matching BeaverBuddies versions. The addon sends allocation commands through BeaverBuddies replay events. All players must use the same MixedStorage assemblies.
 
 ## Validation
 
-Compiled against Timberborn 1.1.2.4 assemblies. 10,043 allocation assertions cover capacities 20, 30, 180, 200, 1000 and 1200, invalid percentages, persistence, delivery guards, and 2,000 randomized splits with up to 100 goods. All 11 supported template names and storage categories were checked against the game's Blueprints.zip. The original user reports successful live use; automated tests do not constitute a full multiplayer compatibility test suite.
+Compiled against Timberborn 1.1.2.4 assemblies. 10,043 allocation assertions cover capacities 20, 30, 180, 200, 1000 and 1200, invalid percentages, persistence, delivery guards, and 2,000 randomized splits with up to 100 goods. All 11 supported template names and storage categories were checked against the game's Blueprints.zip. The new mesh clipper passes 15,689 offline assertions, including 1,000 randomized section partitions. Earlier versions were used successfully in game; v0.4.0 mixed visuals have not been tested in game or multiplayer. Appearance, lifecycle behavior and performance still need live verification.
 
 ## Build
 
