@@ -1,11 +1,11 @@
 {
   "Name": "MixedStorage – BeaverBuddies",
-  "Version": "0.4.1",
+  "Version": "0.4.2",
   "Id": "kyler.mixedstorage.beaverbuddies",
   "MinimumGameVersion": "1.1.2.4",
   "Description": "Sends MixedStorage allocation changes through BeaverBuddies replay events. Every player must enable both MixedStorage mods. Preview build.",
   "RequiredMods": [
-    { "Id": "kyler.mixedstorage", "MinimumVersion": "0.4.1" },
+    { "Id": "kyler.mixedstorage", "MinimumVersion": "0.4.2" },
     { "Id": "beaverbuddies" }
   ]
 }

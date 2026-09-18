@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.2
+
+- Replace the small inline contents summary with readable cards: 30px goods icons, bold names, 19px stored/limit counts, allocation percentages and stock fill bars.
+- Keep incoming and excess counts visible, and bound the summary height for large goods lists.
+
+
 ## v0.4.1 (visual prototype fix)
 
 - Fix ambiguous native method lookup that caused mixed visuals to fall back to one good.

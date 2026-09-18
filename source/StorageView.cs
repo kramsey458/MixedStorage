@@ -34,6 +34,11 @@ namespace MixedStorage
             public TextField Percent;
             public Label Limit;
             public Label Stock;
+            public VisualElement SummaryCard;
+            public Label SummaryCount;
+            public Label SummaryShare;
+            public Label SummaryNote;
+            public VisualElement SummaryFill;
             public bool Valid;
         }
 
@@ -45,7 +50,8 @@ namespace MixedStorage
         private readonly VisualElement _vanilla;
         private readonly VisualElement _panel;
         private readonly Label _summary;
-        private readonly Label _contentsSummary;
+        private readonly ScrollView _contentsSummary;
+        private readonly Label _contentsEmpty;
         private readonly Label _total;
         private readonly Label _message;
         private readonly Label _count;
@@ -81,14 +87,20 @@ namespace MixedStorage
             var title = Text("STORAGE ALLOCATION", 16);
             title.style.unityFontStyleAndWeight = FontStyle.Bold;
             _panel.Add(title);
-            _summary = Text("", 13);
+            _summary = Text("", 16);
+            _summary.style.unityFontStyleAndWeight = FontStyle.Bold;
             _panel.Add(_summary);
-            _contentsSummary = Text("", 12);
-            _contentsSummary.style.whiteSpace = WhiteSpace.Normal;
+            _contentsSummary = new ScrollView(ScrollViewMode.Vertical);
+            _contentsSummary.style.maxHeight = 210;
+            _contentsSummary.style.flexShrink = 0;
+            _contentsSummary.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            _contentsSummary.verticalScrollerVisibility = ScrollerVisibility.Auto;
             _contentsSummary.style.marginTop = 4;
             _contentsSummary.style.marginBottom = 4;
             _contentsSummary.tooltip = "Applied allocation percentage and current stored quantity / item limit. Includes incoming and excess goods, regardless of search or filters.";
             _panel.Add(_contentsSummary);
+            _contentsSummary.RegisterCallback<WheelEvent>(evt => evt.StopPropagation());
+            _contentsEmpty = Text("No goods allocated or stored.", 15);
 
             _search = new TextField { name = "MixedStorageSearch", tooltip = "Search the goods allowed in this storage building." };
             _search.label = "Search";
@@ -180,6 +192,7 @@ namespace MixedStorage
             _panel.style.display = DisplayStyle.None;
             _rows.Clear();
             _scroll.Clear();
+            _contentsSummary.Clear();
         }
 
         private void LoadDraft()
@@ -188,9 +201,12 @@ namespace MixedStorage
             _revision = _state.Revision;
             _rows.Clear();
             _scroll.Clear();
+            _contentsSummary.Clear();
+            _contentsSummary.Add(_contentsEmpty);
             foreach (var id in _draft.Keys.OrderBy(DisplayName, StringComparer.CurrentCultureIgnoreCase).ThenBy(x => x, StringComparer.Ordinal))
             {
                 var row = new Row { Id = id, Name = DisplayName(id), Root = Horizontal(), Valid = true };
+                CreateSummaryCard(row);
                 row.Root.style.paddingTop = row.Root.style.paddingBottom = 1;
                 row.Root.style.borderBottomWidth = 1;
                 row.Root.style.borderBottomColor = new Color(.3f, .4f, .36f);
@@ -393,7 +409,7 @@ namespace MixedStorage
             var inventory = _state.Inventory;
             _summary.text = inventory.TotalAmountInStock + " / " + inventory.Capacity + " items · " +
                 (_state.Active ? _state.Shares.Count + " goods allocated" : "Single-good settings active");
-            var contents = new List<string>();
+            int visibleContents = 0;
             foreach (var row in _rows)
             {
                 int stock = inventory.AmountInStock(row.Id), incoming = inventory.ReservedCapacity(row.Id);
@@ -401,15 +417,79 @@ namespace MixedStorage
                 int share = 0;
                 if (_state.Active) _state.Shares.TryGetValue(row.Id, out share);
                 else if (_state.Allower.HasAllowedGood && _state.Allower.AllowedGood == row.Id) share = AllocationPlan.Total;
-                if (share > 0 || stock > 0 || incoming > 0)
-                    contents.Add(row.Name + " " + AllocationPlan.Format(share) + "%: " + stock + "/" + liveLimit +
-                        (incoming > 0 ? " (+" + incoming + " incoming)" : "") + (stock > liveLimit ? " excess" : ""));
+                bool visible = share > 0 || stock > 0 || incoming > 0;
+                row.SummaryCard.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+                if (visible) visibleContents++;
+                row.SummaryCount.text = stock + " / " + liveLimit;
+                row.SummaryCount.style.color = stock > liveLimit ? Error : Cream;
+                row.SummaryShare.text = AllocationPlan.Format(share) + "% allocated";
+                row.SummaryNote.text = (incoming > 0 ? "+" + incoming + " incoming" : "") +
+                    (stock > liveLimit ? (incoming > 0 ? " · " : "") + (stock - liveLimit) + " excess" : "");
+                row.SummaryNote.style.display = incoming > 0 || stock > liveLimit ? DisplayStyle.Flex : DisplayStyle.None;
+                row.SummaryNote.style.color = stock > liveLimit ? Error : Muted;
+                row.SummaryFill.style.width = Length.Percent(liveLimit > 0 ? Mathf.Clamp01((float)stock / liveLimit) * 100 : stock > 0 ? 100 : 0);
+                row.SummaryFill.style.backgroundColor = stock > liveLimit ? Error : Green;
                 row.Stock.text = stock + " stored" + (incoming > 0 ? " + " + incoming + " incoming" : "") +
                     (stock > liveLimit ? " · excess" : "");
                 row.Stock.style.color = stock > liveLimit ? Error : Muted;
             }
-            _contentsSummary.text = contents.Count == 0 ? "No goods allocated or stored." :
-                "Applied % · stored / limit\n" + string.Join("  •  ", contents);
+            _contentsEmpty.style.display = visibleContents == 0 ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private void CreateSummaryCard(Row row)
+        {
+            var card = new VisualElement();
+            card.style.backgroundColor = new Color(.09f, .17f, .16f, .8f);
+            card.style.marginBottom = 4;
+            card.style.paddingLeft = card.style.paddingRight = 7;
+            card.style.paddingTop = card.style.paddingBottom = 5;
+            card.style.flexShrink = 0;
+            card.tooltip = row.Name + ": stored / limit. Bar shows stock as a fraction of the applied limit.";
+            var line = Horizontal();
+            var icon = new Image();
+            icon.style.width = icon.style.height = 30;
+            icon.style.flexShrink = 0;
+            icon.style.marginRight = 8;
+            if (_goods.HasGood(row.Id)) icon.sprite = _goods.GetGood(row.Id).IconSmall.Value;
+            line.Add(icon);
+            var details = new VisualElement();
+            details.style.flexGrow = 1;
+            details.style.flexShrink = 1;
+            details.style.minWidth = 0;
+            var name = Text(row.Name, 16);
+            name.style.whiteSpace = WhiteSpace.Normal;
+            name.style.unityFontStyleAndWeight = FontStyle.Bold;
+            details.Add(name);
+            row.SummaryShare = Text("", 14);
+            row.SummaryShare.style.color = Muted;
+            details.Add(row.SummaryShare);
+            line.Add(details);
+            var counts = new VisualElement();
+            counts.style.flexShrink = 0;
+            counts.style.marginLeft = 8;
+            row.SummaryCount = Text("", 19);
+            row.SummaryCount.style.unityFontStyleAndWeight = FontStyle.Bold;
+            row.SummaryCount.style.unityTextAlign = TextAnchor.MiddleRight;
+            counts.Add(row.SummaryCount);
+            var legend = Text("stored / limit", 12);
+            legend.style.color = Muted;
+            legend.style.unityTextAlign = TextAnchor.MiddleRight;
+            counts.Add(legend);
+            line.Add(counts);
+            card.Add(line);
+            row.SummaryNote = Text("", 13);
+            row.SummaryNote.style.whiteSpace = WhiteSpace.Normal;
+            card.Add(row.SummaryNote);
+            var track = new VisualElement();
+            track.style.height = 4;
+            track.style.marginTop = 4;
+            track.style.backgroundColor = new Color(.24f, .34f, .30f);
+            row.SummaryFill = new VisualElement();
+            row.SummaryFill.style.height = 4;
+            track.Add(row.SummaryFill);
+            card.Add(track);
+            row.SummaryCard = card;
+            _contentsSummary.Add(card);
         }
 
         private static Label Text(string value, int size)

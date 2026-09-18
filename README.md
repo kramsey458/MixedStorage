@@ -1,13 +1,13 @@
-# MixedStorage 0.4.1
+# MixedStorage 0.4.2
 
 Percentage allocations for Timberborn 1.1.2.4 warehouses and piles.
 
 ## Downloads
 
-**[Download v0.4.1 visual prototype from Releases](https://github.com/kramsey458/MixedStorage/releases/tag/v0.4.1).**
+**[Download v0.4.2 visual prototype from Releases](https://github.com/kramsey458/MixedStorage/releases/tag/v0.4.2).**
 
-- **MixedStorage-v0.4.1.zip**: the main mod, required for both single-player and multiplayer.
-- **MixedStorage-BeaverBuddies-v0.4.1.zip**: the multiplayer addon; install alongside the main mod and BeaverBuddies on every computer.
+- **MixedStorage-v0.4.2.zip**: the main mod, required for both single-player and multiplayer.
+- **MixedStorage-BeaverBuddies-v0.4.2.zip**: the multiplayer addon; install alongside the main mod and BeaverBuddies on every computer.
 
 Download these compiled ZIPs rather than GitHub's automatically generated source-code archives.
 
@@ -28,11 +28,11 @@ Mixed 3D contents use allocation-sized sections of native good meshes, filled fr
 
 Extract MixedStorage into Documents/Timberborn/Mods, replacing the existing MixedStorage folder's files. Enable it and Harmony, then restart Timberborn. Uses MixedStorage mod IDs and allocation save keys.
 
-For multiplayer, also extract and enable MixedStorage-BeaverBuddies. All computers must use version 0.4.1 of both packages and matching BeaverBuddies versions. The addon sends allocation commands through BeaverBuddies replay events. All players must use the same MixedStorage assemblies.
+For multiplayer, also extract and enable MixedStorage-BeaverBuddies. All computers must use version 0.4.2 of both packages and matching BeaverBuddies versions. The addon sends allocation commands through BeaverBuddies replay events. All players must use the same MixedStorage assemblies.
 
 ## Validation
 
-Compiled against Timberborn 1.1.2.4 assemblies. 10,043 allocation assertions cover capacities 20, 30, 180, 200, 1000 and 1200, invalid percentages, persistence, delivery guards, and 2,000 randomized splits with up to 100 goods. All 11 supported template names and storage categories were checked against the game's Blueprints.zip. Native rendering API signature checks guard against the ambiguous method lookup that broke v0.4.0. The new mesh clipper passes 15,689 offline assertions, including 1,000 randomized section partitions. Earlier versions were used successfully in game; v0.4.1 mixed visuals have not been tested in game or multiplayer. Appearance, lifecycle behavior and performance still need live verification.
+Compiled against Timberborn 1.1.2.4 assemblies. 10,043 allocation assertions cover capacities 20, 30, 180, 200, 1000 and 1200, invalid percentages, persistence, delivery guards, and 2,000 randomized splits with up to 100 goods. All 11 supported template names and storage categories were checked against the game's Blueprints.zip. Native rendering API signature checks guard against the ambiguous method lookup that broke v0.4.0. The new mesh clipper passes 15,689 offline assertions, including 1,000 randomized section partitions. Earlier versions were used successfully in game; v0.4.2 mixed visuals have not been tested in game or multiplayer. Appearance, lifecycle behavior and performance still need live verification.
 
 ## Build
 
