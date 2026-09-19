@@ -1,0 +1,159 @@
+/*
+ * Replica of Timberborn's entity window with the MixedStorage "Storage Allocation" panel.
+ * 1 CSS px = 1 UI unit (the game window is 440 units wide). Sizes follow the mod's StorageView;
+ * colors were sampled from in-game screenshots. Noto Sans is licensed under the SIL OFL (see fonts/OFL.txt).
+ */
+@font-face { font-family: "Noto Sans"; font-style: normal; font-weight: 400; font-display: swap; src: url(fonts/noto-sans-latin-400.woff2) format("woff2"); }
+@font-face { font-family: "Noto Sans"; font-style: normal; font-weight: 700; font-display: swap; src: url(fonts/noto-sans-latin-700.woff2) format("woff2"); }
+
+.ig-stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: clamp(24px, 4vw, 56px); align-items: start; margin-top: 28px; }
+.ig-side h3 { margin-top: 0; }
+.ig-controls { display: grid; gap: 20px; margin-bottom: 26px; }
+.ctl-label { display: block; font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--edge); margin-bottom: 8px; }
+.ctl-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn[aria-pressed="true"] { background: rgba(255, 255, 181, .2); box-shadow: inset 0 -3px 0 var(--orange); }
+.ig-tips { margin: 0; padding-left: 1.25em; color: var(--muted); font-size: .98rem; }
+.ig-tips li { margin-bottom: .6em; }
+.ig-tips strong { color: var(--ink); }
+.ig-fine { margin: 14px 0 0; text-align: center; font-size: .82rem; color: var(--muted); }
+
+/* ---- the window ---- */
+.ig {
+  --ig-bg: #436452; --ig-cream: #ffffcd; --ig-frame: #ffffb5; --ig-dark: #5c574c;
+  --ig-blue: #3b5468; --ig-maroon: #5a3f4b; --ig-input: #2d5d51; --ig-tan: #af9679; --ig-tan-line: #8a7357;
+  --ig-orange: #ffa60f; --ig-aqua: #dcfefd; --ig-bad: #ffcbbb; --ig-text: #fbfffc;
+  width: 100%; max-width: 440px; margin-inline: auto;
+  background: var(--ig-bg); color: var(--ig-text);
+  border: 2px solid var(--ig-frame); box-shadow: inset 0 0 0 1px var(--ig-dark), 0 18px 40px rgba(0, 0, 0, .45);
+  border-radius: 4px;
+  font: 400 13px/1.362 "Noto Sans", "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-align: left;
+}
+.ig *, .ig *::before, .ig *::after { box-sizing: border-box; }
+.ig [hidden] { display: none !important; }
+.ig p { margin: 0; }
+.ig-sec { border-top: 2px solid var(--ig-cream); }
+.ig-deco { pointer-events: none; user-select: none; cursor: default; }
+
+/* top button bar */
+.ig-bar { display: flex; justify-content: space-between; padding: .5px 4px; }
+.ig-bar div { display: flex; gap: 6px; }
+.ig-circle { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--ig-cream); background: #35513f; display: grid; place-items: center; }
+.ig-circle svg { width: 13px; height: 13px; fill: none; stroke: var(--ig-cream); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.ig-circle--red { background: #a3241f; }
+
+/* header + description */
+.ig-header { display: grid; grid-template-columns: 56px 1fr 56px; align-items: center; background: var(--ig-maroon); padding: 9px 10px 10px; }
+.ig-header svg { width: 44px; height: 44px; fill: none; stroke: var(--ig-cream); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.ig-header h3 { margin: 0; font-size: 16px; text-align: center; color: #fff; letter-spacing: 0; }
+.ig-header p { text-align: center; font-size: 12px; }
+.ig-desc { position: relative; background: var(--ig-blue); padding: 6px 11px; }
+.ig-desc .solid { color: #ffff40; }
+.ig-desc em { display: block; text-align: right; margin-top: 7px; }
+.ig-collapse { position: absolute; right: 8px; top: -9px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--ig-cream); background: var(--ig-blue); display: grid; place-items: center; }
+.ig-collapse svg { width: 9px; height: 9px; fill: none; stroke: var(--ig-cream); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+/* accept goods + prioritized */
+.ig-accept { display: flex; align-items: center; gap: 11px; padding: 13px 11px; }
+.ig-seg { display: flex; background: var(--ig-tan); border: 2px solid var(--ig-cream); border-radius: 3px; height: 24px; box-shadow: inset 0 0 0 1px var(--ig-tan-line); }
+.ig-seg span { width: 28px; display: grid; place-items: center; }
+.ig-seg span.on { position: relative; z-index: 1; height: 32px; margin: -6px 0 -6px -2px; background: #b59d7c; border: 2px solid var(--ig-cream); border-radius: 3px; }
+.ig-seg svg { width: 22px; height: 20px; fill: none; stroke: var(--ig-cream); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.ig-prio { padding: 10px 11px; }
+
+/* checkbox (also used for "Allocated goods only") */
+.ig-check { position: relative; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }
+.ig-check input { position: absolute; opacity: 0; width: 22px; height: 22px; margin: 0; cursor: pointer; }
+.ig-check .box { flex: none; width: 22px; height: 22px; background: #2d4b45; border: 2px solid var(--ig-cream); border-radius: 3px; box-shadow: 0 0 0 1px #8a7f4f; position: relative; }
+.ig-check input:checked + .box::after { content: ""; position: absolute; left: 5px; top: 0; width: 6px; height: 12px; border: solid var(--ig-cream); border-width: 0 3px 3px 0; transform: rotate(40deg); }
+.ig-check input:focus-visible + .box { outline: 3px solid var(--ig-orange); outline-offset: 2px; }
+
+/* the mod's panel */
+.ig-alloc { padding: 10px 4px 9px 11px; }
+.ig-title { margin: 0 0 3px; font-size: 16px; font-weight: 700; text-transform: uppercase; color: #fff; letter-spacing: 0; }
+.ig-scroll { max-height: 380px; overflow-y: auto; overflow-x: hidden; padding-right: 4px; scrollbar-gutter: stable; }
+.ig-scroll:focus-visible { outline: 3px solid var(--ig-orange); outline-offset: 2px; }
+.ig-scroll::-webkit-scrollbar { width: 16px; }
+.ig-scroll::-webkit-scrollbar-track { background: linear-gradient(90deg, transparent 4px, #214545 4px, #214545 12px, transparent 12px); border-radius: 6px; }
+.ig-scroll::-webkit-scrollbar-thumb { background: #47f7e8; border: 2px solid #f5e8a0; border-radius: 4px; min-height: 44px; box-shadow: inset 0 0 0 1px #2b6a63; }
+.ig-scroll::-webkit-scrollbar-thumb:hover { background: #7bfff2; }
+@-moz-document url-prefix() { .ig-scroll { scrollbar-color: #47f7e8 #214545; scrollbar-width: auto; } }
+.ig-summary { font-size: 16px; font-weight: 700; color: #fff; }
+
+/* summary cards */
+.ig-cards { margin: 4px 0 4px; }
+.ig-empty { font-size: 15px; padding: 6px 0; }
+.ig-card { background: var(--ig-blue); border: 1px solid #2a3d4d; border-radius: 3px; padding: 5px 7px; margin-bottom: 4px; }
+.ig-card__line { display: flex; align-items: center; }
+.ig-card__icon { flex: none; width: 30px; height: 30px; margin-right: 8px; display: grid; place-items: center; }
+.ig-card__icon img { display: block; image-rendering: auto; }
+.ig-card__main { flex: 1 1 0; min-width: 0; }
+.ig-card__main b { display: block; font-size: 16px; font-weight: 700; color: #fff; overflow-wrap: anywhere; }
+.ig-card__main span { display: block; font-size: 14px; }
+.ig-card__count { flex: none; margin-left: 8px; text-align: right; }
+.ig-card__count b { display: block; font-size: 19px; font-weight: 700; color: #fff; }
+.ig-card__count span { display: block; font-size: 12px; }
+.ig-card__note { font-size: 13px; }
+.ig-card.is-excess .ig-card__count b, .ig-card.is-excess .ig-card__note { color: var(--ig-bad); }
+.ig-bar-track { height: 4px; margin-top: 4px; background: #2b4658; }
+.ig-bar-track i { display: block; height: 4px; background: var(--ig-orange); transition: width .25s ease; }
+.ig-card.is-excess .ig-bar-track i { background: #ff5a2a; }
+
+/* search row, filters and list */
+.ig-search { display: flex; align-items: center; margin-top: 6px; }
+.ig-search label { flex: none; margin-right: 8px; font-size: 13px; }
+.ig-search .ig-input { flex: 1 1 0; min-width: 0; height: 24px; font-size: 13px; }
+.ig-search .ig-btn { width: 24px; min-width: 24px; min-height: 24px; margin-left: 4px; padding: 0; }
+.ig-only { margin-top: 5px; }
+.ig-count { margin-top: 3px; font-size: 11px; }
+.ig-head { display: flex; align-items: center; margin-top: 5px; font-size: 11px; text-transform: uppercase; }
+.ig-head span:first-child { flex: 1 1 0; min-width: 0; }
+.ig-head span:nth-child(2) { width: 122px; flex: none; }
+.ig-head span:nth-child(3) { width: 40px; margin-left: 6px; flex: none; text-align: right; }
+.ig-rows { margin-top: 3px; }
+.ig-row { display: flex; align-items: center; padding: 1px 0; border-bottom: 1px solid rgba(255, 255, 181, .3); }
+.ig-row__icon { flex: none; width: 20px; height: 20px; margin-right: 5px; display: grid; place-items: center; }
+.ig-row__icon img { display: block; }
+.ig-row__main { flex: 1 1 0; min-width: 0; margin-right: 0; }
+.ig-row__main b { display: block; font-size: 13px; font-weight: 400; overflow-wrap: anywhere; }
+.ig-row__main span { display: block; font-size: 11px; }
+.ig-row__main span.is-excess { color: var(--ig-bad); }
+.ig-row .ig-input { width: 58px; min-width: 58px; flex: none; margin-right: 4px; }
+.ig-row .ig-btn { min-height: 22px; height: 22px; padding: 0; flex: none; }
+.ig-row .ig-reset { width: 22px; min-width: 22px; margin-right: 4px; }
+.ig-row .ig-max { width: 34px; min-width: 34px; font-size: 11px; }
+.ig-row__limit { width: 40px; margin-left: 6px; flex: none; text-align: right; }
+.ig-round { margin-top: 5px; font-size: 11px; }
+.ig-round.is-bad { color: var(--ig-bad); }
+.ig-msg { margin-top: 4px; min-height: 1.3em; font-size: 12px; }
+.ig-msg.is-good { color: var(--ig-aqua); }
+.ig-msg.is-bad { color: var(--ig-bad); }
+.ig-nomatch { padding: 8px 0; font-size: 13px; }
+
+/* inputs + buttons */
+.ig-input { display: block; width: 100%; height: 22px; padding: 0 6px; background: var(--ig-input); color: #fff; border: 1.5px solid var(--ig-cream); border-radius: 3px; font: 400 13px/1 "Noto Sans", "Segoe UI", system-ui, sans-serif; }
+.ig-input:focus-visible { outline: 3px solid var(--ig-orange); outline-offset: 1px; }
+.ig-input[aria-invalid="true"] { background: #802419; }
+.ig-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 28px; padding: 0 6px; background: var(--ig-tan); color: #fff; border: 2px solid var(--ig-cream); border-radius: 4px; box-shadow: inset 0 0 0 1.5px var(--ig-tan-line); font: 400 13px/1 "Noto Sans", "Segoe UI", system-ui, sans-serif; text-shadow: 0 0 2px rgba(50, 35, 15, .65), 0 1px 1px rgba(50, 35, 15, .5); white-space: nowrap; cursor: pointer; }
+.ig-btn:hover:not(:disabled) { background: #bea589; }
+.ig-btn:active:not(:disabled) { background: #9c8467; }
+.ig-btn:focus-visible { outline: 3px solid var(--ig-orange); outline-offset: 2px; }
+.ig-btn:disabled { background: #797a66; border-color: #aaa97f; box-shadow: inset 0 0 0 1.5px #62634f; color: #eef0dd; text-shadow: none; cursor: default; }
+
+/* fixed footer */
+.ig-foot { margin-top: 8px; }
+.ig-clip { display: flex; gap: 4px; margin-top: 2px; }
+.ig-total { margin-top: 9px; padding-top: 5px; border-top: 1px solid rgba(255, 255, 181, .3); font-size: 15px; font-weight: 700; color: var(--ig-aqua); }
+.ig-total.is-bad { color: var(--ig-bad); }
+.ig-actions { display: flex; gap: 4px; margin-top: 6px; padding-right: 7px; }
+.ig-actions .ig-apply { flex: 1 1 0; margin-right: 0; }
+.ig-clip .ig-btn { margin-right: 0; }
+
+@media (max-width: 900px) {
+  .ig-stage { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 420px) {
+  .ig-head span:nth-child(2) { width: 100px; }
+  .ig-card__main b { font-size: 15px; }
+}

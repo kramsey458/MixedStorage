@@ -1,36 +1,53 @@
-/* Interactive split demo. Uses the same rounding as the mod (see split.js). */
+/*
+ * Interactive replica of the in-game Storage Allocation panel. The behavior and wording mirror
+ * StorageView and StorageState in the mod: edits are drafts until Apply, lowering a limit never
+ * deletes stock, and limits use the same rounding (see split.js).
+ */
 (function () {
   'use strict';
-  var root = document.querySelector('[data-demo]');
-  if (!root || !window.MixedStorageSplit) return;
-
   var Split = window.MixedStorageSplit;
-  var goods = [
-    { id: 'Carrots', color: '#ffa60f' },
-    { id: 'Gears', color: '#7cc4d9' },
-    { id: 'Planks', color: '#c9a56a' }
+  var root = document.querySelector('[data-demo]');
+  if (!root || !Split) return;
+  var stage = root.closest('[data-demo-stage]') || root.parentNode;
+  var TOTAL = Split.TOTAL;
+
+  // Alphabetical, like the in-game list. row/card are icon sizes in UI units for the 20- and 30-unit slots.
+  var GOODS = [
+    { id: 'Berries',    name: 'Berries',      icon: 'berries',     row: [17.7, 17.0], card: [26.5, 25.5] },
+    { id: 'Books',      name: 'Books',        icon: 'books',       row: [17.7, 15.6], card: [26.5, 23.3] },
+    { id: 'BotChassis', name: 'Bot chassis',  icon: 'bot-chassis', row: [18.4, 19.1], card: [27.6, 28.6] },
+    { id: 'BotHeads',   name: 'Bot heads',    icon: 'bot-heads',   row: [17.2, 18.6], card: [25.8, 27.8] },
+    { id: 'BotLimbs',   name: 'Bot limbs',    icon: 'bot-limbs',   row: [18.6, 19.2], card: [27.8, 28.9] },
+    { id: 'Bread',      name: 'Bread',        icon: 'bread',       row: [17.8, 15.0], card: [26.8, 22.5] },
+    { id: 'Wheat',      name: 'Wheat',        icon: 'wheat',       row: [16.4, 16.4], card: [24.6, 24.6] },
+    { id: 'WheatFlour', name: 'Wheat flour',  icon: 'wheat-flour', row: [18.4, 20.8], card: [27.6, 31.1] }
   ];
-  var presets = {
-    even:   { capacity: 1200, values: ['50', '50', '0'] },
-    thirds: { capacity: 200,  values: ['33.33', '33.33', '33.34'] },
-    tiny:   { capacity: 200,  values: ['99.8', '0.2', '0'] }
+  var BUILDINGS = {
+    large:  { name: 'Large Warehouse',  capacity: 1200, quote: "With so much goods packed inside, there's no room to swing a tail." },
+    medium: { name: 'Medium Warehouse', capacity: 200,  quote: 'Proper storage of goods is crucial to surviving the hazards of a post-apocalyptic world.' }
   };
+  var PRESETS = {
+    even:   { Bread: 5000, WheatFlour: 5000 },
+    thirds: { Bread: 3333, Wheat: 3333, WheatFlour: 3334 },
+    tiny:   { Bread: 9996, Berries: 4 }
+  };
+  var byId = {};
+  GOODS.forEach(function (g) { byId[g.id] = g; });
 
-  var capInput = root.querySelector('[data-cap]');
-  var bar = root.querySelector('[data-bar]');
-  var total = root.querySelector('[data-total]');
-  var note = root.querySelector('[data-note]');
-  var rows = goods.map(function (g, i) {
-    return {
-      good: g,
-      input: root.querySelector('[data-pct="' + i + '"]'),
-      limit: root.querySelector('[data-limit="' + i + '"]'),
-      seg: bar.children[i]
-    };
-  });
+  var $ = function (sel) { return root.querySelector(sel); };
+  var els = {
+    title: $('[data-title]'), quote: $('[data-quote]'), scroll: $('[data-scroll]'), summary: $('[data-summary]'),
+    cards: $('[data-cards]'), search: $('[data-search]'), clearSearch: $('[data-clear-search]'), only: $('[data-only]'),
+    count: $('[data-count]'), head: $('[data-head]'), rows: $('[data-rows]'), round: $('[data-round]'), msg: $('[data-msg]'),
+    copy: $('[data-copy]'), paste: $('[data-paste]'), total: $('[data-total]'), clear: $('[data-clear]'),
+    revert: $('[data-revert]'), apply: $('[data-apply]')
+  };
+  var rowEls = {};
+  var state = { building: 'large', capacity: 1200, applied: {}, stock: {}, draft: {}, valid: {}, copied: null };
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Same rules as the mod: 0-100 with at most two decimals. Returns hundredths of a percent, or null.
-  function parsePercent(text) {
+  // ---- helpers (same rules as AllocationPlan) ----
+  function parsePercent(text) {           // 0-100 with at most two decimals -> hundredths of a percent, or null
     text = String(text).trim().replace(',', '.');
     if (!/^\+?(\d+\.?\d*|\.\d+)$/.test(text)) return null;
     var value = Number(text);
@@ -38,67 +55,204 @@
     var units = Math.round(value * 100);
     return Math.abs(value * 100 - units) < 1e-7 ? units : null;
   }
-  function pctText(units) { return (units / 100).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
+  function fmt(units) { return String(Math.round(units) / 100); }
+  function limitsFor(units) {
+    var shares = GOODS.map(function (g) { return { id: g.id, units: units[g.id] || 0 }; });
+    var lim = Split.capacities(shares, state.capacity), out = {};
+    GOODS.forEach(function (g, i) { out[g.id] = lim[i]; });
+    return out;
+  }
+  function icon(g, slot) {
+    var s = g[slot];
+    return '<img src="assets/goods/' + g.icon + '.png" alt="" style="width:' + s[0] + 'px;height:' + s[1] + 'px">';
+  }
+  function setMsg(text, kind) { els.msg.textContent = text; els.msg.className = 'ig-msg' + (kind ? ' is-' + kind : ''); }
 
-  function update() {
-    var capacity = Math.floor(Number(capInput.value));
-    var capacityOk = isFinite(capacity) && capacity >= 1 && capacity <= 100000;
-    capInput.setAttribute('aria-invalid', capacityOk ? 'false' : 'true');
-
-    var units = rows.map(function (r) { return parsePercent(r.input.value); });
-    var fieldsOk = true;
-    rows.forEach(function (r, i) {
-      var ok = units[i] !== null;
-      if (!ok) fieldsOk = false;
-      r.input.setAttribute('aria-invalid', ok ? 'false' : 'true');
+  // ---- rows (built once) ----
+  function buildRows() {
+    els.rows.textContent = '';
+    GOODS.forEach(function (g) {
+      var row = document.createElement('div');
+      row.className = 'ig-row';
+      row.setAttribute('data-id', g.id);
+      row.innerHTML =
+        '<span class="ig-row__icon">' + icon(g, 'row') + '</span>' +
+        '<span class="ig-row__main"><b>' + g.name + '</b><span></span></span>' +
+        '<input class="ig-input" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" aria-label="' + g.name + ' percent" ' +
+          'title="0–100%, up to two decimal places. Changes are drafts until Apply.">' +
+        '<button class="ig-btn ig-reset" type="button" title="Reset ' + g.name + ' to 0% (draft only)" aria-label="Reset ' + g.name + ' to 0 percent">×</button>' +
+        '<button class="ig-btn ig-max" type="button" title="Set ' + g.name + ' to 100% and all other goods to 0% (draft only)" aria-label="Set ' + g.name + ' to 100 percent">Max</button>' +
+        '<span class="ig-row__limit"></span>';
+      var input = row.querySelector('input');
+      input.addEventListener('input', function () { onPercent(g.id, input.value); });
+      els.rows.appendChild(row);
+      rowEls[g.id] = { root: row, input: input, stock: row.querySelector('.ig-row__main span'), limit: row.querySelector('.ig-row__limit') };
     });
+  }
 
-    var sum = units.reduce(function (a, u) { return a + (u || 0); }, 0);
-    var valid = fieldsOk && capacityOk && sum === Split.TOTAL;
-
-    var limits = null;
-    if (valid) limits = Split.capacities(rows.map(function (r, i) { return { id: r.good.id, units: units[i] }; }), capacity);
-
-    rows.forEach(function (r, i) {
-      r.limit.textContent = limits ? limits[i].toLocaleString('en-US') : '—';
-      r.seg.style.width = limits ? (limits[i] / capacity * 100) + '%' : '0%';
-      r.seg.style.background = r.good.color;
+  // ---- draft handling ----
+  function loadDraft() {
+    GOODS.forEach(function (g) {
+      state.draft[g.id] = state.applied[g.id] || 0;
+      state.valid[g.id] = true;
+      rowEls[g.id].input.value = fmt(state.draft[g.id]);
+      rowEls[g.id].input.setAttribute('aria-invalid', 'false');
     });
+    validate(); filter(); refreshStock();
+  }
+  function setDraft(map, message) {
+    GOODS.forEach(function (g) {
+      state.draft[g.id] = map[g.id] || 0;
+      state.valid[g.id] = true;
+      rowEls[g.id].input.value = fmt(state.draft[g.id]);
+      rowEls[g.id].input.setAttribute('aria-invalid', 'false');
+    });
+    setMsg(message, '');
+    validate(); filter();
+  }
+  function onPercent(id, text) {
+    var units = parsePercent(text);
+    state.valid[id] = units !== null;
+    state.draft[id] = units === null ? 0 : units;
+    rowEls[id].input.setAttribute('aria-invalid', units === null ? 'true' : 'false');
+    setMsg('Unapplied changes', '');
+    validate();
+  }
 
-    var totalBad = !fieldsOk || sum !== Split.TOTAL;
-    if (!fieldsOk) {
-      total.textContent = 'Enter valid percentages (0–100, 2 decimals)';
-    } else if (sum === Split.TOTAL) {
-      total.textContent = '100% / 100% allocated';
-    } else {
-      var diff = Math.abs(sum - Split.TOTAL);
-      total.textContent = pctText(sum) + '% / 100% — ' + pctText(diff) + (sum < Split.TOTAL ? '% remaining' : '% over');
+  function validate() {
+    var fieldsOk = GOODS.every(function (g) { return state.valid[g.id]; });
+    var total = GOODS.reduce(function (a, g) { return a + state.draft[g.id]; }, 0);
+    var valid = fieldsOk && total === TOTAL;
+    els.apply.disabled = !valid;
+    els.copy.disabled = !valid;
+    els.paste.disabled = !state.copied;
+
+    if (!fieldsOk) els.total.textContent = 'Enter valid percentages (0–100, 2 decimals)';
+    else if (total === TOTAL) els.total.textContent = '100% / 100% allocated';
+    else els.total.textContent = fmt(total) + '% / 100% — ' + fmt(Math.abs(total - TOTAL)) + (total < TOTAL ? '% remaining' : '% over');
+    els.total.classList.toggle('is-bad', !valid);
+
+    var preview = valid ? limitsFor(state.draft) : null;
+    GOODS.forEach(function (g) { rowEls[g.id].limit.textContent = preview ? String(preview[g.id]) : '—'; });
+    var zero = preview ? GOODS.filter(function (g) { return state.draft[g.id] > 0 && preview[g.id] === 0; }).length : 0;
+    els.round.textContent = zero > 0
+      ? zero + ' allocated good(s) round to 0 items. Increase their shares or use larger storage.'
+      : 'Limits round to whole items; leftover slots go to the largest fractions. All slots are allocated.';
+    els.round.classList.toggle('is-bad', zero > 0);
+  }
+
+  function filter() {
+    var q = els.search.value.trim().toLowerCase(), visible = 0;
+    GOODS.forEach(function (g) {
+      var show = (!els.only.checked || state.draft[g.id] > 0) &&
+                 (q === '' || g.name.toLowerCase().indexOf(q) >= 0 || g.id.toLowerCase().indexOf(q) >= 0);
+      rowEls[g.id].root.hidden = !show;
+      if (show) visible++;
+    });
+    els.count.textContent = visible + ' of ' + GOODS.length + ' goods shown · Total includes hidden rows';
+  }
+
+  // Summary cards and stock lines reflect the applied allocation, not the draft.
+  function refreshStock() {
+    var allocated = GOODS.filter(function (g) { return state.applied[g.id] > 0; });
+    var limits = limitsFor(state.applied);
+    var totalStock = GOODS.reduce(function (a, g) { return a + (state.stock[g.id] || 0); }, 0);
+    els.summary.textContent = totalStock + ' / ' + state.capacity + ' items · ' + allocated.length +
+      (allocated.length === 1 ? ' good allocated' : ' goods allocated');
+
+    var html = '', shown = 0;
+    GOODS.forEach(function (g) {
+      var share = state.applied[g.id] || 0, stock = state.stock[g.id] || 0, limit = limits[g.id] || 0;
+      var excess = stock > limit;
+      rowEls[g.id].stock.textContent = stock + ' stored' + (excess ? ' · excess' : '');
+      rowEls[g.id].stock.className = excess ? 'is-excess' : '';
+      if (!(share > 0 || stock > 0)) return;
+      shown++;
+      var fill = limit > 0 ? Math.min(1, stock / limit) * 100 : (stock > 0 ? 100 : 0);
+      html += '<div class="ig-card' + (excess ? ' is-excess' : '') + '">' +
+        '<div class="ig-card__line"><span class="ig-card__icon">' + icon(g, 'card') + '</span>' +
+        '<span class="ig-card__main"><b>' + g.name + '</b><span>' + fmt(share) + '% allocated</span></span>' +
+        '<span class="ig-card__count"><b>' + stock + ' / ' + limit + '</b><span>stored / limit</span></span></div>' +
+        (excess ? '<div class="ig-card__note">' + (stock - limit) + ' excess</div>' : '') +
+        '<div class="ig-bar-track"><i style="width:' + fill + '%"></i></div></div>';
+    });
+    els.cards.innerHTML = shown ? html : '<p class="ig-empty">No goods allocated or stored.</p>';
+  }
+
+  // ---- actions ----
+  function apply() {
+    var fieldsOk = GOODS.every(function (g) { return state.valid[g.id]; });
+    if (!fieldsOk || els.apply.disabled) return;
+    state.applied = {};
+    GOODS.forEach(function (g) { if (state.draft[g.id] > 0) state.applied[g.id] = state.draft[g.id]; });
+    loadDraft();
+    setMsg('Applied. Excess stock is preserved and can be hauled out.', 'good');
+  }
+  function revealList() {
+    var top = els.head.getBoundingClientRect().top - els.scroll.getBoundingClientRect().top + els.scroll.scrollTop - 4;
+    els.scroll.scrollTo({ top: Math.max(0, top), behavior: reduceMotion ? 'auto' : 'smooth' });
+  }
+  function setBuilding(key) {
+    var b = BUILDINGS[key];
+    state.building = key; state.capacity = b.capacity;
+    els.title.textContent = b.name; els.quote.textContent = b.quote;
+    state.applied = { Bread: 5000, WheatFlour: 5000 };
+    state.stock = { Bread: b.capacity / 2, WheatFlour: b.capacity / 2 };
+    els.search.value = ''; els.only.checked = false;
+    loadDraft();
+    setMsg('Edit percentages, then Apply. 0% disables a good.', '');
+    Array.prototype.forEach.call(stage.querySelectorAll('[data-building]'), function (btn) {
+      btn.setAttribute('aria-pressed', btn.getAttribute('data-building') === key ? 'true' : 'false');
+    });
+    els.scroll.scrollTop = 0;
+  }
+
+  els.rows.addEventListener('click', function (e) {
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    var id = btn.closest('.ig-row').getAttribute('data-id'), g = byId[id];
+    if (btn.classList.contains('ig-reset')) {
+      rowEls[id].input.value = '0';
+      onPercent(id, '0');
+      rowEls[id].input.focus(); rowEls[id].input.select();
+    } else if (btn.classList.contains('ig-max')) {
+      var only = {}; only[id] = TOTAL;
+      setDraft(only, g.name + ' set to 100%. Press Apply.');
     }
-    total.classList.toggle('is-bad', totalBad);
-
-    var zero = 0;
-    if (limits) rows.forEach(function (r, i) { if (units[i] > 0 && limits[i] === 0) zero++; });
-    var bad = false, text;
-    if (!capacityOk) { text = 'Capacity must be a whole number from 1 to 100,000.'; bad = true; }
-    else if (!valid) { text = 'Apply is unavailable until every percentage is valid and the total is exactly 100%.'; bad = true; }
-    else if (zero > 0) { text = zero + ' allocated good(s) round to 0 items. Increase their shares or use larger storage.'; bad = true; }
-    else { text = 'Limits round to whole items; leftover slots go to the largest fractions. All slots are allocated.'; }
-    note.textContent = text;
-    note.classList.toggle('is-bad', bad);
-  }
-
-  function setPreset(name) {
-    var p = presets[name];
-    if (!p) return;
-    capInput.value = p.capacity;
-    rows.forEach(function (r, i) { r.input.value = p.values[i]; });
-    update();
-  }
-
-  capInput.addEventListener('input', update);
-  rows.forEach(function (r) { r.input.addEventListener('input', update); });
-  Array.prototype.forEach.call(root.querySelectorAll('[data-preset]'), function (btn) {
-    btn.addEventListener('click', function () { setPreset(btn.getAttribute('data-preset')); });
   });
-  setPreset('even');
+  els.search.addEventListener('input', filter);
+  els.only.addEventListener('change', filter);
+  els.clearSearch.addEventListener('click', function () { els.search.value = ''; filter(); els.search.focus(); });
+  els.apply.addEventListener('click', apply);
+  els.revert.addEventListener('click', function () { loadDraft(); setMsg('Draft reverted.', ''); });
+  els.clear.addEventListener('click', function () {
+    els.only.checked = false;
+    setDraft({}, 'Draft cleared. Existing allocations remain active until Apply.');
+  });
+  els.copy.addEventListener('click', function () {
+    if (els.copy.disabled) return;
+    state.copied = {};
+    GOODS.forEach(function (g) { state.copied[g.id] = state.draft[g.id]; });
+    setMsg('Allocations copied. Select another storage building and Paste.', 'good');
+    validate();
+  });
+  els.paste.addEventListener('click', function () {
+    if (!state.copied) return;
+    setDraft(state.copied, "Allocations pasted. Limits use this building's capacity. Press Apply.");
+    revealList();
+  });
+  Array.prototype.forEach.call(stage.querySelectorAll('[data-building]'), function (btn) {
+    btn.addEventListener('click', function () { setBuilding(btn.getAttribute('data-building')); });
+  });
+  Array.prototype.forEach.call(stage.querySelectorAll('[data-preset]'), function (btn) {
+    btn.addEventListener('click', function () {
+      setDraft(PRESETS[btn.getAttribute('data-preset')], 'Unapplied changes');
+      revealList();
+    });
+  });
+  var reset = stage.querySelector('[data-reset]');
+  if (reset) reset.addEventListener('click', function () { state.copied = null; setBuilding(state.building); });
+
+  buildRows();
+  setBuilding('large');
 })();
