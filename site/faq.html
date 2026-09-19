@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAQ: MixedStorage</title>
+<meta name="description" content="Answers about MixedStorage for Timberborn: supported buildings, percentages and rounding, copy and paste, visuals, multiplayer, and compatibility.">
+<link rel="canonical" href="https://kramsey458.github.io/MixedStorage/faq.html">
+<meta name="theme-color" content="#16231c">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MixedStorage">
+<meta property="og:title" content="FAQ: MixedStorage">
+<meta property="og:description" content="Answers about MixedStorage for Timberborn: supported buildings, percentages and rounding, copy and paste, visuals, multiplayer, and compatibility.">
+<meta property="og:url" content="https://kramsey458.github.io/MixedStorage/faq.html">
+<meta property="og:image" content="https://kramsey458.github.io/MixedStorage/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="4" width="28" height="24" rx="4" fill="#436452" stroke="#ffffb5" stroke-width="2"/><rect x="5.5" y="8" width="9" height="16" rx="2" fill="#ffa60f"/><rect x="17.5" y="8" width="9" height="16" rx="2" fill="#7cc4d9"/></svg><span>MixedStorage</span></a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="nav" aria-label="Main">
+        <a href="./">Features</a>
+        <a href="install.html">Install</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="faq.html" aria-current="page">FAQ</a>
+        <a class="nav__gh" href="https://github.com/kramsey458/MixedStorage" rel="noopener">GitHub &#8599;</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+
+<div class="wrap">
+  <div class="page-head">
+    <p class="eyebrow">Guide</p>
+    <h1>Frequently asked questions</h1>
+    <p class="lead">Quick answers about what MixedStorage does and how it behaves. Something not working? Try the <a href="troubleshooting.html">troubleshooting guide</a>.</p>
+  </div>
+  <div class="doc">
+    <div class="tools" style="margin-top:12px">
+      <button class="btn btn--small" type="button" data-expand="all">Expand all</button>
+      <button class="btn btn--small" type="button" data-expand="none">Collapse all</button>
+    </div>
+    <h2 class="group-title">General</h2>
+<details class="qa" id="faq-what"><summary>What is MixedStorage?</summary><div class="qa__body"><p>A Timberborn mod that lets a single warehouse or pile store several kinds of goods. You give each good a percentage of the building's capacity. For example, a 1,200-capacity warehouse can reserve 50% for carrots (600) and 50% for gears (600).</p></div></details>
+<details class="qa" id="faq-fill"><summary>Does it create goods or fill the building for me?</summary><div class="qa__body"><p>No. Percentages only reserve space. They don't create goods or instantly fill the building. Normal hauling rules decide what arrives and when.</p></div></details>
+<details class="qa" id="faq-buildings"><summary>Which buildings does it support?</summary><div class="qa__body"><p><strong>Folktails:</strong> small, medium, and large warehouses; small, large, and underground piles. <strong>Iron Teeth:</strong> small, medium, and large warehouses; small industrial and large industrial piles.</p><p>Buildings keep their normal accepted goods. Tanks and map-editor reserve storage aren't included. See the <a href="./#buildings">supported buildings table</a>.</p></div></details>
+<details class="qa" id="faq-version"><summary>Which Timberborn version does it need?</summary><div class="qa__body"><p>It's built against Timberborn <strong>1.1.2.4</strong>. Other versions aren't guaranteed to work.</p></div></details>
+<details class="qa" id="faq-prerelease"><summary>Why are some releases marked as pre-releases?</summary><div class="qa__body"><p>Newer builds are published as pre-releases while recent layout and visual changes get more in-game testing. Players have reported successful use of earlier builds, and automated checks cover the allocation math, geometry, native game API calls, and optional multiplayer loading.</p></div></details>
+<details class="qa" id="faq-bb"><summary>Do I need BeaverBuddies?</summary><div class="qa__body"><p>No. Single-player doesn't need it. You only need BeaverBuddies for multiplayer.</p></div></details>
+<details class="qa" id="faq-existing"><summary>What happens to my existing buildings and saves?</summary><div class="qa__body"><p>Buildings you haven't given an allocation keep working with the game's normal single-good setting, and the editor starts from that setting. Allocations you apply are saved with the building in your save file, and existing MixedStorage allocations are preserved when you upgrade.</p></div></details>
+<details class="qa" id="faq-official"><summary>Is it an official Timberborn mod?</summary><div class="qa__body"><p>No. It's an independent community mod and isn't affiliated with Mechanistry.</p></div></details>
+<h2 class="group-title">Using it</h2>
+<details class="qa" id="faq-100"><summary>Why does the total have to be exactly 100%?</summary><div class="qa__body"><p>So the building's whole capacity is allocated. Apply stays unavailable until the total is exactly 100%, and the line under the list tells you how much is remaining or over.</p></div></details>
+<details class="qa" id="faq-zero"><summary>What does 0% mean?</summary><div class="qa__body"><p>A good at 0% is disabled in that building. Leave goods you don't want at 0%.</p></div></details>
+<details class="qa" id="faq-precision"><summary>How precise can percentages be?</summary><div class="qa__body"><p>Two decimal places, so down to 0.01%.</p></div></details>
+<details class="qa" id="faq-max"><summary>What does Max do? How do I go back to a single good?</summary><div class="qa__body"><p>Max sets that good to 100% and every other good to 0% in your draft. Click <strong>Apply 100%</strong> to confirm. That's also how you give one good the whole building again.</p></div></details>
+<details class="qa" id="faq-draft"><summary>Are my edits applied immediately?</summary><div class="qa__body"><p>No. Edits are drafts until you click Apply. <strong>Revert</strong> discards them, and <strong>Clear all</strong> clears the draft. Current allocations stay active until you apply a valid replacement.</p></div></details>
+<details class="qa" id="faq-copy"><summary>Can I copy an allocation to other buildings?</summary><div class="qa__body"><p>Yes. Click <strong>Copy allocations</strong>, select another building, click <strong>Paste allocations</strong>, then Apply. Item limits are recalculated for the destination's capacity, and the destination must accept every copied good with a nonzero percentage. Stock, hauling mode, and hauler priority aren't copied, and the copied settings last only for the current game session.</p></div></details>
+<details class="qa" id="faq-modes"><summary>Do Accept, Obtain, Supply, Empty, and hauler priority still work?</summary><div class="qa__body"><p>Yes. Those continue to use the game's own hauling system.</p></div></details>
+<details class="qa" id="faq-summary"><summary>Does the summary at the top change when I search or filter?</summary><div class="qa__body"><p>No. It always shows the applied settings and actual stock, including incoming and excess goods, regardless of search or filters.</p></div></details>
+<h2 class="group-title">Limits and stock</h2>
+<details class="qa" id="faq-rounding"><summary>How do percentages become item limits?</summary><div class="qa__body"><p>Each share is rounded down to whole items, then any leftover slots go to the largest fractions, so the limits always add up to the building's full capacity. The <a href="./#try-it">demo on the home page</a> uses the same rounding.</p></div></details>
+<details class="qa" id="faq-zero-limit"><summary>Why does a good have a limit of 0, or a number I didn't expect?</summary><div class="qa__body"><p>Limits are whole items, so tiny shares can round to zero, especially in small buildings. The panel warns you when an allocated good rounds to 0 items. Increase its share or use larger storage.</p></div></details>
+<details class="qa" id="faq-lower"><summary>What happens to goods above a limit I lower?</summary><div class="qa__body"><p>Nothing is deleted. Extra goods stay stored, are marked as excess in the summary, and can be hauled out.</p></div></details>
+<details class="qa" id="faq-incoming"><summary>What does “incoming” mean, and why can't I lower a limit?</summary><div class="qa__body"><p>Incoming goods are deliveries already reserved by haulers on their way. They count toward limits. If lowering a limit would conflict with them, wait for the delivery to finish and try again.</p></div></details>
+<h2 class="group-title">In the world</h2>
+<details class="qa" id="faq-visuals"><summary>Why doesn't the visual split match my percentages exactly?</summary><div class="qa__body"><p>Whole visible cells can't always match a percentage exactly. Tiny shares may have no visible cell, some models may look narrower, and excess goods may not be fully represented. Use the summary for exact amounts.</p></div></details>
+<details class="qa" id="faq-banner"><summary>Why does the banner show only one good?</summary><div class="qa__body"><p>Banners are single-good by design and show one representative good. If a model can't be divided, MixedStorage falls back to the original visuals.</p></div></details>
+<h2 class="group-title">Multiplayer and compatibility</h2>
+<details class="qa" id="faq-mp"><summary>Does it work in multiplayer?</summary><div class="qa__body"><p>Yes, through BeaverBuddies. Install the same MixedStorage version on every computer, alongside matching BeaverBuddies versions and Harmony. Applied allocations synchronize through BeaverBuddies, and Apply may briefly show a queued message until the next simulation tick.</p></div></details>
+<details class="qa" id="faq-mp-download"><summary>Is there a separate multiplayer add-on?</summary><div class="qa__body"><p>No. The integration is bundled and switches on automatically when BeaverBuddies is present. If you still have the old <strong>MixedStorage-BeaverBuddies</strong> add-on, remove or disable it.</p></div></details>
+<details class="qa" id="faq-replays"><summary>What about old multiplayer replay recordings?</summary><div class="qa__body"><p>Old recordings may reference the former add-on and may need the original mod versions. The integration was developed against BeaverBuddies Stability Preview for Timberborn 1.1, and other builds aren't guaranteed to be compatible.</p></div></details>
+<details class="qa" id="faq-mods"><summary>Is it compatible with other mods?</summary><div class="qa__body"><p>Other mods haven't been specifically tested. If you run into a conflict, <a href="https://github.com/kramsey458/MixedStorage/issues" rel="noopener">open an issue</a> and list your enabled mods.</p></div></details>
+<h2 class="group-title">The project</h2>
+<details class="qa" id="faq-report"><summary>How do I report a bug or suggest something?</summary><div class="qa__body"><p><a href="https://github.com/kramsey458/MixedStorage/issues" rel="noopener">Open an issue on GitHub</a>. The <a href="troubleshooting.html#reporting">troubleshooting guide</a> lists what to include.</p></div></details>
+<details class="qa" id="faq-changes"><summary>Where can I see what changed between versions?</summary><div class="qa__body"><p>In the <a href="https://github.com/kramsey458/MixedStorage/blob/main/CHANGELOG.md" rel="noopener">changelog</a>.</p></div></details>
+<details class="qa" id="faq-source"><summary>Where's the source code, and how do I build it?</summary><div class="qa__body"><p>On <a href="https://github.com/kramsey458/MixedStorage" rel="noopener">GitHub</a>. The <a href="https://github.com/kramsey458/MixedStorage/blob/main/docs/DEVELOPMENT.md" rel="noopener">developer notes</a> cover building and how the mod works.</p></div></details>
+  </div>
+</div>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="4" width="28" height="24" rx="4" fill="#436452" stroke="#ffffb5" stroke-width="2"/><rect x="5.5" y="8" width="9" height="16" rx="2" fill="#ffa60f"/><rect x="17.5" y="8" width="9" height="16" rx="2" fill="#7cc4d9"/></svg><span>MixedStorage</span></a>
+        <p style="margin-top:12px;max-width:44ch">Mixed-goods storage for Timberborn warehouses and piles. An unofficial community mod, not affiliated with Mechanistry.</p>
+      </div>
+      <div>
+        <h2>Guides</h2>
+        <ul>
+          <li><a href="install.html">Install guide</a></li>
+          <li><a href="troubleshooting.html">Troubleshooting</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Project</h2>
+        <ul>
+          <li><a href="https://github.com/kramsey458/MixedStorage/releases" data-release-link rel="noopener">Downloads &amp; releases</a></li>
+          <li><a href="https://github.com/kramsey458/MixedStorage/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          <li><a href="https://github.com/kramsey458/MixedStorage/issues" rel="noopener">Report a problem</a></li>
+          <li><a href="https://github.com/kramsey458/MixedStorage" rel="noopener">Source on GitHub</a></li>
+          <li><a href="https://github.com/kramsey458/MixedStorage/blob/main/docs/DEVELOPMENT.md" rel="noopener">Developer notes</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="footer__fine">Built for Timberborn 1.1.2.4. Timberborn is developed by Mechanistry; MixedStorage is an independent, fan-made mod.</p>
+  </div>
+</footer>
+<script src="assets/site.js" defer></script>
+</body>
+</html>

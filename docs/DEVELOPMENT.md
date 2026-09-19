@@ -45,3 +45,7 @@ The mod reuses the installed game's styles and assets: `NineSliceVisualElement` 
 - Isolated loading processes with and without BeaverBuddies check eager main-type enumeration, bridge event discovery, delegate installation, repeated initialization, and obsolete-addon rejection.
 
 Loading checks run under .NET, not inside Unity/Mono. They do not establish live multiplayer compatibility. Builds pass without compiler warnings; v0.5.6's layout has not been visually tested in game.
+
+## Website
+
+The project website (features, install guide, troubleshooting, FAQ) is plain static HTML, CSS and JavaScript in `site/`, published to GitHub Pages by `.github/workflows/pages.yml` whenever `site/` changes on `main`. There is no build step; edit the files directly. The download buttons ask GitHub's public releases API for the newest release and fall back to the releases page if that request fails. `site/assets/split.js` mirrors `AllocationPlan.Capacities` for the interactive demo, so update it if the rounding rules ever change.
