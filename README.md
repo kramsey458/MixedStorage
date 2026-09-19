@@ -10,6 +10,8 @@ Divide a building's capacity by percentage. For example, a 1,200-capacity wareho
 
 <img width="625" height="1112" alt="image" src="https://github.com/user-attachments/assets/862e5c13-33a0-47ed-9515-9e2dffefe3a9" />
 
+<img width="752" height="364" alt="image" src="https://github.com/user-attachments/assets/f097ffda-3656-4ec6-9e67-7a7a979d60fe" />
+
 ## What you can do
 
 - **Mix goods:** assign percentages to any goods the building normally accepts.
