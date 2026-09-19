@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
 using Timberborn.BaseComponentSystem;
+using Timberborn.CoreUI;
 using Timberborn.Goods;
 using Timberborn.InventorySystem;
 using Timberborn.ModManagerScene;
@@ -19,7 +20,7 @@ namespace MixedStorage
         {
             OptionalMultiplayer.Initialize();
             new Harmony("kyler.mixedstorage").PatchAll(typeof(ModStarter).Assembly);
-            Debug.Log("[MixedStorage] 0.5.2 loaded; warehouse and pile allocations for Timberborn 1.1.2.4.");
+            Debug.Log("[MixedStorage] 0.5.3 loaded; warehouse and pile allocations for Timberborn 1.1.2.4.");
         }
     }
 
@@ -95,9 +96,9 @@ namespace MixedStorage
     [HarmonyPatch(typeof(StockpileInventoryFragment), nameof(StockpileInventoryFragment.InitializeFragment))]
     internal static class InitializeViewPatch
     {
-        static void Postfix(StockpileInventoryFragment __instance, IGoodService ____goodService, ref VisualElement __result)
+        static void Postfix(StockpileInventoryFragment __instance, IGoodService ____goodService, VisualElementLoader ____visualElementLoader, ref VisualElement __result)
         {
-            var view = new StorageView(____goodService, __result);
+            var view = new StorageView(____goodService, ____visualElementLoader, __result);
             Views.All.Add(__instance, view);
             __result = view.Root;
         }

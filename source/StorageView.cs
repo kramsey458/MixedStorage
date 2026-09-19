@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Timberborn.CoreUI;
 using Timberborn.Goods;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -42,11 +43,14 @@ namespace MixedStorage
             public bool Valid;
         }
 
-        private static readonly Color Cream = new Color(1f, .94f, .75f);
-        private static readonly Color Muted = new Color(.77f, .84f, .79f);
+        private static readonly Color NativeText = new Color(.8f, .8f, .8f);
+        private static readonly Color Muted = new Color(.7f, .74f, .7f);
+        private static readonly Color Divider = new Color(.8f, .75f, .55f, .3f);
         private static readonly Color Error = new Color(1f, .52f, .43f);
         private static readonly Color Green = new Color(.57f, .89f, .66f);
         private readonly IGoodService _goods;
+        private readonly VisualElementLoader _visualElementLoader;
+        private readonly VisualTreeAsset _inputTemplate;
         private readonly VisualElement _vanilla;
         private readonly VisualElement _panel;
         private readonly ScrollView _body;
@@ -70,20 +74,27 @@ namespace MixedStorage
         private int _revision;
         private int _messageRevision;
         private float _nextRefresh;
+        private VisualElement _entityPanel;
+        private StyleLength _originalPanelWidth;
         public VisualElement Root { get; }
 
-        public StorageView(IGoodService goods, VisualElement vanilla)
+        public StorageView(IGoodService goods, VisualElementLoader visualElementLoader, VisualElement vanilla)
         {
             _goods = goods;
+            _visualElementLoader = visualElementLoader;
+            _inputTemplate = visualElementLoader.LoadVisualTreeAsset("Core/InputBox");
             _vanilla = vanilla;
             Root = new VisualElement { name = "MixedStorageRoot" };
+            // These are the game's own style sheets and nine-slice backgrounds.
+            // The vanilla fragment is a sibling, so expose its styles to our controls too.
+            for (int i = 0; i < vanilla.styleSheets.count; i++)
+                Root.styleSheets.Add(vanilla.styleSheets[i]);
             Root.Add(vanilla);
-            _panel = new VisualElement { name = "MixedStoragePanel" };
+            _panel = new NineSliceVisualElement { name = "MixedStoragePanel" };
+            _panel.AddToClassList("entity-sub-panel");
+            _panel.AddToClassList("bg-sub-box--green");
             _panel.style.display = DisplayStyle.None;
-            _panel.style.paddingLeft = _panel.style.paddingRight = 8;
-            _panel.style.paddingTop = _panel.style.paddingBottom = 8;
-            _panel.style.backgroundColor = new Color(.13f, .23f, .22f, .96f);
-            _panel.style.color = Cream;
+            _panel.style.color = NativeText;
             Root.Add(_panel);
             var title = Text("STORAGE ALLOCATION", 16);
             title.style.unityFontStyleAndWeight = FontStyle.Bold;
@@ -103,21 +114,31 @@ namespace MixedStorage
             _panel.Add(_contentsSummary);
             _contentsEmpty = Text("No goods allocated or stored.", 15);
 
-            _search = new TextField { name = "MixedStorageSearch", tooltip = "Search the goods allowed in this storage building." };
-            _search.label = "Search";
-            _search.style.marginTop = 6;
+            _search = CreateInput("MixedStorageSearch", "Search the goods allowed in this storage building.");
             _search.RegisterValueChangedCallback(_ => Filter());
             var searchRow = Horizontal();
+            searchRow.style.marginTop = 6;
+            var searchLabel = Text("Search", 13);
+            searchLabel.style.flexGrow = 1;
+            searchLabel.style.flexBasis = 0;
+            searchLabel.style.marginRight = 8;
+            searchRow.Add(searchLabel);
             _search.style.flexGrow = 1;
+            _search.style.flexBasis = 0;
             _search.style.minWidth = 0;
-            StyleInput(_search);
             searchRow.Add(_search);
             var clearSearch = ActionButton("×", () => { _search.value = ""; _search.Focus(); });
             clearSearch.tooltip = "Clear search";
             clearSearch.style.width = 24;
+            clearSearch.style.minHeight = 24;
+            clearSearch.style.paddingLeft = clearSearch.style.paddingRight = 0;
+            clearSearch.style.marginLeft = 4;
+            clearSearch.style.marginRight = 0;
             searchRow.Add(clearSearch);
             _panel.Add(searchRow);
-            _allocatedOnly = new Toggle("Allocated goods only");
+            _allocatedOnly = new Toggle { text = "Allocated goods only" };
+            _allocatedOnly.AddToClassList("game-toggle");
+            _allocatedOnly.AddToClassList("entity-panel__toggle");
             _allocatedOnly.style.fontSize = 13;
             _allocatedOnly.RegisterValueChangedCallback(_ => Filter());
             _panel.Add(_allocatedOnly);
@@ -166,28 +187,36 @@ namespace MixedStorage
             actions.Add(ActionButton("Revert", () => { LoadDraft(); _message.text = "Draft reverted."; _message.style.color = Muted; }));
             _apply = ActionButton("Apply 100%", Apply);
             _apply.style.flexGrow = 1;
+            _apply.style.marginRight = 0;
             actions.Add(_apply);
             _panel.Add(actions);
             // Keep the total and Apply outside the scrolling content. The game window
             // includes other fragments above us, so budget from this fragment's actual top.
             _body = new ScrollView(ScrollViewMode.Vertical);
+            _body.AddToClassList("scroll--green-decorated");
+            new ScrollBarInitializationService().InitializeVisualElement(_body);
             _body.style.minHeight = 0;
             _body.style.flexShrink = 1;
             _body.style.flexGrow = 1;
             _body.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             _body.verticalScrollerVisibility = ScrollerVisibility.Auto;
             CompactScroll(_body);
-            _body.verticalScroller.style.width = 12;
-            _body.verticalScroller.style.minWidth = 12;
+            _body.verticalScroller.style.width = 20;
+            _body.verticalScroller.style.minWidth = 20;
             _body.verticalScroller.style.marginLeft = 4;
             foreach (var child in _panel.Children().ToArray())
                 if (child != title && child != _total && child != actions) _body.Add(child);
             _panel.Insert(1, _body);
             title.style.flexShrink = _total.style.flexShrink = actions.style.flexShrink = 0;
             _total.style.whiteSpace = WhiteSpace.Normal;
+            _total.style.borderTopWidth = 1;
+            _total.style.borderTopColor = Divider;
+            _total.style.paddingTop = 5;
             _panel.style.minHeight = 0;
-            Root.style.alignSelf = Align.FlexEnd;
+            Root.style.minWidth = 0;
+            Root.style.alignSelf = Align.Stretch;
             _panel.RegisterCallback<GeometryChangedEvent>(_ => FitPanel());
+            Root.RegisterCallback<DetachFromPanelEvent>(evt => { if (evt.target == Root) RestorePanelWidth(); });
             // Keep typing and scrolling within the editor instead of bubbling to shortcuts/panel scrolling.
             _panel.RegisterCallback<KeyDownEvent>(evt => { if (evt.target is TextElement || evt.target is TextField) evt.StopPropagation(); });
         }
@@ -197,7 +226,7 @@ namespace MixedStorage
             _state = state;
             _activeView = state == null ? null : new WeakReference<StorageView>(this);
             _panel.style.display = state == null ? DisplayStyle.None : DisplayStyle.Flex;
-            if (state == null) return;
+            if (state == null) { RestorePanelWidth(); return; }
             _vanilla.style.display = DisplayStyle.None;
             _messageRevision = state.MessageRevision;
             _search.SetValueWithoutNotify("");
@@ -210,6 +239,7 @@ namespace MixedStorage
 
         public void Clear()
         {
+            RestorePanelWidth();
             _state = null;
             _panel.style.display = DisplayStyle.None;
             _rows.Clear();
@@ -231,7 +261,7 @@ namespace MixedStorage
                 CreateSummaryCard(row);
                 row.Root.style.paddingTop = row.Root.style.paddingBottom = 1;
                 row.Root.style.borderBottomWidth = 1;
-                row.Root.style.borderBottomColor = new Color(.3f, .4f, .36f);
+                row.Root.style.borderBottomColor = Divider;
                 var icon = new Image();
                 icon.style.width = icon.style.height = 20;
                 icon.style.flexShrink = 0;
@@ -250,7 +280,7 @@ namespace MixedStorage
                 row.Stock.style.color = Muted;
                 details.Add(row.Stock);
                 row.Root.Add(details);
-                row.Percent = new TextField { name = "Percent_" + id, tooltip = "0–100%, up to two decimal places. Changes are drafts until Apply." };
+                row.Percent = CreateInput("Percent_" + id, "0–100%, up to two decimal places. Changes are drafts until Apply.");
                 row.Percent.style.width = 58;
                 row.Percent.style.minWidth = 58;
                 row.Percent.style.marginLeft = 0;
@@ -258,13 +288,13 @@ namespace MixedStorage
                 row.Percent.style.flexShrink = 0;
                 row.Percent.style.fontSize = 13;
                 row.Percent.style.marginTop = row.Percent.style.marginBottom = 0;
-                StyleInput(row.Percent);
+                row.Percent.style.height = row.Percent.style.minHeight = 22;
                 row.Percent.SetValueWithoutNotify(AllocationPlan.Format(_draft[id]));
                 row.Percent.RegisterValueChangedCallback(evt =>
                 {
                     row.Valid = AllocationPlan.TryParsePercent(evt.newValue, out var units);
                     _draft[row.Id] = row.Valid ? units : 0;
-                    row.Percent.style.backgroundColor = row.Valid ? new StyleColor(StyleKeyword.Null) : new StyleColor(new Color(.5f, .14f, .1f));
+                    SetInputValidity(row.Percent, row.Valid);
                     _message.text = "Unapplied changes";
                     _message.style.color = Muted;
                     Validate();
@@ -356,7 +386,7 @@ namespace MixedStorage
                 _draft[row.Id] = 0;
                 row.Valid = true;
                 row.Percent.SetValueWithoutNotify("0");
-                row.Percent.style.backgroundColor = new StyleColor(StyleKeyword.Null);
+                SetInputValidity(row.Percent, true);
             }
             _allocatedOnly.SetValueWithoutNotify(false);
             _message.text = "Draft cleared. Existing allocations remain active until Apply.";
@@ -372,7 +402,7 @@ namespace MixedStorage
                 _draft[row.Id] = draft.TryGetValue(row.Id, out var value) ? value : 0;
                 row.Valid = true;
                 row.Percent.SetValueWithoutNotify(AllocationPlan.Format(_draft[row.Id]));
-                row.Percent.style.backgroundColor = new StyleColor(StyleKeyword.Null);
+                SetInputValidity(row.Percent, true);
             }
             _message.text = message;
             _message.style.color = Muted;
@@ -430,18 +460,37 @@ namespace MixedStorage
 
         private void FitPanel()
         {
+            if (_state == null) return;
             var viewport = _panel.panel?.visualTree;
             if (viewport == null) return;
+            if (_entityPanel == null)
+            {
+                // Widen the shared window, not just our fragment. Native headers,
+                // descriptions and hauling controls stretch with it automatically.
+                for (var parent = Root.parent; parent != null; parent = parent.parent)
+                {
+                    if (parent.name != "EntityPanel" || !parent.ClassListContains("entity-panel")) continue;
+                    _entityPanel = parent;
+                    _originalPanelWidth = parent.style.width;
+                    break;
+                }
+            }
+            float width = Mathf.Min(440, viewport.worldBound.width - 24);
+            if (_entityPanel != null && width > 0 && Mathf.Abs(_entityPanel.resolvedStyle.width - width) > 1)
+                _entityPanel.style.width = width;
             float bottom = viewport.worldBound.yMax;
             float top = _panel.worldBound.yMin;
             if (float.IsNaN(bottom) || float.IsNaN(top) || bottom <= 0) return;
             float height = Mathf.Clamp(bottom - Mathf.Max(0, top) - 16, 80, 520);
-            // Expand leftwards from the sidebar's right edge and respect UI scaling.
-            float width = Mathf.Min(440, viewport.worldBound.width - 24);
-            if (width > 0 && Mathf.Abs(Root.resolvedStyle.width - width) > 1)
-                Root.style.width = width;
             if (Mathf.Abs(_panel.resolvedStyle.height - height) > 1)
                 _panel.style.height = height;
+        }
+
+        private void RestorePanelWidth()
+        {
+            if (_entityPanel == null) return;
+            _entityPanel.style.width = _originalPanelWidth;
+            _entityPanel = null;
         }
 
         private void ShowResult()
@@ -455,7 +504,7 @@ namespace MixedStorage
         {
             var inventory = _state.Inventory;
             _summary.text = inventory.TotalAmountInStock + " / " + inventory.Capacity + " items · " +
-                (_state.Active ? _state.Shares.Count + " goods allocated" : "Single-good settings active");
+                (_state.Active ? _state.Shares.Count + (_state.Shares.Count == 1 ? " good allocated" : " goods allocated") : "Single-good settings active");
             int visibleContents = 0;
             foreach (var row in _rows)
             {
@@ -468,14 +517,14 @@ namespace MixedStorage
                 row.SummaryCard.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
                 if (visible) visibleContents++;
                 row.SummaryCount.text = stock + " / " + liveLimit;
-                row.SummaryCount.style.color = stock > liveLimit ? Error : Cream;
+                row.SummaryCount.style.color = stock > liveLimit ? Error : NativeText;
                 row.SummaryShare.text = AllocationPlan.Format(share) + "% allocated";
                 row.SummaryNote.text = (incoming > 0 ? "+" + incoming + " incoming" : "") +
                     (stock > liveLimit ? (incoming > 0 ? " · " : "") + (stock - liveLimit) + " excess" : "");
                 row.SummaryNote.style.display = incoming > 0 || stock > liveLimit ? DisplayStyle.Flex : DisplayStyle.None;
                 row.SummaryNote.style.color = stock > liveLimit ? Error : Muted;
                 row.SummaryFill.style.width = Length.Percent(liveLimit > 0 ? Mathf.Clamp01((float)stock / liveLimit) * 100 : stock > 0 ? 100 : 0);
-                row.SummaryFill.style.backgroundColor = stock > liveLimit ? Error : Green;
+                row.SummaryFill.style.unityBackgroundImageTintColor = stock > liveLimit ? Error : Color.white;
                 row.Stock.text = stock + " stored" + (incoming > 0 ? " + " + incoming + " incoming" : "") +
                     (stock > liveLimit ? " · excess" : "");
                 row.Stock.style.color = stock > liveLimit ? Error : Muted;
@@ -485,8 +534,8 @@ namespace MixedStorage
 
         private void CreateSummaryCard(Row row)
         {
-            var card = new VisualElement();
-            card.style.backgroundColor = new Color(.09f, .17f, .16f, .8f);
+            var card = new NineSliceVisualElement();
+            card.AddToClassList("bg-sub-box--blue");
             card.style.marginBottom = 4;
             card.style.paddingLeft = card.style.paddingRight = 7;
             card.style.paddingTop = card.style.paddingBottom = 5;
@@ -530,9 +579,10 @@ namespace MixedStorage
             var track = new VisualElement();
             track.style.height = 4;
             track.style.marginTop = 4;
-            track.style.backgroundColor = new Color(.24f, .34f, .30f);
+            track.style.backgroundImage = new StyleBackground(Resources.Load<Sprite>("UI/Images/Backgrounds/bg-pixel-1"));
             row.SummaryFill = new VisualElement();
             row.SummaryFill.style.height = 4;
+            row.SummaryFill.style.backgroundImage = new StyleBackground(Resources.Load<Sprite>("UI/Images/Backgrounds/bg-pixel-4"));
             track.Add(row.SummaryFill);
             card.Add(track);
             row.SummaryCard = card;
@@ -542,6 +592,7 @@ namespace MixedStorage
         private static Label Text(string value, int size)
         {
             var label = new Label(value);
+            label.AddToClassList("entity-panel__text");
             label.style.fontSize = size;
             label.style.marginLeft = label.style.marginRight = 0;
             label.style.marginTop = label.style.marginBottom = 0;
@@ -564,29 +615,44 @@ namespace MixedStorage
             row.style.alignItems = Align.Center;
             return row;
         }
-        private static Button ActionButton(string text, Action action)
+        private Button ActionButton(string text, Action action)
         {
-            var button = new Button(action) { text = text };
+            var button = (Button)_visualElementLoader.LoadVisualElement("Game/EntityPanel/DebugButton");
+            button.name = "";
+            button.RemoveFromClassList("debug-fragment__button");
+            button.text = text;
+            button.clicked += action;
             button.style.fontSize = 13;
+            button.style.whiteSpace = WhiteSpace.NoWrap;
             button.style.minHeight = 28;
             button.style.marginRight = 4;
-            button.style.backgroundColor = new Color(.19f, .32f, .29f);
-            button.style.color = Cream;
-            button.style.borderTopWidth = button.style.borderBottomWidth = button.style.borderLeftWidth = button.style.borderRightWidth = 1;
-            button.style.borderTopColor = button.style.borderBottomColor = button.style.borderLeftColor = button.style.borderRightColor = new Color(.48f, .59f, .46f);
+            button.style.paddingLeft = button.style.paddingRight = 6;
             return button;
         }
 
-        private static void StyleInput(TextField field)
+        private TextField CreateInput(string name, string tooltip)
         {
+            // NineSliceTextField is internal; obtain the native control from its template.
+            // Clone without initializing the unused dialog buttons and localization.
+            var field = _inputTemplate.CloneTree().Q<TextField>("Input");
+            field.RemoveFromHierarchy();
+            field.RemoveFromClassList("box__input");
+            field.name = name;
+            field.tooltip = tooltip;
+            field.pickingMode = PickingMode.Position;
+            field.style.fontSize = 13;
+            field.style.height = field.style.minHeight = 24;
             var input = field.Q<VisualElement>(className: "unity-text-field__input");
-            if (input == null) return;
-            input.style.backgroundColor = new Color(.1f, .18f, .17f);
-            input.style.color = Cream;
-            input.style.paddingLeft = input.style.paddingRight = 4;
-            input.style.paddingTop = input.style.paddingBottom = 1;
-            input.style.borderBottomWidth = 1;
-            input.style.borderBottomColor = Muted;
+            if (input != null) input.style.unityTextAlign = TextAnchor.MiddleLeft;
+            return field;
+        }
+
+        private static void SetInputValidity(TextField field, bool valid)
+        {
+            // Tint the input above the native frame, keeping invalid drafts visible.
+            var input = field.Q<VisualElement>(className: "unity-text-field__input");
+            if (input != null)
+                input.style.backgroundColor = valid ? new StyleColor(StyleKeyword.Null) : new StyleColor(new Color(.5f, .14f, .1f));
         }
     }
 }

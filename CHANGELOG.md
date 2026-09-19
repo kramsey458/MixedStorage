@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.5.3
+
+- Align the entire selected storage window to one width, including the native title, description, hauling controls, and allocation editor. Restore the original width when selecting another type of building or closing the window.
+- Reuse Timberborn's native textured panel frames, buttons, input fields, checkbox, scrollbar, text colors, and stock-bar colors.
+- Preserve the summary cards, compact goods rows, screen-height cap, and fixed allocation total / Apply / Revert footer. Allocation and multiplayer behavior are unchanged.
+
 ## v0.5.2
 
 - Use a single scrolling body, removing stacked scrollbar gutters from the summary and goods list.
