@@ -6,7 +6,7 @@ Divide a building's capacity by percentage. For example, a 1,200-capacity wareho
 
 **[Download MixedStorage v0.5.6](https://github.com/kramsey458/MixedStorage/releases/download/v0.5.6/MixedStorage-v0.5.6.zip)** · [Release notes](https://github.com/kramsey458/MixedStorage/releases/tag/v0.5.6) · [Report a problem](https://github.com/kramsey458/MixedStorage/issues) · [Website](https://kramsey458.github.io/MixedStorage/)
 
-> **v0.5.6 is a prerelease**, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer. Recent layout and visual changes still need more in-game testing.
+> **v0.5.6** is the current release, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer.
 
 <img width="625" height="1112" alt="image" src="https://github.com/user-attachments/assets/862e5c13-33a0-47ed-9515-9e2dffefe3a9" />
 
@@ -96,6 +96,6 @@ Applied allocations synchronize through BeaverBuddies. Apply may briefly show a 
 
 Built against **Timberborn 1.1.2.4**. Multiplayer integration was developed against **BeaverBuddies Stability Preview for Timberborn 1.1**; other builds are not guaranteed compatible.
 
-Players have reported successful use of earlier builds. Automated allocation, geometry, native API, and optional multiplayer loading checks pass, but these do not replace live gameplay testing. **The v0.5.6 layout has not yet been visually verified in game.**
+Players have reported successful use of earlier builds, and the **v0.5.6 layout has been visually verified in game**. Automated allocation, geometry, native API, and optional multiplayer loading checks also pass, but these do not replace live gameplay testing.
 
 See the [changelog](CHANGELOG.md) for version history and [developer notes](docs/DEVELOPMENT.md) for build instructions and technical details.
