@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.4
+
+- Keep Copy allocations and Paste allocations fixed above the allocation total so both remain visible at every scroll position. Preserve the existing native styling and allocation behavior.
+
 ## v0.5.3
 
 - Align the entire selected storage window to one width, including the native title, description, hauling controls, and allocation editor. Restore the original width when selecting another type of building or closing the window.

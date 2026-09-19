@@ -174,13 +174,14 @@ namespace MixedStorage
             _message.style.whiteSpace = WhiteSpace.Normal;
             _panel.Add(_message);
             var clipboardActions = Horizontal();
+            clipboardActions.style.marginTop = 6;
             _copy = ActionButton("Copy allocations", CopyAllocation);
             _copy.tooltip = "Copy this valid 100% draft. Stock, hauling mode and hauler priority are not copied.";
             _paste = ActionButton("Paste allocations", PasteAllocation);
             _paste.tooltip = "Paste copied percentages into this draft, then Apply. All allocated goods must be accepted here.";
             clipboardActions.Add(_copy);
             clipboardActions.Add(_paste);
-            _panel.Add(clipboardActions);
+            _panel.Insert(_panel.IndexOf(_total), clipboardActions);
             var actions = Horizontal();
             actions.style.marginTop = 6;
             actions.Add(ActionButton("Clear all", ClearDraft));
@@ -190,7 +191,7 @@ namespace MixedStorage
             _apply.style.marginRight = 0;
             actions.Add(_apply);
             _panel.Add(actions);
-            // Keep the total and Apply outside the scrolling content. The game window
+            // Keep clipboard controls, the total and Apply outside the scrolling content. The game window
             // includes other fragments above us, so budget from this fragment's actual top.
             _body = new ScrollView(ScrollViewMode.Vertical);
             _body.AddToClassList("scroll--green-decorated");
@@ -205,9 +206,9 @@ namespace MixedStorage
             _body.verticalScroller.style.minWidth = 20;
             _body.verticalScroller.style.marginLeft = 4;
             foreach (var child in _panel.Children().ToArray())
-                if (child != title && child != _total && child != actions) _body.Add(child);
+                if (child != title && child != clipboardActions && child != _total && child != actions) _body.Add(child);
             _panel.Insert(1, _body);
-            title.style.flexShrink = _total.style.flexShrink = actions.style.flexShrink = 0;
+            title.style.flexShrink = clipboardActions.style.flexShrink = _total.style.flexShrink = actions.style.flexShrink = 0;
             _total.style.whiteSpace = WhiteSpace.Normal;
             _total.style.borderTopWidth = 1;
             _total.style.borderTopColor = Divider;
