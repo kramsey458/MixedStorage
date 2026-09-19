@@ -119,8 +119,8 @@ namespace MixedStorage
             var searchRow = Horizontal();
             searchRow.style.marginTop = 6;
             var searchLabel = Text("Search", 13);
-            searchLabel.style.flexGrow = 1;
-            searchLabel.style.flexBasis = 0;
+            searchLabel.style.flexGrow = 0;
+            searchLabel.style.flexShrink = 0;
             searchLabel.style.marginRight = 8;
             searchRow.Add(searchLabel);
             _search.style.flexGrow = 1;

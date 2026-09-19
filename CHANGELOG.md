@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.6
+
+- Tighten the search row: the search box now starts right after the Search label and fills the rest of the row, removing the empty gap. Layout is otherwise unchanged.
+
 ## v0.5.5
 
 - Keep the native Construction site panel fully visible below the allocation editor while a warehouse or pile is being built. The editor now leaves room for any fragments Timberborn stacks beneath it and grows back when construction finishes. Layout is otherwise unchanged.
