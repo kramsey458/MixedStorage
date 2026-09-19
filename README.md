@@ -4,9 +4,9 @@
 
 Divide a building's capacity by percentage. For example, a 1,200-capacity warehouse can reserve **50% for carrots (600)** and **50% for gears (600)**. Percentages reserve space; they do not create goods or instantly fill the building.
 
-**[Download MixedStorage v0.5.4](https://github.com/kramsey458/MixedStorage/releases/download/v0.5.4/MixedStorage-v0.5.4.zip)** · [Release notes](https://github.com/kramsey458/MixedStorage/releases/tag/v0.5.4) · [Report a problem](https://github.com/kramsey458/MixedStorage/issues)
+**[Download MixedStorage v0.5.5](https://github.com/kramsey458/MixedStorage/releases/download/v0.5.5/MixedStorage-v0.5.5.zip)** · [Release notes](https://github.com/kramsey458/MixedStorage/releases/tag/v0.5.5) · [Report a problem](https://github.com/kramsey458/MixedStorage/issues)
 
-> **v0.5.4 is a prerelease**, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer. Recent layout and visual changes still need more in-game testing.
+> **v0.5.5 is a prerelease**, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer. Recent layout and visual changes still need more in-game testing.
 
 <img width="625" height="1112" alt="image" src="https://github.com/user-attachments/assets/862e5c13-33a0-47ed-9515-9e2dffefe3a9" />
 
@@ -22,7 +22,7 @@ Divide a building's capacity by percentage. For example, a 1,200-capacity wareho
 
 ## Install
 
-1. Download **MixedStorage-v0.5.4.zip** above. On the release page, choose that file under **Assets**, not **Source code**.
+1. Download **MixedStorage-v0.5.5.zip** above. On the release page, choose that file under **Assets**, not **Source code**.
 2. Close Timberborn. Extract the ZIP's **MixedStorage** folder into your Timberborn **Mods** folder—normally `Documents\Timberborn\Mods` on Windows.
 3. Check that `Documents\Timberborn\Mods\MixedStorage\version-1.1\manifest.json` exists. Avoid an extra nested MixedStorage folder.
 4. Install **Harmony 2.4.1 or newer** if needed. Enable **Harmony** and **MixedStorage** in the game's mod manager, then restart when prompted.
@@ -96,6 +96,6 @@ Applied allocations synchronize through BeaverBuddies. Apply may briefly show a 
 
 Built against **Timberborn 1.1.2.4**. Multiplayer integration was developed against **BeaverBuddies Stability Preview for Timberborn 1.1**; other builds are not guaranteed compatible.
 
-Players have reported successful use of earlier builds. Automated allocation, geometry, native API, and optional multiplayer loading checks pass, but these do not replace live gameplay testing. **The v0.5.4 layout has not yet been visually verified in game.**
+Players have reported successful use of earlier builds. Automated allocation, geometry, native API, and optional multiplayer loading checks pass, but these do not replace live gameplay testing. **The v0.5.5 layout has not yet been visually verified in game.**
 
 See the [changelog](CHANGELOG.md) for version history and [developer notes](docs/DEVELOPMENT.md) for build instructions and technical details.

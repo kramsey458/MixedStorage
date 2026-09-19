@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.5
+
+- Keep the native Construction site panel fully visible below the allocation editor while a warehouse or pile is being built. The editor now leaves room for any fragments Timberborn stacks beneath it and grows back when construction finishes. Layout is otherwise unchanged.
+
 ## v0.5.4
 
 - Keep Copy allocations and Paste allocations fixed above the allocation total so both remain visible at every scroll position. Preserve the existing native styling and allocation behavior.

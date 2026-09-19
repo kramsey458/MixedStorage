@@ -32,7 +32,7 @@ Native goods meshes and materials are reused. Complete primary/secondary mesh ce
 
 Updates are coalesced to at most five rebuilds per building per second. Generated meshes/materials have lifecycle cleanup. Rendering does not intentionally consume simulation randomness or add multiplayer commands.
 
-The editor has one scrolling body and a fixed footer containing Copy/Paste allocations, the allocation total, and Clear/Revert/Apply. The shared native `EntityPanel` targets 440 UI units, bounded by the viewport, so every fragment stretches to the same width. Its original inline width is restored when the storage view closes, detaches, or switches to an unsupported selection. Height is based on available space below the allocation editor's current position.
+The editor has one scrolling body and a fixed footer containing Copy/Paste allocations, the allocation total, and Clear/Revert/Apply. The shared native `EntityPanel` targets 440 UI units, bounded by the viewport, so every fragment stretches to the same width. Its original inline width is restored when the storage view closes, detaches, or switches to an unsupported selection. Height is based on available space below the allocation editor's current position, less the height of any visible fragments the game stacks beneath it in the same column (for example the Construction site panel while a building is unfinished), so those stay on screen.
 
 The mod reuses the installed game's styles and assets: `NineSliceVisualElement` panels, `bg-sub-box--green` and `bg-sub-box--blue` frames, `button-game` buttons from the native DebugButton template, native TextFields cloned from the InputBox template, and the game's checkbox/scrollbar styles. Game art is not bundled in the mod. Existing summary sizes and allocation controls are retained. Appearance at different resolutions and UI scales still needs verification.
 
@@ -44,4 +44,4 @@ The mod reuses the installed game's styles and assets: `NineSliceVisualElement` 
 - Nine native rendering API signatures checked against installed game assemblies; the old ambiguous Initialize lookup is reproduced as a regression check.
 - Isolated loading processes with and without BeaverBuddies check eager main-type enumeration, bridge event discovery, delegate installation, repeated initialization, and obsolete-addon rejection.
 
-Loading checks run under .NET, not inside Unity/Mono. They do not establish live multiplayer compatibility. Builds pass without compiler warnings; v0.5.4's layout has not been visually tested in game.
+Loading checks run under .NET, not inside Unity/Mono. They do not establish live multiplayer compatibility. Builds pass without compiler warnings; v0.5.5's layout has not been visually tested in game.

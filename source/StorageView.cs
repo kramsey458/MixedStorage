@@ -482,9 +482,33 @@ namespace MixedStorage
             float bottom = viewport.worldBound.yMax;
             float top = _panel.worldBound.yMin;
             if (float.IsNaN(bottom) || float.IsNaN(top) || bottom <= 0) return;
-            float height = Mathf.Clamp(bottom - Mathf.Max(0, top) - 16, 80, 520);
+            float height = Mathf.Clamp(bottom - Mathf.Max(0, top) - 16 - SpaceBelow(), 80, 520);
             if (Mathf.Abs(_panel.resolvedStyle.height - height) > 1)
                 _panel.style.height = height;
+        }
+
+        // The game stacks its own fragments under this one in the same column, such as the construction
+        // site's materials. Reserve their height so they stay on screen instead of being pushed past its bottom.
+        private float SpaceBelow()
+        {
+            if (_entityPanel == null) return 0;
+            float below = 0;
+            for (var node = _panel; node.parent != null && node.parent != _entityPanel; node = node.parent)
+            {
+                var parent = node.parent;
+                float edge = node.layout.yMax;
+                if (float.IsNaN(edge) || parent.resolvedStyle.flexDirection != FlexDirection.Column) continue;
+                float last = edge;
+                for (int i = parent.IndexOf(node) + 1; i < parent.childCount; i++)
+                {
+                    var sibling = parent[i];
+                    var style = sibling.resolvedStyle;
+                    if (style.display == DisplayStyle.None || style.position == Position.Absolute || float.IsNaN(sibling.layout.yMax)) continue;
+                    last = Mathf.Max(last, sibling.layout.yMax + style.marginBottom);
+                }
+                below += last - edge;
+            }
+            return below;
         }
 
         private void RestorePanelWidth()
