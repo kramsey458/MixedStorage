@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Troubleshooting: MixedStorage</title>
+<meta name="description" content="Fixes for common MixedStorage problems: mod not appearing, Harmony, startup errors, Apply grayed out, paste rejected, limits of 0, and multiplayer.">
+<link rel="canonical" href="https://kramsey458.github.io/MixedStorage/troubleshooting.html">
+<meta name="theme-color" content="#16231c">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MixedStorage">
+<meta property="og:title" content="Troubleshooting: MixedStorage">
+<meta property="og:description" content="Fixes for common MixedStorage problems: mod not appearing, Harmony, startup errors, Apply grayed out, paste rejected, limits of 0, and multiplayer.">
+<meta property="og:url" content="https://kramsey458.github.io/MixedStorage/troubleshooting.html">
+<meta property="og:image" content="https://kramsey458.github.io/MixedStorage/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="4" width="28" height="24" rx="4" fill="#436452" stroke="#ffffb5" stroke-width="2"/><rect x="5.5" y="8" width="9" height="16" rx="2" fill="#ffa60f"/><rect x="17.5" y="8" width="9" height="16" rx="2" fill="#7cc4d9"/></svg><span>MixedStorage</span></a>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav id="site-nav" class="nav" aria-label="Main">
+        <a href="./">Features</a>
+        <a href="install.html">Install</a>
+        <a href="troubleshooting.html" aria-current="page">Troubleshooting</a>
+        <a href="faq.html">FAQ</a>
+        <a class="nav__gh" href="https://github.com/kramsey458/MixedStorage" rel="noopener">GitHub &#8599;</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+
+<div class="wrap">
+  <div class="page-head">
+    <p class="eyebrow">Guide</p>
+    <h1>Troubleshooting</h1>
+    <p class="lead">Find your symptom below. Each entry explains why it happens and what to do.</p>
+    <ul class="toc" aria-label="On this page">
+      <li><a href="#problems">Common problems</a></li>
+      <li><a href="#reporting">Reporting a problem</a></li>
+    </ul>
+  </div>
+  <div class="doc">
+    <section id="problems">
+      <h2>Common problems</h2>
+      <div class="tools">
+        <button class="btn btn--small" type="button" data-expand="all">Expand all</button>
+        <button class="btn btn--small" type="button" data-expand="none">Collapse all</button>
+      </div>
+      <details class="qa" id="t-not-listed"><summary>MixedStorage doesn't appear in the mod manager</summary><div class="qa__body"><h4>Why it happens</h4><p>The game only finds mods in the expected folder layout. The usual causes are a ZIP that wasn't extracted, an extra nested folder, or the wrong download.</p><h4>What to do</h4><ol><li>Close Timberborn.</li><li>Check that <code>Documents\Timberborn\Mods\MixedStorage\version-1.1\manifest.json</code> exists.</li><li>If you see <code>MixedStorage\MixedStorage\version-1.1</code>, move the inner folder up one level.</li><li>Make sure you downloaded the ZIP under <strong>Assets</strong> on the release page, not <em>Source code</em>.</li><li>Restart the game.</li></ol></div></details>
+      <details class="qa" id="t-harmony"><summary>MixedStorage won't enable, or Harmony is missing</summary><div class="qa__body"><h4>Why it happens</h4><p>MixedStorage requires Harmony 2.4.1 or newer, and declares it as a required mod.</p><h4>What to do</h4><p>Install Harmony from the <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3284904751" rel="noopener">Steam Workshop</a>, enable both <strong>Harmony</strong> and <strong>MixedStorage</strong> in the mod manager, and restart when prompted.</p></div></details>
+      <details class="qa" id="t-old-addon"><summary>A startup error mentions the old MixedStorage-BeaverBuddies add-on</summary><div class="qa__body"><h4>Why it happens</h4><p>Since v0.5.0, multiplayer support is built into MixedStorage. The old separate add-on conflicts with it, and MixedStorage stops with this message: <em>“MixedStorage now includes multiplayer support. Remove or disable the old MixedStorage-BeaverBuddies addon and restart Timberborn.”</em></p><h4>What to do</h4><p>Remove or disable <strong>MixedStorage-BeaverBuddies</strong>, then fully restart Timberborn. Keep BeaverBuddies itself if you play multiplayer.</p></div></details>
+      <details class="qa" id="t-bridge-missing"><summary>An error says the bundled multiplayer integration is missing</summary><div class="qa__body"><h4>Why it happens</h4><p>BeaverBuddies is loaded, but the MixedStorage file doesn't contain its embedded multiplayer integration. That happens with a partial or incorrectly built copy. The message reads: <em>“MixedStorage's bundled multiplayer integration is missing. Reinstall the complete release.”</em></p><h4>What to do</h4><p>Close the game, delete the existing <code>MixedStorage</code> folder from your Mods folder, and install the ZIP from the official release again.</p></div></details>
+      <details class="qa" id="t-no-panel"><summary>There's no Storage Allocation panel when I select a building</summary><div class="qa__body"><h4>Why it happens</h4><p>Only the supported warehouses and piles get the panel. Tanks, map-editor reserve storage, and other storage buildings don't. It's also missing if the mod isn't enabled or failed to load.</p><h4>What to do</h4><ol><li>Compare your building with the <a href="./#buildings">supported list</a>.</li><li>Confirm MixedStorage and Harmony are both enabled.</li><li>Search <code>Player.log</code> for <code>[MixedStorage]</code>. A working install logs a &ldquo;loaded&rdquo; line at startup, and a failure shows an error there.</li></ol></div></details>
+      <details class="qa" id="t-apply-disabled"><summary>Apply 100% is grayed out</summary><div class="qa__body"><h4>Why it happens</h4><p>Apply only unlocks when the draft is valid. The line under the goods list tells you which rule you're breaking:</p><ul><li><strong>Enter valid percentages (0–100, 2 decimals):</strong> one box has something invalid, such as letters, a negative number, more than two decimals, or a value over 100.</li><li><strong>NN% / 100% — NN% remaining</strong> (or <strong>over</strong>): the total must be exactly 100%.</li><li>A good with a nonzero percentage isn't accepted by this building. Set it to 0%.</li><li>A multiplayer change is queued and hasn't been applied yet.</li></ul><h4>What to do</h4><p>Fix the box or total the message points at. <strong>Max</strong> on one good gives you a valid draft instantly, and <strong>Revert</strong> restores the current settings. If a multiplayer change is queued, wait a moment for the next simulation tick.</p></div></details>
+      <details class="qa" id="t-incoming"><summary>Apply says “Wait for incoming deliveries to finish before lowering their limits”</summary><div class="qa__body"><h4>Why it happens</h4><p>Haulers are already carrying goods to this building, and the new limit would be lower than what's stored plus what's on its way. Incoming deliveries count toward limits.</p><h4>What to do</h4><p>Wait for the deliveries to finish, then click Apply again.</p></div></details>
+      <details class="qa" id="t-paste"><summary>Paste allocations is grayed out or rejected</summary><div class="qa__body"><h4>Why it happens</h4><ul><li>Nothing has been copied yet. <strong>Copy allocations</strong> works only on a valid draft totaling 100%.</li><li>Copied settings last only for the current game session, so restarting the game forgets them.</li><li>The destination must accept every good with a nonzero copied percentage. Otherwise you'll see <em>“Cannot paste: this building does not accept all copied goods. Draft unchanged.”</em></li></ul><h4>What to do</h4><p>Copy from a valid building, select a compatible destination, click Paste, and then click <strong>Apply</strong> to confirm. Stock, hauling mode, and hauler priority are never copied.</p></div></details>
+      <details class="qa" id="t-zero-limit"><summary>One of my goods has a limit of 0</summary><div class="qa__body"><h4>Why it happens</h4><p>Percentages become whole-item limits, and a tiny share of a small building can round down to zero items. The panel warns you: <em>“N allocated good(s) round to 0 items. Increase their shares or use larger storage.”</em> The limits still add up to the building's full capacity.</p><h4>What to do</h4><p>Increase that good's share, or use a larger storage building. The <a href="./#try-it">demo on the home page</a> shows how the rounding works.</p></div></details>
+      <details class="qa" id="t-excess"><summary>Stock is above the limit and shows as “excess”</summary><div class="qa__body"><h4>Why it happens</h4><p>You lowered a limit or changed the split while goods were already stored. MixedStorage never deletes goods; it flags the extras as excess in the summary.</p><h4>What to do</h4><p>Nothing is broken. The extra goods stay until they're used or hauled out through the game's normal hauling rules.</p></div></details>
+      <details class="qa" id="t-not-arriving"><summary>Goods aren't arriving after I Apply</summary><div class="qa__body"><h4>Why it happens</h4><p>Allocations reserve space. They don't create goods or move them. Normal hauling rules still decide what arrives and when.</p><h4>What to do</h4><p>Check the building's storage mode (Accept, Obtain, Supply, or Empty), hauler priority, and that the goods actually exist in the same district. Then let your haulers work.</p></div></details>
+      <details class="qa" id="t-visuals"><summary>The goods in the world look wrong, narrow, or show only one good</summary><div class="qa__body"><h4>Why it happens</h4><p>The in-world split is approximate on purpose. Whole visible cells can't always match a percentage exactly. Tiny shares may have no visible cell, some models look narrower, banners show one representative good, and excess goods may not be fully represented.</p><h4>What to do</h4><p>Use the summary cards for exact amounts. If a model can't be divided, MixedStorage falls back to the original visuals. If something looks truly broken, <a href="#reporting">report it</a> with a screenshot.</p></div></details>
+      <details class="qa" id="t-multiplayer"><summary>Multiplayer: Apply says “Queued for multiplayer”, or players see different settings</summary><div class="qa__body"><h4>Why it happens</h4><p>In multiplayer, applied allocations synchronize through BeaverBuddies, so Apply may briefly show a queued message until the next simulation tick. That's normal. Different settings between players usually mean mismatched installs.</p><h4>What to do</h4><ul><li>Install the same MixedStorage version, matching BeaverBuddies versions, and Harmony on every computer.</li><li>After upgrading, restart every computer's game and start a fresh multiplayer session.</li><li>Old replay recordings may reference the former add-on and may need the original mod versions.</li></ul></div></details>
+      <details class="qa" id="t-layout"><summary>The panel looks cut off or misplaced at my resolution or UI scale</summary><div class="qa__body"><h4>Why it happens</h4><p>The editor is sized to your window and shares the entity window with the game's own panels. Older versions could push the Construction site panel off the bottom of the screen on unfinished buildings.</p><h4>What to do</h4><p>Update to the newest release. v0.5.5 fixed the cut-off Construction site panel. If it still looks wrong, <a href="#reporting">report it</a> with a screenshot, your resolution and UI scale, the building type, and its allocations.</p></div></details>
+    </section>
+
+    <section id="reporting">
+      <h2>Reporting a problem</h2>
+      <div class="prose">
+        <p>Still stuck, or found a bug? <a href="https://github.com/kramsey458/MixedStorage/issues" rel="noopener">Open an issue on GitHub</a> and include:</p>
+        <ul>
+          <li>Your Timberborn and MixedStorage versions, and the other mods you have enabled.</li>
+          <li>Whether you were playing multiplayer.</li>
+          <li>Steps to reproduce the problem.</li>
+          <li>For layout or visual problems: a screenshot, your resolution and UI scale, the building type, and its allocations.</li>
+          <li>For crashes: the relevant error and stack trace from the game log.</li>
+        </ul>
+        <div class="panel panel--blue note note--info">
+          <h3>Where the logs are</h3>
+          <p>On Windows they're normally in <code>%USERPROFILE%\AppData\LocalLow\Mechanistry\Timberborn</code>. <code>Player.log</code> is the current session. After a restart, the previous session is usually in <code>Player-prev.log</code>.</p>
+          <p>Logs can contain personal information, so review them before sharing.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="4" width="28" height="24" rx="4" fill="#436452" stroke="#ffffb5" stroke-width="2"/><rect x="5.5" y="8" width="9" height="16" rx="2" fill="#ffa60f"/><rect x="17.5" y="8" width="9" height="16" rx="2" fill="#7cc4d9"/></svg><span>MixedStorage</span></a>
+        <p style="margin-top:12px;max-width:44ch">Mixed-goods storage for Timberborn warehouses and piles. An unofficial community mod, not affiliated with Mechanistry.</p>
+      </div>
+      <div>
+        <h2>Guides</h2>
+        <ul>
+          <li><a href="install.html">Install guide</a></li>
+          <li><a href="troubleshooting.html">Troubleshooting</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Project</h2>
+        <ul>
+          <li><a href="https://github.com/kramsey458/MixedStorage/releases" data-release-link rel="noopener">Downloads &amp; releases</a></li>
+          <li><a href="https://github.com/kramsey458/MixedStorage/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
+          <li><a href="https://github.com/kramsey458/MixedStorage/issues" rel="noopener">Report a problem</a></li>
+          <li><a href="https://github.com/kramsey458/MixedStorage" rel="noopener">Source on GitHub</a></li>
+          <li><a href="https://github.com/kramsey458/MixedStorage/blob/main/docs/DEVELOPMENT.md" rel="noopener">Developer notes</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="footer__fine">Built for Timberborn 1.1.2.4. Timberborn is developed by Mechanistry; MixedStorage is an independent, fan-made mod.</p>
+  </div>
+</footer>
+<script src="assets/site.js" defer></script>
+</body>
+</html>
