@@ -2,13 +2,13 @@
 
 **Store several kinds of goods in one warehouse or pile—and choose how much space each gets.**
 
-<img width="625" height="1112" alt="image" src="https://github.com/user-attachments/assets/862e5c13-33a0-47ed-9515-9e2dffefe3a9" />
-
 Divide a building's capacity by percentage. For example, a 1,200-capacity warehouse can reserve **50% for carrots (600)** and **50% for gears (600)**. Percentages reserve space; they do not create goods or instantly fill the building.
 
 **[Download MixedStorage v0.5.4](https://github.com/kramsey458/MixedStorage/releases/download/v0.5.4/MixedStorage-v0.5.4.zip)** · [Release notes](https://github.com/kramsey458/MixedStorage/releases/tag/v0.5.4) · [Report a problem](https://github.com/kramsey458/MixedStorage/issues)
 
 > **v0.5.4 is a prerelease**, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer. Recent layout and visual changes still need more in-game testing.
+
+<img width="625" height="1112" alt="image" src="https://github.com/user-attachments/assets/862e5c13-33a0-47ed-9515-9e2dffefe3a9" />
 
 ## What you can do
 
