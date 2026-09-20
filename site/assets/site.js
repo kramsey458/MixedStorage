@@ -54,7 +54,7 @@
   if (cached && cached.rel && Date.now() - cached.t < TTL) { apply(cached.rel); return; }
 
   if (!window.fetch) return;
-  fetch('https://api.github.com/repos/kramsey458/MixedStorage/releases?per_page=10', { headers: { Accept: 'application/vnd.github+json' } })
+  fetch('https://api.github.com/repos/timbermods/MixedStorage/releases?per_page=10', { headers: { Accept: 'application/vnd.github+json' } })
     .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(function (list) {
       var r = list.filter(function (x) { return !x.draft; })[0];

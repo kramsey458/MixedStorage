@@ -37,7 +37,7 @@ try {
 
     $null = Invoke-Git -C $work commit -q -m "Deploy website from main@$source"
     Invoke-Git -C $work push $Remote HEAD:gh-pages | ForEach-Object { Write-Output $_ }
-    Write-Output 'Published. GitHub Pages usually updates within a minute: https://kramsey458.github.io/MixedStorage/'
+    Write-Output 'Published. GitHub Pages usually updates within a minute: https://timbermods.github.io/MixedStorage/'
 }
 finally {
     try { $null = Invoke-Git -C $PSScriptRoot worktree remove --force $work } catch { }

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kramsey458.github.io/MixedStorage/sitemap.xml
+Sitemap: https://timbermods.github.io/MixedStorage/sitemap.xml
