@@ -4,7 +4,7 @@
 
 Divide a building's capacity by percentage. For example, a 1,200-capacity warehouse can reserve **50% for carrots (600)** and **50% for gears (600)**. Percentages reserve space; they do not create goods or instantly fill the building.
 
-**[Download MixedStorage v0.5.6](https://github.com/kramsey458/MixedStorage/releases/download/v0.5.6/MixedStorage-v0.5.6.zip)** · [Release notes](https://github.com/kramsey458/MixedStorage/releases/tag/v0.5.6) · [Report a problem](https://github.com/kramsey458/MixedStorage/issues) · [Website](https://kramsey458.github.io/MixedStorage/)
+**[Download MixedStorage v0.5.6](https://github.com/timbermods/MixedStorage/releases/download/v0.5.6/MixedStorage-v0.5.6.zip)** · [Release notes](https://github.com/timbermods/MixedStorage/releases/tag/v0.5.6) · [Report a problem](https://github.com/timbermods/MixedStorage/issues) · [Website](https://timbermods.github.io/MixedStorage/)
 
 > **v0.5.6** is the current release, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer.
 
@@ -90,7 +90,7 @@ Applied allocations synchronize through BeaverBuddies. Apply may briefly show a 
 | Startup mentions the old addon | Remove or disable MixedStorage-BeaverBuddies, then fully restart. |
 | Panel or visuals look wrong | Include a screenshot, resolution/UI scale, building type, and allocations in a report. |
 
-[Open an issue](https://github.com/kramsey458/MixedStorage/issues) with your game/mod versions, other enabled mods, whether you were playing multiplayer, and steps to reproduce. For crashes, include the relevant error and stack trace; review logs for personal information before sharing them. Windows logs are normally in `%USERPROFILE%\AppData\LocalLow\Mechanistry\Timberborn`. After restarting, the previous session is usually in `Player-prev.log`.
+[Open an issue](https://github.com/timbermods/MixedStorage/issues) with your game/mod versions, other enabled mods, whether you were playing multiplayer, and steps to reproduce. For crashes, include the relevant error and stack trace; review logs for personal information before sharing them. Windows logs are normally in `%USERPROFILE%\AppData\LocalLow\Mechanistry\Timberborn`. After restarting, the previous session is usually in `Player-prev.log`.
 
 ## Compatibility and testing
 
