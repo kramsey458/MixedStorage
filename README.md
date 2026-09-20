@@ -99,3 +99,9 @@ Built against **Timberborn 1.1.2.4**. Multiplayer integration was developed agai
 Players have reported successful use of earlier builds, and the **v0.5.6 layout has been visually verified in game**. Automated allocation, geometry, native API, and optional multiplayer loading checks also pass, but these do not replace live gameplay testing.
 
 See the [changelog](CHANGELOG.md) for version history and [developer notes](docs/DEVELOPMENT.md) for build instructions and technical details.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+The license covers this project's own source code, documentation and website. It does not cover Timberborn, its name or its artwork, which belong to Mechanistry, including the goods icons in `site/assets/goods/` (the game's own textures). The Noto Sans fonts in `site/assets/fonts/` keep their own SIL Open Font License (see `OFL.txt` there).
