@@ -87,7 +87,7 @@
 .ig-card { background: var(--ig-blue); border: 1px solid #2a3d4d; border-radius: 3px; padding: 5px 7px; margin-bottom: 4px; }
 .ig-card__line { display: flex; align-items: center; }
 .ig-card__icon { flex: none; width: 30px; height: 30px; margin-right: 8px; display: grid; place-items: center; }
-.ig-card__icon img { display: block; image-rendering: auto; }
+.ig-card__icon img { display: block; width: 30px; height: 30px; }
 .ig-card__main { flex: 1 1 0; min-width: 0; }
 .ig-card__main b { display: block; font-size: 16px; font-weight: 700; color: #fff; overflow-wrap: anywhere; }
 .ig-card__main span { display: block; font-size: 14px; }
@@ -114,7 +114,7 @@
 .ig-rows { margin-top: 3px; }
 .ig-row { display: flex; align-items: center; padding: 1px 0; border-bottom: 1px solid rgba(255, 255, 181, .3); }
 .ig-row__icon { flex: none; width: 20px; height: 20px; margin-right: 5px; display: grid; place-items: center; }
-.ig-row__icon img { display: block; }
+.ig-row__icon img { display: block; width: 20px; height: 20px; }
 .ig-row__main { flex: 1 1 0; min-width: 0; margin-right: 0; }
 .ig-row__main b { display: block; font-size: 13px; font-weight: 400; overflow-wrap: anywhere; }
 .ig-row__main span { display: block; font-size: 11px; }

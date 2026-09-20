@@ -11,20 +11,13 @@
   var stage = root.closest('[data-demo-stage]') || root.parentNode;
   var TOTAL = Split.TOTAL;
 
-  // Alphabetical, like the in-game list. row/card are icon sizes in UI units for the 20- and 30-unit slots.
-  var GOODS = [
-    { id: 'Berries',    name: 'Berries',      icon: 'berries',     row: [17.7, 17.0], card: [26.5, 25.5] },
-    { id: 'Books',      name: 'Books',        icon: 'books',       row: [17.7, 15.6], card: [26.5, 23.3] },
-    { id: 'BotChassis', name: 'Bot chassis',  icon: 'bot-chassis', row: [18.4, 19.1], card: [27.6, 28.6] },
-    { id: 'BotHeads',   name: 'Bot heads',    icon: 'bot-heads',   row: [17.2, 18.6], card: [25.8, 27.8] },
-    { id: 'BotLimbs',   name: 'Bot limbs',    icon: 'bot-limbs',   row: [18.6, 19.2], card: [27.8, 28.9] },
-    { id: 'Bread',      name: 'Bread',        icon: 'bread',       row: [17.8, 15.0], card: [26.8, 22.5] },
-    { id: 'Wheat',      name: 'Wheat',        icon: 'wheat',       row: [16.4, 16.4], card: [24.6, 24.6] },
-    { id: 'WheatFlour', name: 'Wheat flour',  icon: 'wheat-flour', row: [18.4, 20.8], card: [27.6, 31.1] }
-  ];
+  // Every good a Folktails warehouse accepts (see goods.js), sorted like the in-game list.
+  var GOODS = window.MixedStorageGoods;
+  if (!GOODS || !GOODS.length) return;
   var BUILDINGS = {
-    large:  { name: 'Large Warehouse',  capacity: 1200, quote: "With so much goods packed inside, there's no room to swing a tail." },
-    medium: { name: 'Medium Warehouse', capacity: 200,  quote: 'Proper storage of goods is crucial to surviving the hazards of a post-apocalyptic world.' }
+    small:  { name: 'Small Warehouse',  capacity: 30,   quote: '\"No dynamite in my pantry, please and thank you.\" \u2014Ma\u00a0\'Ngonel' },
+    medium: { name: 'Medium Warehouse', capacity: 200,  quote: 'Proper storage of goods is crucial to surviving the hazards of a post-apocalyptic world.' },
+    large:  { name: 'Large Warehouse',  capacity: 1200, quote: "With so much goods packed inside, there's no room to swing a tail." }
   };
   var PRESETS = {
     even:   { Bread: 5000, WheatFlour: 5000 },
@@ -63,8 +56,8 @@
     return out;
   }
   function icon(g, slot) {
-    var s = g[slot];
-    return '<img src="assets/goods/' + g.icon + '.png" alt="" style="width:' + s[0] + 'px;height:' + s[1] + 'px">';
+    var size = slot === 'card' ? 60 : 40;
+    return '<img src="assets/goods/' + g.icon + '-' + size + '.png" alt="" width="' + size / 2 + '" height="' + size / 2 + '"' + (slot === 'card' ? '' : ' loading="lazy"') + '>';
   }
   function setMsg(text, kind) { els.msg.textContent = text; els.msg.className = 'ig-msg' + (kind ? ' is-' + kind : ''); }
 
@@ -238,6 +231,7 @@
   });
   els.paste.addEventListener('click', function () {
     if (!state.copied) return;
+    els.only.checked = true;
     setDraft(state.copied, "Allocations pasted. Limits use this building's capacity. Press Apply.");
     revealList();
   });
@@ -246,6 +240,7 @@
   });
   Array.prototype.forEach.call(stage.querySelectorAll('[data-preset]'), function (btn) {
     btn.addEventListener('click', function () {
+      els.only.checked = true;
       setDraft(PRESETS[btn.getAttribute('data-preset')], 'Unapplied changes');
       revealList();
     });
