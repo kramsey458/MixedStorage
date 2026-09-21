@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.5.7 (pre-release)
 
 - Cheaper mixed-storage visuals. A delivery now redraws only the goods whose stock changed instead of every good in the building, reuses lookups and geometry buffers instead of reallocating them each time, and holds off redrawing buildings the camera cannot see until they come back into view. How storage looks is otherwise unchanged.
 
