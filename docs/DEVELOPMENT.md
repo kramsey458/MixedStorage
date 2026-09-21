@@ -30,7 +30,7 @@ The bridge sends allocation changes through BeaverBuddies replay events. Its ass
 
 Native goods meshes and materials are reused. Complete primary/secondary mesh cells are selected by center after validating index topology. Continuous or unrecognized layouts are fitted whole into their sections. Visual proportions are approximate, banners remain single-good, and the UI provides exact quantities. Unsupported or unreadable meshes fall back to native rendering.
 
-Updates are coalesced to at most five rebuilds per building per second. Generated meshes/materials have lifecycle cleanup. Rendering does not intentionally consume simulation randomness or add multiplayer commands.
+Updates are coalesced to at most five rebuilds per building per second. A building none of whose drawn sections is visible to a camera (`Renderer.isVisible`) is redrawn at most once every two seconds and catches up when it comes into view; storage with nothing drawn yet is always built immediately. A rebuild redraws only the sections whose good changed fill level. Section boundaries depend on the allocation and on each good's full-capacity footprint, cached per good and capacity, not on stock, so new allocations or a capacity change redraw every section and a delivery redraws one. A section copies only the vertices of its own cells out of the native variant mesh into reused buffers, and moves them with a plain offset when the native object has no rotation or scale, so a redraw allocates almost no managed memory. Reflection lookups on the native (internal) types are resolved once per type. Generated meshes/materials have lifecycle cleanup. Rendering does not intentionally consume simulation randomness or add multiplayer commands.
 
 The editor has one scrolling body and a fixed footer containing Copy/Paste allocations, the allocation total, and Clear/Revert/Apply. The shared native `EntityPanel` targets 440 UI units, bounded by the viewport, so every fragment stretches to the same width. Its original inline width is restored when the storage view closes, detaches, or switches to an unsupported selection. Height is based on available space below the allocation editor's current position, less the height of any visible fragments the game stacks beneath it in the same column (for example the Construction site panel while a building is unfinished), so those stay on screen.
 
@@ -40,7 +40,8 @@ The mod reuses the installed game's styles and assets: `NineSliceVisualElement` 
 
 - 10,043 allocation assertions: 2,000 randomized splits, lists up to 100 goods, capacities 20/30/180/200/1000/1200, validation, rounding, persistence, and delivery guards.
 - All 11 supported template names and storage categories checked against the game's Blueprints.zip.
-- 15,689 legacy clipping assertions and 201 whole-cell partition cases covering boundary ownership, complete topology, and unknown-topology fallback.
+- 15,689 legacy clipping assertions and 201 whole-cell partition cases covering boundary ownership, complete topology, compact vertices, per-vertex attributes, and unknown-topology fallback.
+- 400 random piles (plain and rotated/scaled transforms, random section boundaries) whose extracted sections are compared triangle by triangle with the original algorithm that transformed and kept every vertex, plus the whole-mesh fit used for bulk surfaces.
 - Nine native rendering API signatures checked against installed game assemblies; the old ambiguous Initialize lookup is reproduced as a regression check.
 - Isolated loading processes with and without BeaverBuddies check eager main-type enumeration, bridge event discovery, delegate installation, repeated initialization, and obsolete-addon rejection.
 
