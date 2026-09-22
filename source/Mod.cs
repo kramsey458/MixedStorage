@@ -71,9 +71,21 @@ namespace MixedStorage
     {
         static void Postfix(SingleGoodAllower __instance, IEntityLoader entityLoader) => StorageState.Get(__instance)?.Load(entityLoader);
     }
+    // The game's Duplicate settings tool. A mixed source copies its allocation. Any other source gives
+    // the target that building's single good (or none), as in the base game, so a mixed target leaves
+    // mixed mode first; otherwise AllowPatch would silently keep the old allocation.
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.DuplicateFrom))]
     internal static class DuplicatePatch
     {
+        static void Prefix(SingleGoodAllower __instance, SingleGoodAllower source)
+        {
+            var target = StorageState.Get(__instance);
+            if (target?.Active != true || StorageState.Get(source)?.Active == true) return;
+            // The base game leaves the target unchanged when it does not take the source's good.
+            if (source.AllowedGood != null && !target.Inventory.Takes(source.AllowedGood)) return;
+            target.Deactivate();
+        }
+
         static void Postfix(SingleGoodAllower __instance, SingleGoodAllower source) => StorageState.Get(__instance)?.Duplicate(StorageState.Get(source));
     }
     [HarmonyPatch(typeof(StockpileVisualizers), "OnDisallowedGoodsChanged")]

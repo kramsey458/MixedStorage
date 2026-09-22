@@ -8,7 +8,7 @@ Use .NET SDK 8 and local Timberborn 1.1.2.4, Harmony, and BeaverBuddies dependen
 .\build.ps1 -GameDir 'C:\Games\Timberborn' -HarmonyPath 'C:\Mods\Harmony\0Harmony.dll' -BeaverBuddiesPath 'C:\Mods\BeaverBuddies\version-1.1\BeaverBuddies.dll'
 ```
 
-Replace example paths with your installation paths. BeaverBuddies is required to build the bridge, although optional for players. The script builds the base API, compiles the bridge, then rebuilds the main DLL with the bridge embedded. A bootstrap build alone is not a distributable release. Checks run before the unified ZIP is written to `dist/`. Game and third-party DLLs are referenced locally, not distributed.
+Replace example paths with your installation paths. BeaverBuddies is required to build the bridge, although optional for players. The script builds the base API, compiles the bridge, then rebuilds the main DLL with the bridge embedded. A bootstrap build alone is not a distributable release. Checks run before the unified ZIP is written to `dist/`. The ZIP is made with Windows' `tar.exe`, because `Compress-Archive` in Windows PowerShell 5.1 writes `\` path separators that some macOS and Linux tools extract as flat file names; the script fails if any entry name contains `\`. Game and third-party DLLs are referenced locally, not distributed.
 
 Run allocation checks separately with `dotnet run --project tests/AllocationTests.csproj -c Release`. Use `build.ps1` for the full dependency-aware checks.
 
@@ -16,7 +16,9 @@ Run allocation checks separately with `dotnet run --project tests/AllocationTest
 
 Percentages use integer units totaling 10,000. Whole-item limits use largest-remainder rounding with ordinal good-ID ordering for ties. Incoming reservations guard against conflicting limit reductions; existing excess stock is preserved. Copy/paste transfers percentages atomically into a draft and rejects incompatible goods. Hauling mode and priority are not copied.
 
-Persistence uses the MixedStorage mod ID and `MixedStorage.Allocation` save key. Applying settings uses the multiplayer command path when available.
+The game's Duplicate settings tool calls `SingleGoodAllower.DuplicateFrom`. A mixed source applies its allocation to the target through the same checks as Apply, and logs a warning if they reject it. Any other source gives the target that building's single good, or none, as in the base game, so a mixed target first leaves mixed mode (`StorageState.Deactivate`). That is the only way back to the base game's rules. Leaving mixed mode announces every formerly allocated good, because the game's `InventoryRegistry` caches which buildings have room for each good and only updates a good when it is announced.
+
+Persistence uses the MixedStorage mod ID and `MixedStorage.Allocation` save key. An unreadable saved allocation is logged and ignored, so the building keeps the single good the base game saved alongside it instead of stopping the whole save from loading. Applying settings uses the multiplayer command path when available.
 
 ## Optional DLL loading
 
@@ -24,13 +26,15 @@ Inspection of Timberborn 1.1.2.4's ModCodeStarter showed recursive DLL loading f
 
 The main DLL has no BeaverBuddies assembly reference. The bridge is an embedded resource named `MixedStorage.OptionalMultiplayer`, loaded only when BeaverBuddies is present. A scoped assembly resolver finds the already-loaded main mod, bridge, and BeaverBuddies assemblies. Initialization is idempotent. The obsolete separate addon is rejected to prevent conflicting integrations.
 
+The runtime only binds a method's calls into BeaverBuddies when that method first runs, so at startup the bridge looks up every BeaverBuddies member it uses and loads its event type. If the installed BeaverBuddies lacks any of them, MixedStorage stops with a message naming what is missing, instead of failing silently at the first Apply. Errors during Apply are shown in the panel's message line and logged in full.
+
 The bridge sends allocation changes through BeaverBuddies replay events. Its assembly identity differs from the former addon, so historical replay recordings may require the old mod versions. Allocation save keys remain unchanged.
 
 ## Rendering and UI
 
 Native goods meshes and materials are reused. Complete primary/secondary mesh cells are selected by center after validating index topology. Continuous or unrecognized layouts are fitted whole into their sections. Visual proportions are approximate, banners remain single-good, and the UI provides exact quantities. Unsupported or unreadable meshes fall back to native rendering.
 
-Updates are coalesced to at most five rebuilds per building per second. A building none of whose drawn sections is visible to a camera (`Renderer.isVisible`) is redrawn at most once every two seconds and catches up when it comes into view; storage with nothing drawn yet is always built immediately. A rebuild redraws only the sections whose good changed fill level. Section boundaries depend on the allocation and on each good's full-capacity footprint, cached per good and capacity, not on stock, so new allocations or a capacity change redraw every section and a delivery redraws one. A section copies only the vertices of its own cells out of the native variant mesh into reused buffers, and moves them with a plain offset when the native object has no rotation or scale, so a redraw allocates almost no managed memory. Reflection lookups on the native (internal) types are resolved once per type. Generated meshes/materials have lifecycle cleanup. Rendering does not intentionally consume simulation randomness or add multiplayer commands.
+Updates are coalesced to at most five rebuilds per building per second. A building none of whose drawn sections is visible to a camera (`Renderer.isVisible`) is redrawn at most once every two seconds and catches up when it comes into view; storage with nothing drawn yet is always built immediately. A rebuild redraws only the sections whose good changed fill level. Section boundaries depend on the allocation and on each good's full-capacity footprint, cached per good and capacity, not on stock, so new allocations or a capacity change redraw every section and a delivery redraws one. A section copies only the vertices of its own cells out of the native variant mesh into reused buffers, and moves them with a plain offset when the native object has no rotation or scale, so a redraw allocates almost no managed memory. Reflection lookups on the native (internal) types are resolved once per type. Generated meshes/materials have lifecycle cleanup, and a building that leaves mixed mode goes back to the native visuals. Rendering does not intentionally consume simulation randomness or add multiplayer commands.
 
 The editor has one scrolling body and a fixed footer containing Copy/Paste allocations, the allocation total, and Clear/Revert/Apply. The shared native `EntityPanel` targets 440 UI units, bounded by the viewport, so every fragment stretches to the same width. Its original inline width is restored when the storage view closes, detaches, or switches to an unsupported selection. Height is based on available space below the allocation editor's current position, less the height of any visible fragments the game stacks beneath it in the same column (for example the Construction site panel while a building is unfinished) and, with dev mode on, the debug panel the game shows after them (`DiagnosticFragments`, a sibling of `Fragments` directly under the `EntityPanel`, which holds buttons such as Finish now), so those stay on screen. The game's own layout files are readable in `Timberborn_Data\StreamingAssets\Modding\UI.zip`.
 
@@ -38,12 +42,12 @@ The mod reuses the installed game's styles and assets: `NineSliceVisualElement` 
 
 ## Validation
 
-- 10,043 allocation assertions: 2,000 randomized splits, lists up to 100 goods, capacities 20/30/180/200/1000/1200, validation, rounding, persistence, and delivery guards.
+- 10,061 allocation assertions: 2,000 randomized splits, lists up to 100 goods, capacities 20/30/180/200/1000/1200, validation, rounding, persistence (every malformed saved value fails the one way loading handles), and delivery guards.
 - All 11 supported template names and storage categories checked against the game's Blueprints.zip.
-- 15,689 legacy clipping assertions and 201 whole-cell partition cases covering boundary ownership, complete topology, compact vertices, per-vertex attributes, and unknown-topology fallback.
+- 201 whole-cell partition cases covering boundary ownership, complete topology, compact vertices, per-vertex attributes, and unknown-topology fallback.
 - 400 random piles (plain and rotated/scaled transforms, random section boundaries) whose extracted sections are compared triangle by triangle with the original algorithm that transformed and kept every vertex, plus the whole-mesh fit used for bulk surfaces.
 - Nine native rendering API signatures checked against installed game assemblies; the old ambiguous Initialize lookup is reproduced as a regression check.
-- Isolated loading processes with and without BeaverBuddies check eager main-type enumeration, bridge event discovery, delegate installation, repeated initialization, and obsolete-addon rejection.
+- Isolated loading processes with and without BeaverBuddies check eager main-type enumeration, bridge event discovery, delegate installation, repeated initialization, and obsolete-addon rejection. A stub BeaverBuddies with one member missing (`loading-tests/StubBeaverBuddies`) checks that an incompatible build is rejected at startup with a message naming the member.
 
 Loading checks run under .NET, not inside Unity/Mono. They do not establish live multiplayer compatibility. Builds pass without compiler warnings; v0.5.8's layout has been visually verified in game.
 

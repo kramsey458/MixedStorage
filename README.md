@@ -78,6 +78,8 @@ Applied allocations synchronize through BeaverBuddies. Apply may briefly show a 
 - **Incoming deliveries count toward limits.** If a reduction conflicts with goods already on their way, wait for delivery and try again.
 - **Storage modes still matter.** Accept, Obtain, Supply, Empty, and hauler priority continue to use the game's hauling system.
 - **World visuals are approximate.** Whole visible cells cannot always match a percentage exactly. Tiny shares may have no visible cell, some models may look narrower, and banners still show one representative good. Excess goods may not be fully represented. Use the summary for exact amounts; unsupported meshes fall back to the original visuals.
+- **The game's Duplicate settings tool works with mixed storage.** Copying from a mixed building gives the target the same percentages, if it accepts those goods and no incoming delivery conflicts. Copying from a normal building that stores a good this one accepts, or one set to store nothing, turns a mixed building back into a normal one; that is also the way to leave mixed storage.
+- **The mod's own text is in English.** Good names follow your game language.
 
 ## Having trouble?
 
@@ -88,9 +90,15 @@ Applied allocations synchronize through BeaverBuddies. Apply may briefly show a 
 | Paste is rejected | The destination must accept every good with a nonzero copied percentage. |
 | Lower limit is rejected | Wait for incoming deliveries to finish. |
 | Startup mentions the old addon | Remove or disable MixedStorage-BeaverBuddies, then fully restart. |
+| Startup says multiplayer support does not work with the installed BeaverBuddies | Install the BeaverBuddies build named under [Compatibility and testing](#compatibility-and-testing), or disable BeaverBuddies if you play single-player. |
+| Apply shows "Apply failed" | Report it with your Player.log; the message and log say what went wrong. |
 | Panel or visuals look wrong | Include a screenshot, resolution/UI scale, building type, and allocations in a report. |
 
 [Open an issue](https://github.com/timbermods/MixedStorage/issues) with your game/mod versions, other enabled mods, whether you were playing multiplayer, and steps to reproduce. For crashes, include the relevant error and stack trace; review logs for personal information before sharing them. Windows logs are normally in `%USERPROFILE%\AppData\LocalLow\Mechanistry\Timberborn`. After restarting, the previous session is usually in `Player-prev.log`.
+
+## Removing MixedStorage
+
+Close Timberborn, then disable MixedStorage in the mod manager or delete its folder. In saves that used it, each mixed building goes back to storing only its largest allocated good, and haulers carry the other goods away, as the base game does when you switch a warehouse to a different good.
 
 ## Compatibility and testing
 

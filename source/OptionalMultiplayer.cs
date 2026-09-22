@@ -30,9 +30,18 @@ namespace MixedStorage
                 using (var bytes = new MemoryStream())
                 {
                     stream.CopyTo(bytes);
-                    var bridge = Assembly.Load(bytes.ToArray());
-                    var starter = bridge.GetType("MixedStorage.Multiplayer.MultiplayerStarter", true);
-                    starter.GetMethod("Initialize", BindingFlags.Public | BindingFlags.Static).Invoke(null, null);
+                    try
+                    {
+                        var bridge = Assembly.Load(bytes.ToArray());
+                        var starter = bridge.GetType("MixedStorage.Multiplayer.MultiplayerStarter", true);
+                        starter.GetMethod("Initialize", BindingFlags.Public | BindingFlags.Static).Invoke(null, null);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Without the bridge, allocations would not synchronize and players would desync.
+                        throw new InvalidOperationException("MixedStorage's multiplayer support does not work with the installed BeaverBuddies version (" +
+                            ex.GetBaseException().Message + "). Install the BeaverBuddies version named in MixedStorage's README, or disable BeaverBuddies.", ex);
+                    }
                     _started = true;
                     return true;
                 }

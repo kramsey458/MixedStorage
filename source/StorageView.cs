@@ -435,7 +435,17 @@ namespace MixedStorage
         private void Apply()
         {
             if (_rows.Any(x => !x.Valid)) return;
-            var result = AllocationCommands.Submit(_state, AllocationPlan.Serialize(_draft));
+            SubmissionResult result;
+            try { result = AllocationCommands.Submit(_state, AllocationPlan.Serialize(_draft)); }
+            catch (Exception ex)
+            {
+                // Otherwise the click would just do nothing; the log keeps the full details.
+                Debug.LogError("[MixedStorage] Apply failed: " + ex);
+                _message.text = "Apply failed: " + ex.GetBaseException().Message + " Details are in Player.log.";
+                _message.style.color = Error;
+                RefreshStock();
+                return;
+            }
             if (result == SubmissionResult.Queued)
             {
                 _state.Pending = true;

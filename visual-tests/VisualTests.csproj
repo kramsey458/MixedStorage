@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 <PropertyGroup><TargetFramework>net8.0</TargetFramework><OutputType>Exe</OutputType><ImplicitUsings>enable</ImplicitUsings><GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Timberborn</GameDir></PropertyGroup>
-<ItemGroup><Compile Include="../source/StorageMeshClipper.cs" Link="StorageMeshClipper.cs" /><Reference Include="$(GameDir)\Timberborn_Data\Managed\UnityEngine.CoreModule.dll" /></ItemGroup>
+<ItemGroup><Reference Include="$(GameDir)\Timberborn_Data\Managed\UnityEngine.CoreModule.dll" /></ItemGroup>
 <ItemGroup><Reference Include="$(HarmonyPath)" /></ItemGroup>
 <ItemGroup><Compile Include="../source/WholeCellGeometry.cs" Link="WholeCellGeometry.cs" /></ItemGroup>
 </Project>

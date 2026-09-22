@@ -77,7 +77,8 @@ namespace MixedStorage
         {
             var state = StorageState.Get(__instance);
             if (!selected || state?.Active != true) return true;
-            __result = "Mixed (" + state.Shares.Count + " goods) — edit storage panel";
+            int count = state.Shares.Count;
+            __result = "Mixed (" + count + (count == 1 ? " good" : " goods") + ") — edit storage panel";
             return false;
         }
     }

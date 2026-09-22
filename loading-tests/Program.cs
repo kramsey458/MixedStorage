@@ -6,9 +6,11 @@ var mainPath = Path.GetFullPath(args[1]);
 var managed = Path.Combine(args[2], "Timberborn_Data", "Managed");
 var harmony = Path.GetDirectoryName(args[3])!;
 var bbPath = args[4];
+// "incompatible" loads a BeaverBuddies whose API differs from the one the bridge was built against.
+bool beaverBuddies = mode == "with" || mode == "incompatible";
 AssemblyLoadContext.Default.Resolving += (_, name) =>
 {
-    var dirs = mode == "with" ? new[] { managed, harmony, Path.GetDirectoryName(bbPath)! } : new[] { managed, harmony };
+    var dirs = beaverBuddies ? new[] { managed, harmony, Path.GetDirectoryName(bbPath)! } : new[] { managed, harmony };
     foreach (var dir in dirs)
     {
         var file = Path.Combine(dir, name.Name + ".dll");
@@ -16,7 +18,7 @@ AssemblyLoadContext.Default.Resolving += (_, name) =>
     }
     return null;
 };
-if (mode == "with") Assembly.Load(File.ReadAllBytes(bbPath));
+if (beaverBuddies) Assembly.Load(File.ReadAllBytes(bbPath));
 var main = Assembly.Load(File.ReadAllBytes(mainPath));
 if (main.GetReferencedAssemblies().Any(a => a.Name!.Contains("BeaverBuddies") || a.Name.Contains("MultiplayerBridge")))
     throw new Exception("Main mod has a hard multiplayer dependency.");
@@ -28,6 +30,18 @@ if (mode == "legacy")
     try { init.Invoke(null, null); throw new Exception("Legacy addon was accepted."); }
     catch (TargetInvocationException ex) when (ex.InnerException is InvalidOperationException && ex.InnerException.Message.Contains("Remove or disable"))
     { Console.WriteLine("PASS: legacy separate addon rejected with upgrade instructions."); return; }
+}
+if (mode == "incompatible")
+{
+    try { init.Invoke(null, null); throw new Exception("Incompatible BeaverBuddies was accepted."); }
+    catch (TargetInvocationException ex) when (ex.InnerException is InvalidOperationException &&
+        ex.InnerException.Message.Contains("does not work with the installed BeaverBuddies") && ex.InnerException.Message.Contains("ReplayEvent.DoPrefix"))
+    {
+        if (main.GetType("MixedStorage.AllocationCommands")!.GetField("MultiplayerSubmit")!.GetValue(null) != null)
+            throw new Exception("Multiplayer submit delegate installed for an incompatible BeaverBuddies.");
+        Console.WriteLine("PASS: incompatible BeaverBuddies rejected at startup: " + ex.InnerException.Message);
+        return;
+    }
 }
 bool loaded = (bool)init.Invoke(null, null)!;
 if (loaded != (mode == "with")) throw new Exception("Incorrect optional loading result.");

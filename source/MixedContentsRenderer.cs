@@ -71,7 +71,8 @@ namespace MixedStorage
         public static void Refresh(StockpileVisualizers owner)
         {
             var state = StorageState.Get(owner);
-            if (state?.Active != true) return;
+            // A building that left mixed mode goes back to the native visuals.
+            if (state?.Active != true) { Clear(owner); return; }
             var instance = Instances.GetValue(owner, _ => new MixedContentsRenderer());
             try { instance.Schedule(owner, state); }
             catch (Exception ex) { instance.Fail(ex); }

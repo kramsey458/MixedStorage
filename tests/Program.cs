@@ -52,6 +52,14 @@ Reject(() => AllocationPlan.Capacities(new Dictionary<string, int> { ["A"] = 100
 Reject(() => AllocationPlan.Deserialize("1|A=5000;A=5000"), "Reject duplicate saved IDs");
 Reject(() => AllocationPlan.Deserialize("2|A=10000"), "Reject unknown save version");
 Reject(() => AllocationPlan.Deserialize("1|A=9999"), "Reject invalid saved sum");
+// Loading catches FormatException only, so every malformed saved value must fail with exactly that.
+foreach (string malformed in new[] { null, "", "1", "1|", "1|A", "1|A=", "1|A=x", "1|A=-1", "1|A=+5", "1|A= 10000", "1|A=99999999999",
+             "1|A=10000;", "1|=10000", "1|A=5000;A=5000", "1|A=9999", "1|A=10001", "1|A=10000=1", "2|A=10000" })
+{
+    bool format = false;
+    try { AllocationPlan.Deserialize(malformed); } catch (FormatException) { format = true; }
+    Check(format, "Malformed saved allocation fails with FormatException: " + (malformed ?? "null"));
+}
 var unusual = new Dictionary<string, int> { ["Mod.Good;= |🌲"] = 10000 };
 Check(AllocationPlan.Deserialize(AllocationPlan.Serialize(unusual)).Keys.Single() == unusual.Keys.Single(), "Escape modded IDs");
 Check(AllocationPlan.ConflictsWithDelivery(45, 10, 50), "Reject incoming delivery over new cap");

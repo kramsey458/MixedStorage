@@ -10,6 +10,7 @@ using Timberborn.Persistence;
 using Timberborn.Stockpiles;
 using Timberborn.TemplateSystem;
 using Timberborn.WorldPersistence;
+using UnityEngine;
 
 namespace MixedStorage
 {
@@ -106,8 +107,22 @@ namespace MixedStorage
             InternalChange = true;
             try { Allower.Allow(representative); }
             finally { InternalChange = false; }
-            foreach (string good in Inventory.InputGoods) NotifyGood.Invoke(Allower, new object[] { good });
+            foreach (string good in Inventory.InputGoods) Notify(good);
         }
+
+        // Returns the building to the base game's single-good rules; the caller then sets that good.
+        // Every formerly allocated good is announced because its limit changes, and the game caches
+        // which buildings have room for each good.
+        public void Deactivate()
+        {
+            var previous = Shares;
+            Shares = null;
+            _limits = null;
+            Revision++;
+            foreach (string good in previous.Keys) Notify(good);
+        }
+
+        private void Notify(string good) => NotifyGood.Invoke(Allower, new object[] { good });
 
         public void Save(IEntitySaver saver)
         {
@@ -116,16 +131,21 @@ namespace MixedStorage
 
         public void Load(IEntityLoader loader)
         {
-            if (loader.TryGetComponent(SaveKey, out var component) && component.Has(SharesKey))
+            if (!loader.TryGetComponent(SaveKey, out var component) || !component.Has(SharesKey)) return;
+            string saved = component.Get(SharesKey);
+            try { SetShares(AllocationPlan.Deserialize(saved)); }
+            catch (FormatException ex)
             {
-                // Do not silently discard a malformed allocation and start accepting different goods.
-                SetShares(AllocationPlan.Deserialize(component.Get(SharesKey)));
+                // One unreadable building must not stop the whole save from loading. It keeps the
+                // single good the base game saved alongside it, and the warning says what was lost.
+                Debug.LogWarning("[MixedStorage] Ignoring an unreadable saved allocation for " + Allower.Name + " (" + ex.Message + "): " + saved);
             }
         }
 
         public void Duplicate(StorageState source)
         {
-            if (source != null && source.Active) TryApply(source.Shares, out _);
+            if (source == null || !source.Active || TryApply(source.Shares, out string error)) return;
+            Debug.LogWarning("[MixedStorage] Copied allocations were not applied to " + Allower.Name + ": " + error);
         }
     }
 }

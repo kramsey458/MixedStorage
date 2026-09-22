@@ -82,7 +82,8 @@ namespace MixedStorage
                 var parts = pair.Split('=');
                 if (parts.Length != 2 || !int.TryParse(parts[1], NumberStyles.None, CultureInfo.InvariantCulture, out int share))
                     throw new FormatException("Invalid saved allocation.");
-                result.Add(Uri.UnescapeDataString(parts[0]), share);
+                if (!result.TryAdd(Uri.UnescapeDataString(parts[0]), share))
+                    throw new FormatException("Duplicate good in saved allocation.");
             }
             if (!IsValid(result)) throw new FormatException("Saved allocations do not total 100%.");
             return result;
