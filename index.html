@@ -90,10 +90,10 @@
     <div class="grid-3" style="margin-top:32px">
       <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-split"/></svg></div><h3>Mix goods by percentage</h3><p>Give any good the building normally accepts a share of its capacity, down to 0.01%. Shares must total exactly 100%, so every slot has a purpose.</p></article>
       <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-stack"/></svg></div><h3>Stock at a glance</h3><p>Summary cards show each good's icon, stored / limit count, allocated percentage, and a fill bar, including incoming deliveries and excess stock.</p></article>
-      <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-bolt"/></svg></div><h3>Quick setup</h3><p>Search the goods list, show only allocated goods, click Max to give one good everything, or copy an allocation and paste it into another compatible building. The game's own Duplicate settings tool copies allocations too. Edits stay drafts until you Apply.</p></article>
+      <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-bolt"/></svg></div><h3>Quick setup</h3><p>Search the goods list, show only allocated goods, click Max to give one good everything, or copy an allocation and paste it into another compatible building. The game's own Copy settings tool copies allocations too. Edits stay drafts until you Apply.</p></article>
       <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-shield"/></svg></div><h3>Safe with your stock</h3><p>Lowering a limit never deletes goods. Extras are flagged as excess and leave the normal way, and deliveries already on their way are counted before a change is accepted.</p></article>
       <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-cube"/></svg></div><h3>Visible in the world</h3><p>Warehouses and piles show the mix using the game's own goods models, divided by allocation. The panel always has the exact numbers.</p></article>
-      <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-people"/></svg></div><h3>Multiplayer-ready</h3><p>BeaverBuddies support is built in and switches on automatically when BeaverBuddies is installed. Applied allocations synchronize between players.</p></article>
+      <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-people"/></svg></div><h3>Multiplayer-ready</h3><p>Co-op support for the BeaverBuddies Stability Fork is built in and switches on automatically when it is installed. Applied allocations synchronize between players.</p></article>
     </div>
     <div class="grid-3" style="margin-top:20px">
       <div class="panel panel--blue panel--flat mini"><h3>Looks native</h3><p>Uses the game's own panel frames, buttons, input fields, checkbox, and scrollbar.</p></div>
@@ -107,7 +107,7 @@
   <div class="wrap">
     <p class="eyebrow">Try it</p>
     <h2>Play with the real panel</h2>
-    <p class="lead">This is a working copy of the Storage Allocation panel, styled like the game. Edit percentages, then Apply, just as you would in Timberborn. It uses the mod's own rounding and messages.</p>
+    <p class="lead">This is a working copy of the Storage Allocation panel, styled like the game. Edit percentages, then Apply, as you would in Timberborn. It uses the mod's own rounding and messages.</p>
     <noscript><p class="muted">The interactive panel needs JavaScript. The screenshot at the top of this page shows what it looks like.</p></noscript>
     <div class="ig-stage" data-demo-stage>
       <div class="ig-side">
@@ -133,7 +133,7 @@
         <h3>Things to try</h3>
         <ol class="ig-tips">
           <li>Every good a Folktails warehouse accepts is in the list. Use <strong>Search</strong> or scroll, set <strong>Bread to 25</strong> and <strong>Wheat flour to 75</strong>, then press <strong>Apply 100%</strong>. Bread is now over its new limit. Lowering a limit never deletes stock, so the extra shows as <em>excess</em>.</li>
-          <li>Type <strong>60</strong> next to <strong>50</strong>. The total turns red and Apply stays unavailable until it's exactly 100%.</li>
+          <li>Type <strong>60</strong> into another good's box. The total turns red and Apply stays unavailable until it's exactly 100%.</li>
           <li>Load <strong>A tiny share</strong> to see the panel warn that a good rounds to 0 items.</li>
           <li>Press <strong>Copy allocations</strong>, switch to the other building, then <strong>Paste</strong>. The percentages carry over and the limits are recalculated for the new capacity.</li>
         </ol>
@@ -233,7 +233,7 @@
     <div class="grid-3" style="margin-top:28px">
       <div class="panel panel--blue panel--flat mini"><h3>Game</h3><p>Built against <strong>Timberborn 1.1.2.4</strong>.</p></div>
       <div class="panel panel--blue panel--flat mini"><h3>Requires</h3><p><strong>Harmony 2.4.1</strong> or newer, enabled alongside MixedStorage.</p></div>
-      <div class="panel panel--blue panel--flat mini"><h3>Optional</h3><p><strong>BeaverBuddies</strong> for multiplayer. Support is bundled; there's no separate add-on.</p></div>
+      <div class="panel panel--blue panel--flat mini"><h3>Optional</h3><p>The <a href="https://timbermods.github.io/BeaverBuddies-Stability-Fork/" rel="noopener">BeaverBuddies Stability Fork</a> for multiplayer. Support is bundled; there's no separate add-on.</p></div>
     </div>
   </div>
 </section>
@@ -255,7 +255,7 @@
   <div class="wrap">
     <div class="panel panel--blue note note--info">
       <h3>Project status</h3>
-      <p>MixedStorage 1.1.1 is the current release. Its panel layout and storage visuals are unchanged from v0.5.8, which was checked in game. The changes since then (the game's Duplicate settings tool, clearer error messages, loading damaged saves, the Supply mode order, the reason shown when Apply is unavailable, patch order, and in 1.1.1 leaving mixed storage safely) haven't been played in game yet. Players have reported successful use of earlier builds, and automated checks cover the allocation math, mesh geometry, native game API calls, and optional multiplayer loading. Those checks don't replace live gameplay testing, particularly for multiplayer.</p>
+      <p>MixedStorage 1.1.1 is the current release. Its panel layout and storage visuals are unchanged from v0.5.8, which was checked in game. The changes since then (the game's Copy settings tool, clearer error messages, loading damaged saves, the Supply mode order, the reason shown when Apply is unavailable, patch order, and in 1.1.1 leaving mixed storage safely) haven't been played in game yet. Players have reported successful use of earlier builds, and automated checks cover the allocation math, mesh geometry, native game API calls, and optional multiplayer loading. Those checks don't replace live gameplay testing, particularly for multiplayer.</p>
       <p>Found something odd? <a href="troubleshooting.html">Check the troubleshooting guide</a> or <a href="https://github.com/timbermods/MixedStorage/issues" rel="noopener">open an issue</a>.</p>
     </div>
   </div>
@@ -279,7 +279,7 @@
     <div class="footer__grid">
       <div>
         <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="4" width="28" height="24" rx="4" fill="#436452" stroke="#ffffb5" stroke-width="2"/><rect x="5.5" y="8" width="9" height="16" rx="2" fill="#ffa60f"/><rect x="17.5" y="8" width="9" height="16" rx="2" fill="#7cc4d9"/></svg><span>MixedStorage</span></a>
-        <p style="margin-top:12px;max-width:44ch">Mixed-goods storage for Timberborn warehouses and piles. An unofficial community mod, not affiliated with Mechanistry.</p>
+        <p style="margin-top:12px;max-width:44ch">Mixed-goods storage for Timberborn warehouses and piles. An unofficial community mod for Timberborn. Not affiliated with or endorsed by Mechanistry.</p>
       </div>
       <div>
         <h2>Guides</h2>
@@ -297,10 +297,11 @@
           <li><a href="https://github.com/timbermods/MixedStorage/issues" rel="noopener">Report a problem</a></li>
           <li><a href="https://github.com/timbermods/MixedStorage" rel="noopener">Source on GitHub</a></li>
           <li><a href="https://github.com/timbermods/MixedStorage/blob/main/docs/DEVELOPMENT.md" rel="noopener">Developer notes</a></li>
+          <li><a href="https://timbermods.github.io/">More mods from Timbermods</a></li>
         </ul>
       </div>
     </div>
-    <p class="footer__fine">Built for Timberborn 1.1.2.4. Timberborn is developed by Mechanistry; MixedStorage is an independent, fan-made mod.</p>
+    <p class="footer__fine">Built for Timberborn 1.1.2.4. Timberborn is developed by Mechanistry. MixedStorage is maintained by <a href="https://github.com/timbermods" rel="noopener">Timbermods</a>.</p>
   </div>
 </footer>
 <script src="assets/site.js" defer></script>
