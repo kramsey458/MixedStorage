@@ -66,6 +66,8 @@ namespace MixedStorage
 
         public static StorageState Get(BaseComponent entity) => Get(entity.GetComponent<SingleGoodAllower>());
 
+        // Also runs on LateGamePerformance's worker threads, one worker per storage (see LimitPatch). Shares is only
+        // replaced on the main thread, never changed in place.
         public int Limit(string good)
         {
             if (_limits == null || _cachedCapacity != Inventory.Capacity)
@@ -147,6 +149,7 @@ namespace MixedStorage
 
         private void Notify(string good) => NotifyGood.Invoke(Allower, new object[] { good });
 
+        // Also runs on LateGamePerformance's save workers (see SavePatch).
         public void Save(IEntitySaver saver)
         {
             if (Active) saver.GetComponent(SaveKey).Set(SharesKey, AllocationPlan.Serialize(Shares));

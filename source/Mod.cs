@@ -23,6 +23,7 @@ namespace MixedStorage
                 Debug.LogError("[MixedStorage] " + OptionalMultiplayer.UnavailableReason + "\n" + OptionalMultiplayer.Failure);
             // Throwing here would stop every later mod and the game from starting; allocations are frozen instead.
             if (StorageState.UnavailableReason != null) Debug.LogError("[MixedStorage] " + StorageState.UnavailableReason);
+            // LateGamePerformance trusts LimitPatch and SavePatch by this id and their names; keep it.
             new Harmony("kyler.mixedstorage").PatchAll(typeof(ModStarter).Assembly);
             Debug.Log("[MixedStorage] " + typeof(ModStarter).Assembly.GetName().Version.ToString(3) + " loaded; warehouse and pile allocations for Timberborn 1.1.2.4.");
         }
@@ -34,6 +35,11 @@ namespace MixedStorage
         static void Postfix(SingleGoodAllower __instance, Inventory inventory) => StorageState.Attach(__instance, inventory);
     }
 
+    // LateGamePerformance counts district stock on worker threads and calls this prefix there. It trusts it by name:
+    // its DistrictCounts.ReviewedPatches lists ("SingleGoodAllower.AllowedAmount", "kyler.mixedstorage",
+    // "MixedStorage.LimitPatch.Prefix"). Keep it read-only apart from the storage's own limit cache, and change that
+    // list with any rename. Add no other patch on AllowedAmount or on the Inventory methods those workers call, or
+    // LateGamePerformance quietly counts on the main thread again (PatchTargetTests checks both).
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.AllowedAmount))]
     internal static class LimitPatch
     {
@@ -65,6 +71,9 @@ namespace MixedStorage
             return state?.Active != true || state.InternalChange;
         }
     }
+    // LateGamePerformance saves on worker threads and trusts this postfix by name (its SaveGuard.ReviewedPatches lists
+    // "SingleGoodAllower.Save", "kyler.mixedstorage", "MixedStorage.SavePatch.Postfix"). Keep it writing only this
+    // storage's allocation into its own entity, and change that list with any rename.
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.Save))]
     internal static class SavePatch
     {

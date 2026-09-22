@@ -20,7 +20,8 @@ internal static class PatchTargetTests
         foreach (var file in Directory.GetFiles(managed, "Timberborn.*.dll")) Assembly.LoadFrom(file);
         var mod = Assembly.LoadFrom(modPath);
         var types = mod.GetTypes();
-        HarmonyPatches(types);
+        var patches = HarmonyPatches(types);
+        LateGamePerformanceContract(mod, patches);
         ReflectedMembers(types, managed);
         ConnectionState(mod, beaverBuddiesPath);
         Templates(mod, Path.Combine(gameDir, "Timberborn_Data", "StreamingAssets", "Modding", "Blueprints.zip"));
@@ -28,8 +29,9 @@ internal static class PatchTargetTests
 
     // Mirrors Harmony 2.4's PatchClassProcessor and MethodPatcher for the features the mod uses; anything else fails
     // here so this check is extended before it is relied on.
-    private static void HarmonyPatches(Type[] types)
+    private static List<(MethodBase Target, MethodInfo Patch)> HarmonyPatches(Type[] types)
     {
+        var resolved = new List<(MethodBase Target, MethodInfo Patch)>();
         int classes = 0, targets = 0, fields = 0, parameters = 0;
         foreach (var type in types.Where(t => t.GetCustomAttributes(true).OfType<HarmonyAttribute>().Any()).OrderBy(t => t.FullName, StringComparer.Ordinal))
         {
@@ -59,6 +61,7 @@ internal static class PatchTargetTests
                         : AccessTools.DeclaredMethod(info.declaringType, info.methodName, info.argumentTypes);
                 }
                 if (original == null) throw new Exception($"Patch target not found in the game: {where}.");
+                resolved.Add((original, patch));
                 targets++;
                 string target = $"{original.DeclaringType!.FullName}.{original.Name}";
                 if (patch.Name == "Transpiler") continue;
@@ -105,6 +108,50 @@ internal static class PatchTargetTests
             }
         }
         Console.WriteLine($"PASS: {targets} Harmony patch targets in {classes} patch classes resolve against installed game assemblies, with {fields} injected fields and {parameters} named parameters matching.");
+        return resolved;
+    }
+
+    // LateGamePerformance runs two of these patches on worker threads and trusts them by (target "Type.Method",
+    // Harmony id, patch "Namespace.Type.Method"): DistrictCounts.ReviewedPatches and SaveGuard.ReviewedPatches (read at
+    // LateGamePerformance 0.4.26). A rename makes it stand down to the main thread, and so does any other patch on
+    // AllowedAmount, a Save, or the Inventory methods its counting workers call.
+    private static void LateGamePerformanceContract(Assembly mod, List<(MethodBase Target, MethodInfo Patch)> patches)
+    {
+        const string Id = "kyler.mixedstorage";
+        var reviewed = new[] { ("SingleGoodAllower.AllowedAmount", "MixedStorage.LimitPatch.Prefix"), ("SingleGoodAllower.Save", "MixedStorage.SavePatch.Postfix") };
+        var inventoryWorkerMethods = new[] { "GetCapacity", "LimitedAmount", "Gives", "AmountInStock", "get_Stock", "get_PublicInput" };
+        string id = HarmonyId(mod);
+        if (id != Id) throw new Exception($"ModStarter patches as Harmony id \"{id}\", but LateGamePerformance trusts MixedStorage's patches as \"{Id}\".");
+        var found = patches.Select(p => (Target: p.Target.DeclaringType!.Name + "." + p.Target.Name, Patch: p.Patch.DeclaringType!.FullName + "." + p.Patch.Name, Method: p.Target)).ToList();
+        foreach (var entry in reviewed)
+            if (!found.Any(p => (p.Target, p.Patch) == entry))
+                throw new Exception($"LateGamePerformance trusts {entry.Item2} on {entry.Item1}, which the mod no longer has; update LateGamePerformance's ReviewedPatches together with the rename.");
+        foreach (var p in found)
+        {
+            bool watched = p.Method.Name == "AllowedAmount" || p.Method.Name == "Save"
+                || p.Method.DeclaringType!.FullName == "Timberborn.InventorySystem.Inventory" && inventoryWorkerMethods.Contains(p.Method.Name);
+            if (watched && !reviewed.Contains((p.Target, p.Patch)))
+                throw new Exception($"{p.Patch} patches {p.Target}, which LateGamePerformance runs on worker threads only while every patch on it was reviewed; it would fall back to the main thread.");
+        }
+        Console.WriteLine($"PASS: LateGamePerformance's reviewed patches exist under Harmony id {Id} (LimitPatch.Prefix, SavePatch.Postfix), and no other patch is on the methods its workers call.");
+    }
+
+    // The id ModStarter.StartMod passes to new Harmony(...), read from its IL: ldstr "<id>" directly followed by newobj.
+    private static string HarmonyId(Assembly mod)
+    {
+        var start = mod.GetType("MixedStorage.ModStarter", true)!.GetMethod("StartMod")!;
+        var il = start.GetMethodBody()!.GetILAsByteArray()!;
+        var ids = new List<string>();
+        for (int i = 0; i + 10 <= il.Length; i++)
+        {
+            if (il[i] != 0x72 || il[i + 5] != 0x73 || il[i + 4] != 0x70) continue;
+            MethodBase constructor;
+            try { constructor = start.Module.ResolveMethod(BitConverter.ToInt32(il, i + 6)); }
+            catch (ArgumentException) { continue; }
+            if (constructor?.DeclaringType?.FullName == "HarmonyLib.Harmony") ids.Add(start.Module.ResolveString(BitConverter.ToInt32(il, i + 1)));
+        }
+        if (ids.Count != 1) throw new Exception($"ModStarter.StartMod creates {ids.Count} Harmony instances with a literal id; expected one. Update this check.");
+        return ids[0];
     }
 
     private static void ReflectedMembers(Type[] types, string managed)
