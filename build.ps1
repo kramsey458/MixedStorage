@@ -8,19 +8,16 @@ foreach ($file in @((Join-Path $GameDir 'Timberborn_Data\Managed\Timberborn.Inve
     if (!(Test-Path -LiteralPath $file -PathType Leaf)) { throw "Required dependency not found: $file" }
 }
 # Directory.Build.props sets the version both DLLs are built with; the manifest the game reads must say the same.
-$versionNodes = @(([xml](Get-Content -LiteralPath (Join-Path $PSScriptRoot 'Directory.Build.props') -Raw)).SelectNodes('/Project/PropertyGroup/Version'))
-if ($versionNodes.Count -ne 1) { throw 'Directory.Build.props must set <Version> exactly once.' }
-$version = $versionNodes[0].InnerText.Trim()
-$manifestVersion = (Get-Content -LiteralPath (Join-Path $PSScriptRoot 'packaging\MixedStorage\version-1.1\manifest.json') -Raw | ConvertFrom-Json).Version
-if ($manifestVersion -cne $version) { throw "manifest.json has Version '$manifestVersion' but Directory.Build.props has '$version'. Set both to the release's version." }
+$version = & (Join-Path $PSScriptRoot 'tests\check-version.ps1')
 dotnet build (Join-Path $PSScriptRoot 'multiplayer\MixedStorage.BeaverBuddies.csproj') -p:BootstrapBuild=true -c Release "-p:GameDir=$GameDir" "-p:HarmonyPath=$HarmonyPath" "-p:BeaverBuddiesPath=$BeaverBuddiesPath"
 if ($LASTEXITCODE -ne 0) { throw 'Mod build failed.' }
 dotnet build (Join-Path $PSScriptRoot 'source\MixedStorage.csproj') -c Release "-p:GameDir=$GameDir" "-p:HarmonyPath=$HarmonyPath"
 if ($LASTEXITCODE -ne 0) { throw 'Bundled build failed.' }
-# A <Version> set again in a .csproj would win over Directory.Build.props. The SDK may append '+<commit>'.
+# Anything else that sets the version (a Directory.Build.targets, a -p:Version) would also win over Directory.Build.props.
+# The SDK may append '+<commit>'.
 foreach ($dll in @('multiplayer\bin\Release\netstandard2.1\MixedStorage.MultiplayerBridge.dll', 'source\bin\Release\netstandard2.1\MixedStorage.dll')) {
     $built = "$([Diagnostics.FileVersionInfo]::GetVersionInfo((Join-Path $PSScriptRoot $dll)).ProductVersion)"
-    if ($built -cne $version -and !$built.StartsWith("$version+", [StringComparison]::Ordinal)) { throw "$dll was built as version '$built', not '$version' from Directory.Build.props. Remove any <Version> set in a .csproj." }
+    if ($built -cne $version -and !$built.StartsWith("$version+", [StringComparison]::Ordinal)) { throw "$dll was built as version '$built', not '$version' from Directory.Build.props. Set the version only in Directory.Build.props." }
 }
 dotnet build (Join-Path $PSScriptRoot 'loading-tests\StubBeaverBuddies\StubBeaverBuddies.csproj') -c Release "-p:GameDir=$GameDir"
 if ($LASTEXITCODE -ne 0) { throw 'Stub BeaverBuddies build failed.' }

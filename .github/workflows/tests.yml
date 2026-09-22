@@ -3,7 +3,8 @@ name: Tests
 # The mod builds against the game's own assemblies, which cannot be redistributed, so it is not built here, and the
 # loading and visual tests (which load those assemblies) run only in build.ps1. tests/AllocationTests.csproj compiles
 # only source/AllocationPlan.cs and references no game or package DLLs, so the allocation assertions run here, and so
-# do the website's download-button checks (tests/test-site.mjs: Node only, no packages, no network).
+# do the website's download-button checks (tests/test-site.mjs: Node only, no packages, no network) and the check that
+# the manifest's version matches Directory.Build.props (tests/check-version.ps1, which build.ps1 also runs).
 on:
   push:
     branches: [main]
@@ -36,7 +37,12 @@ jobs:
           node-version: 22
       - name: Allocation tests
         run: dotnet run --project tests/AllocationTests.csproj -c Release
-      # Runs even when the allocation tests failed, so one run reports both.
+      # Runs even when the allocation tests failed, so one run reports every failing step.
       - name: Site checks
         if: ${{ !cancelled() }}
         run: node tests/test-site.mjs
+      # In Windows PowerShell 5.1, which build.ps1 runs under.
+      - name: Version check
+        if: ${{ !cancelled() }}
+        shell: powershell
+        run: .\tests\check-version.ps1

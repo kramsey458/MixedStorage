@@ -12,7 +12,7 @@ Replace example paths with your installation paths. BeaverBuddies is required to
 
 Run allocation checks separately with `dotnet run --project tests/AllocationTests.csproj -c Release`. Use `build.ps1` for the full dependency-aware checks.
 
-The allocation checks need no game files, so GitHub Actions also runs them on every pull request and push to `main` (`.github/workflows/tests.yml`); the loading and visual checks load the game's assemblies and run only in `build.ps1`.
+The allocation checks need no game files, so GitHub Actions also runs them on every pull request and push to `main` (`.github/workflows/tests.yml`), together with the website checks and the version check (`tests/check-version.ps1`); the loading and visual checks load the game's assemblies and run only in `build.ps1`.
 
 ## Allocation and persistence
 
@@ -51,7 +51,7 @@ The mod reuses the installed game's styles and assets: `NineSliceVisualElement` 
 - Nine native rendering API signatures checked against installed game assemblies; the old ambiguous Initialize lookup is reproduced as a regression check.
 - Isolated loading processes with and without BeaverBuddies check eager main-type enumeration, bridge event discovery, delegate installation, repeated initialization, and obsolete-addon rejection. A stub BeaverBuddies with one member missing (`loading-tests/StubBeaverBuddies`) checks that an incompatible build is skipped without stopping startup, that the reason names exactly that member, that a failed bridge is not loaded twice, and that Apply without the bridge only counts as single-player when BeaverBuddies reports no connection.
 
-Loading checks run under .NET, not inside Unity/Mono. They do not establish live multiplayer compatibility. Builds pass without compiler warnings; v0.5.8's layout has been visually verified in game, and v1.0.0 leaves it unchanged. The v1.0.0 Duplicate settings, startup and loading changes have not been exercised in game yet. The mod's startup log line reads its version from the assembly, and both DLLs take theirs from `Directory.Build.props`, so a release bump touches only that file, the manifest, and the README and changelog. `build.ps1` stops before building when the manifest's version differs from `Directory.Build.props`, and before packaging when a built DLL carries another version (a `<Version>` set again in a `.csproj`).
+Loading checks run under .NET, not inside Unity/Mono. They do not establish live multiplayer compatibility. Builds pass without compiler warnings; v0.5.8's layout has been visually verified in game, and v1.0.0 leaves it unchanged. The v1.0.0 Duplicate settings, startup and loading changes have not been exercised in game yet. The mod's startup log line reads its version from the assembly, and both DLLs take theirs from `Directory.Build.props`, so a release bump touches only that file, the manifest, the README and changelog, and the website's Project status note in `site/index.html`. `tests/check-version.ps1`, which `build.ps1` runs before building and CI runs on every pull request, fails when the manifest's version differs from `Directory.Build.props` or a mod `.csproj` sets its own `<Version>`, and `build.ps1` stops before packaging when a built DLL carries another version.
 
 ## Website
 
