@@ -130,8 +130,6 @@ namespace MixedStorage
         }
 
         // Returns the building to the base game's single-good rules; the caller then sets that good.
-        // Every formerly allocated good is announced because its limit changes, and the game caches
-        // which buildings have room for each good.
         public void Deactivate()
         {
             // Without the announcement the building stays mixed (see UnavailableReason), and AllowPatch then keeps
@@ -139,10 +137,20 @@ namespace MixedStorage
             if (!Active || UnavailableReason != null) return;
             var previous = Shares;
             SetShares(null);
-            // While these fire, the building still has its representative good; the visuals must follow
-            // that good (VisualizerPatch), not whichever formerly allocated good is announced last.
+            Announce(previous.Keys);
+        }
+
+        // Announces goods whose limit changed, because the game caches which buildings have room for each good.
+        // Only goods the building accepts: the game limits any other good to 0 whatever the allocation says
+        // (Inventory.LimitedAmount), and a saved allocation can name a good the game no longer knows, which
+        // would throw from InventoryRegistry. While these fire, the building still has its representative good;
+        // the visuals must follow that good (VisualizerPatch), not whichever good is announced last. Without the
+        // announcement method (see UnavailableReason) nothing is announced.
+        private void Announce(IEnumerable<string> goods)
+        {
+            if (NotifyGood == null) return;
             InternalChange = true;
-            try { foreach (string good in previous.Keys) Notify(good); }
+            try { foreach (string good in goods) if (Inventory.Takes(good)) Notify(good); }
             finally { InternalChange = false; }
         }
 
@@ -156,21 +164,25 @@ namespace MixedStorage
 
         public void Load(IEntityLoader loader)
         {
-            // The state mirrors the save, also when the map editor's undo reloads an existing building.
-            if (!loader.TryGetComponent(SaveKey, out var component) || !component.Has(SharesKey))
+            // The state mirrors the save, also when the map editor's undo reloads an existing building. A building
+            // loaded for the first time is never mixed yet, so a mixed one is already in the world: its changed
+            // limits are announced as Apply and Deactivate do, which also sends its visuals back to the native pile
+            // when it leaves mixed mode (MixedAllocationVisualPatch).
+            var previous = Shares;
+            if (!loader.TryGetComponent(SaveKey, out var component) || !component.Has(SharesKey)) { if (Active) SetShares(null); }
+            else
             {
-                if (Active) SetShares(null);
-                return;
+                string saved = component.Get(SharesKey);
+                try { SetShares(AllocationPlan.Deserialize(saved)); }
+                catch (FormatException ex)
+                {
+                    // One unreadable building must not stop the whole save from loading. It keeps the
+                    // single good the base game saved alongside it, and the warning says what was lost.
+                    if (Active) SetShares(null);
+                    Debug.LogWarning("[MixedStorage] Ignoring an unreadable saved allocation for " + Allower.Name + " (" + ex.Message + "): " + saved);
+                }
             }
-            string saved = component.Get(SharesKey);
-            try { SetShares(AllocationPlan.Deserialize(saved)); }
-            catch (FormatException ex)
-            {
-                // One unreadable building must not stop the whole save from loading. It keeps the
-                // single good the base game saved alongside it, and the warning says what was lost.
-                if (Active) SetShares(null);
-                Debug.LogWarning("[MixedStorage] Ignoring an unreadable saved allocation for " + Allower.Name + " (" + ex.Message + "): " + saved);
-            }
+            if (previous != null) Announce(previous.Keys.Union(Shares?.Keys ?? Enumerable.Empty<string>(), StringComparer.Ordinal));
         }
 
         public void Duplicate(StorageState source)

@@ -196,6 +196,9 @@ namespace MixedStorage
         private void Render(StockpileVisualizers owner, StorageState state)
         {
             if (_busy || _failed) return;
+            // A redraw queued before the building left mixed mode, for example when a reload leaves it without an
+            // allocation, finds no shares; the native pile is back.
+            if (!state.Active) { Release(); return; }
             if (_sharesRevision != state.Revision)
             {
                 _shares = SortedShares(state);

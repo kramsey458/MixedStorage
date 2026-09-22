@@ -46,6 +46,7 @@ internal static class GameApiTests
         Console.WriteLine("PASS: reproduced v0.4.0 name-only Initialize lookup failure; typed lookups succeed.");
         Console.WriteLine($"PASS: {checks} native API signatures (rendering, and the goods announcement) resolved against installed game assemblies.");
         GoodsAnnouncement(modPath, allower);
+        AnnouncementTests.Run(Assembly.LoadFrom(modPath), GameType);
     }
 
     // The built mod resolves the goods announcement at startup. If a game update renamed or changed it, the
