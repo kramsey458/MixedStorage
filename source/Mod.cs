@@ -73,28 +73,28 @@ namespace MixedStorage
     {
         static void Postfix(SingleGoodAllower __instance, IEntityLoader entityLoader) => StorageState.Get(__instance)?.Load(entityLoader);
     }
-    // The game's Duplicate settings tool. A mixed source copies its allocation, or leaves the target as it
-    // was when the allocation cannot apply there. Any other source gives the target that building's single
-    // good (or none), as in the base game, so a mixed target leaves mixed mode first; otherwise AllowPatch
-    // would silently keep the old allocation.
+    // The game's Duplicate settings tool (AllocationPlan.PlanCopy). A mixed source copies its allocation. Any
+    // other source gives the target that building's single good (or none), as in the base game, so a mixed
+    // target leaves mixed mode first; otherwise AllowPatch would silently keep the old allocation. A refused
+    // copy leaves the target as it was. BeaverBuddies replays this on every player (DuplicationEvent).
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.DuplicateFrom))]
     internal static class DuplicatePatch
     {
+        [HarmonyPriority(Priority.Last)]
         static bool Prefix(SingleGoodAllower __instance, SingleGoodAllower source, out bool __state)
         {
             __state = false;
             var target = StorageState.Get(__instance);
             if (target == null) return true;
-            var from = StorageState.Get(source);
-            if (from?.Active == true)
+            switch (AllocationPlan.PlanCopy(StorageState.Get(source)?.Shares, source.AllowedGood, target.Active, target, out string error))
             {
-                if (target.CanApply(from.Shares, out string error)) return __state = true;
-                Debug.LogWarning("[MixedStorage] Copied allocations were not applied to " + __instance.Name + ": " + error);
-                return false;
+                case CopyPlan.CopyAllocation: return __state = true;
+                case CopyPlan.LeaveMixed: target.Deactivate(); return true;
+                case CopyPlan.Refuse:
+                    Debug.LogWarning("[MixedStorage] Copied allocations were not applied to " + __instance.Name + ": " + error);
+                    return false;
+                default: return true;
             }
-            // The base game leaves the target unchanged when it does not take the source's good.
-            if (source.AllowedGood == null || target.Inventory.Takes(source.AllowedGood)) target.Deactivate();
-            return true;
         }
 
         static void Postfix(SingleGoodAllower __instance, SingleGoodAllower source, bool __state)

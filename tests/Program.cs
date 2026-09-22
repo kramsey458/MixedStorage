@@ -77,4 +77,52 @@ Check(clipboardPlan["Log"] == 3333, "Editing pasted draft does not mutate copied
 Check(!AllocationPlan.TryPaste(clipboardPlan, new[] { "Bread" }, out var incompatible) && incompatible == null, "Reject incompatible category atomically");
 Check(!AllocationPlan.TryPaste(null, new[] { "Log" }, out _), "Reject empty clipboard");
 Check(!AllocationPlan.TryPaste(new Dictionary<string, int> { ["Log"] = 9999 }, new[] { "Log" }, out _), "Reject invalid copied total");
-Console.WriteLine($"PASS: {assertions:N0} assertions, including 2,000 randomized allocations, 100-good lists, rounding, persistence, validation, and delivery guards.");
+
+// The game's Duplicate settings tool onto a mixed warehouse (DuplicatePatch).
+const string DeliveryError = "Wait for incoming deliveries to finish before lowering their limits.";
+var berriesCarrot = new Dictionary<string, int> { ["Berries"] = 5000, ["Carrot"] = 5000 };
+var target = new FakeStorage(180, "Berries", "Carrot", "Potato");
+target.StockOf["Berries"] = 20;
+target.StockOf["Carrot"] = 30;
+CopyPlan Copy(IReadOnlyDictionary<string, int> shares, string good, bool mixed, out string error) =>
+    AllocationPlan.PlanCopy(shares, good, mixed, target, out error);
+Check(Copy(berriesCarrot, "Berries", true, out string copyError) == CopyPlan.CopyAllocation && copyError == null, "A mixed source copies its allocation");
+Check(Copy(berriesCarrot, "Berries", false, out _) == CopyPlan.CopyAllocation, "A mixed source also copies onto a normal building");
+Check(Copy(new Dictionary<string, int> { ["Log"] = 10000 }, "Log", true, out copyError) == CopyPlan.Refuse &&
+    copyError == "Set unavailable goods to 0% before applying.", "A mixed source with goods the target does not take is refused");
+Check(Copy(null, "Berries", true, out copyError) == CopyPlan.LeaveMixed && copyError == null, "A normal source turns a mixed target back into a normal one");
+Check(Copy(null, null, true, out _) == CopyPlan.LeaveMixed, "A source storing nothing turns a mixed target back into a normal one");
+Check(Copy(null, "Log", true, out _) == CopyPlan.BaseGame, "A good the target does not take is left to the base game, which skips it");
+Check(Copy(null, "Berries", false, out _) == CopyPlan.BaseGame && Copy(null, null, false, out _) == CopyPlan.BaseGame, "A normal target follows the base game");
+// A hauler is bringing 10 Carrot. Leaving mixed mode gives Carrot no room, and Berries none while Carrot is in stock.
+target.IncomingOf["Carrot"] = 10;
+Check(Copy(berriesCarrot, "Berries", true, out _) == CopyPlan.CopyAllocation, "An unchanged Carrot limit still fits its delivery");
+Check(Copy(new Dictionary<string, int> { ["Berries"] = 10000 }, "Berries", true, out copyError) == CopyPlan.Refuse && copyError == DeliveryError,
+    "A copied allocation that drops Carrot waits for the Carrot delivery");
+Check(Copy(null, "Berries", true, out copyError) == CopyPlan.Refuse && copyError == DeliveryError, "Leaving mixed mode for Berries waits for the Carrot delivery");
+Check(Copy(null, null, true, out copyError) == CopyPlan.Refuse && copyError == DeliveryError, "Leaving mixed mode for no good waits for the Carrot delivery");
+Check(Copy(null, "Carrot", true, out copyError) == CopyPlan.Refuse && copyError == DeliveryError, "Carrot has no room either while Berries are in stock");
+Check(Copy(null, "Berries", false, out _) == CopyPlan.BaseGame, "A delivery does not stop the base game's copy onto a normal building");
+target.StockOf.Remove("Berries");
+Check(Copy(null, "Carrot", true, out copyError) == CopyPlan.LeaveMixed && copyError == null, "Once only Carrot is in stock, keeping Carrot fits its delivery");
+Check(Copy(null, "Berries", true, out _) == CopyPlan.Refuse, "Berries still give Carrot no room");
+target.IncomingOf.Remove("Carrot");
+target.IncomingOf["Potato"] = 5;
+Check(Copy(null, "Berries", true, out _) == CopyPlan.Refuse, "A delivery of a good outside the allocation cannot fit either");
+Check(Copy(null, "Potato", true, out _) == CopyPlan.Refuse, "Potato has no room while Carrot is in stock");
+target.StockOf.Remove("Carrot");
+Check(Copy(null, "Potato", true, out _) == CopyPlan.LeaveMixed, "Keeping the delivered good fits once nothing else is in stock");
+Console.WriteLine($"PASS: {assertions:N0} assertions, including 2,000 randomized allocations, 100-good lists, rounding, persistence, validation, copied settings, and delivery guards.");
+
+// A building for the allocation guards: capacity, accepted goods, stock and incoming deliveries.
+sealed class FakeStorage : IStorageContents
+{
+    private readonly string[] _goods;
+    public readonly Dictionary<string, int> StockOf = new(), IncomingOf = new();
+    public FakeStorage(int capacity, params string[] goods) { Capacity = capacity; _goods = goods; }
+    public int Capacity { get; }
+    public IEnumerable<string> Goods => _goods;
+    public bool Takes(string good) => _goods.Contains(good);
+    public int Stock(string good) => StockOf.GetValueOrDefault(good);
+    public int Incoming(string good) => IncomingOf.GetValueOrDefault(good);
+}
