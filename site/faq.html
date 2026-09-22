@@ -50,7 +50,7 @@
 <details class="qa" id="faq-fill"><summary>Does it create goods or fill the building for me?</summary><div class="qa__body"><p>No. Percentages only reserve space. They don't create goods or instantly fill the building. Normal hauling rules decide what arrives and when.</p></div></details>
 <details class="qa" id="faq-buildings"><summary>Which buildings does it support?</summary><div class="qa__body"><p><strong>Folktails:</strong> small, medium, and large warehouses; small, large, and underground piles. <strong>Iron Teeth:</strong> small, medium, and large warehouses; small industrial and large industrial piles.</p><p>Buildings keep their normal accepted goods. Tanks and map-editor reserve storage aren't included. See the <a href="./#buildings">supported buildings table</a>.</p></div></details>
 <details class="qa" id="faq-version"><summary>Which Timberborn version does it need?</summary><div class="qa__body"><p>It's built against Timberborn <strong>1.1.2.4</strong>. Other versions aren't guaranteed to work.</p></div></details>
-<details class="qa" id="faq-prerelease"><summary>Why are some releases marked as pre-releases?</summary><div class="qa__body"><p>Newer builds are published as pre-releases first, and marked as the latest release once they've been checked in game. Automated checks cover the allocation math, geometry, native game API calls, and optional multiplayer loading, but they don't replace live gameplay testing.</p><p>Not sure which to download? The download button on this site always points to the newest release. If you'd rather stick to builds that have been checked in game, choose the one marked <strong>Latest</strong> on the <a href="https://github.com/timbermods/MixedStorage/releases" rel="noopener">releases page</a>.</p></div></details>
+<details class="qa" id="faq-prerelease"><summary>Why are some releases marked as pre-releases?</summary><div class="qa__body"><p>Newer builds are published as pre-releases first, and marked as the latest release once they've been checked in game. Automated checks cover the allocation math, geometry, native game API calls, and optional multiplayer loading, but they don't replace live gameplay testing.</p><p>Not sure which to download? The download button on this site offers the release marked <strong>Latest</strong> on GitHub (or, while there is none, the newest pre-release). To try a newer pre-release, choose it on the <a href="https://github.com/timbermods/MixedStorage/releases" rel="noopener">releases page</a>.</p></div></details>
 <details class="qa" id="faq-bb"><summary>Do I need BeaverBuddies?</summary><div class="qa__body"><p>No. Single-player doesn't need it. You only need BeaverBuddies for multiplayer.</p></div></details>
 <details class="qa" id="faq-existing"><summary>What happens to my existing buildings and saves?</summary><div class="qa__body"><p>Buildings you haven't given an allocation keep working with the game's normal single-good setting, and the editor starts from that setting. Allocations you apply are saved with the building in your save file, and existing MixedStorage allocations are preserved when you upgrade.</p></div></details>
 <details class="qa" id="faq-remove"><summary>What happens if I remove MixedStorage?</summary><div class="qa__body"><p>Close Timberborn, then disable MixedStorage in the mod manager or delete its folder. In saves that used it, each mixed building goes back to storing only its largest allocated good. As when you switch a warehouse to a different good in the base game, haulers empty out the other goods, and may move some of the kept good too, before the building fills with it again.</p></div></details>
@@ -104,7 +104,7 @@
       <div>
         <h2>Project</h2>
         <ul>
-          <li><a href="https://github.com/timbermods/MixedStorage/releases" data-release-link rel="noopener">Downloads &amp; releases</a></li>
+          <li><a href="https://github.com/timbermods/MixedStorage/releases" data-release-href="notes" rel="noopener">Downloads &amp; releases</a></li>
           <li><a href="https://github.com/timbermods/MixedStorage/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
           <li><a href="https://github.com/timbermods/MixedStorage/issues" rel="noopener">Report a problem</a></li>
           <li><a href="https://github.com/timbermods/MixedStorage" rel="noopener">Source on GitHub</a></li>
@@ -116,5 +116,6 @@
   </div>
 </footer>
 <script src="assets/site.js" defer></script>
+<script src="assets/release.js" defer data-repo="timbermods/MixedStorage" data-asset="^MixedStorage-v[\d.]+\.zip$"></script>
 </body>
 </html>

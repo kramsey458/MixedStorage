@@ -2,7 +2,11 @@ using MixedStorage;
 using UnityEngine;
 int count = 0;
 void Check(bool ok, string name) { count++; if (!ok) throw new Exception(name); }
-GameApiTests.Run(args.Length > 0 ? args[0] : @"C:\Program Files (x86)\Steam\steamapps\common\Timberborn");
+// Arguments: game folder, built MixedStorage.dll, BeaverBuddies.dll (all optional).
+string gameDir = args.Length > 0 ? args[0] : @"C:\Program Files (x86)\Steam\steamapps\common\Timberborn";
+string modPath = args.Length > 1 ? args[1] : Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "source", "bin", "Release", "netstandard2.1", "MixedStorage.dll");
+GameApiTests.Run(gameDir, modPath);
+PatchTargetTests.Run(gameDir, modPath, args.Length > 2 ? args[2] : null);
 
 var cellPoints = new[] { new Vector3(-1,0,0), new Vector3(1,0,0), new Vector3(1,1,0), new Vector3(-1,1,0) };
 var cellPattern = new[] {0,1,2,0,2,3};

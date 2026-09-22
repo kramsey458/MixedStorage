@@ -7,10 +7,18 @@ $ErrorActionPreference = 'Stop'
 foreach ($file in @((Join-Path $GameDir 'Timberborn_Data\Managed\Timberborn.InventorySystem.dll'), $HarmonyPath, $BeaverBuddiesPath)) {
     if (!(Test-Path -LiteralPath $file -PathType Leaf)) { throw "Required dependency not found: $file" }
 }
+# Directory.Build.props sets the version both DLLs are built with; the manifest the game reads must say the same.
+$version = & (Join-Path $PSScriptRoot 'tests\check-version.ps1')
 dotnet build (Join-Path $PSScriptRoot 'multiplayer\MixedStorage.BeaverBuddies.csproj') -p:BootstrapBuild=true -c Release "-p:GameDir=$GameDir" "-p:HarmonyPath=$HarmonyPath" "-p:BeaverBuddiesPath=$BeaverBuddiesPath"
 if ($LASTEXITCODE -ne 0) { throw 'Mod build failed.' }
 dotnet build (Join-Path $PSScriptRoot 'source\MixedStorage.csproj') -c Release "-p:GameDir=$GameDir" "-p:HarmonyPath=$HarmonyPath"
 if ($LASTEXITCODE -ne 0) { throw 'Bundled build failed.' }
+# Anything else that sets the version (a Directory.Build.targets, a -p:Version) would also win over Directory.Build.props.
+# The SDK may append '+<commit>'.
+foreach ($dll in @('multiplayer\bin\Release\netstandard2.1\MixedStorage.MultiplayerBridge.dll', 'source\bin\Release\netstandard2.1\MixedStorage.dll')) {
+    $built = "$([Diagnostics.FileVersionInfo]::GetVersionInfo((Join-Path $PSScriptRoot $dll)).ProductVersion)"
+    if ($built -cne $version -and !$built.StartsWith("$version+", [StringComparison]::Ordinal)) { throw "$dll was built as version '$built', not '$version' from Directory.Build.props. Set the version only in Directory.Build.props." }
+}
 dotnet build (Join-Path $PSScriptRoot 'loading-tests\StubBeaverBuddies\StubBeaverBuddies.csproj') -c Release "-p:GameDir=$GameDir"
 if ($LASTEXITCODE -ne 0) { throw 'Stub BeaverBuddies build failed.' }
 $stubBeaverBuddies = Join-Path $PSScriptRoot 'loading-tests\StubBeaverBuddies\bin\Release\netstandard2.1\BeaverBuddies.dll'
@@ -21,8 +29,8 @@ foreach ($mode in @('without', 'with', 'legacy', 'incompatible')) {
 }
 dotnet run --project (Join-Path $PSScriptRoot 'tests\AllocationTests.csproj') -c Release
 if ($LASTEXITCODE -ne 0) { throw 'Allocation tests failed.' }
-dotnet run --project (Join-Path $PSScriptRoot 'visual-tests\VisualTests.csproj') -c Release "-p:GameDir=$GameDir" "-p:HarmonyPath=$HarmonyPath" -- $GameDir
-if ($LASTEXITCODE -ne 0) { throw 'Visual geometry tests failed.' }
+dotnet run --project (Join-Path $PSScriptRoot 'visual-tests\VisualTests.csproj') -c Release "-p:GameDir=$GameDir" "-p:HarmonyPath=$HarmonyPath" -- $GameDir (Join-Path $PSScriptRoot 'source\bin\Release\netstandard2.1\MixedStorage.dll') $BeaverBuddiesPath
+if ($LASTEXITCODE -ne 0) { throw 'Visual and game API tests failed.' }
 $dist = Join-Path $PSScriptRoot 'dist'
 # Start from an empty staging folder so files from earlier builds are never packed.
 $staging = Join-Path $dist 'MixedStorage'

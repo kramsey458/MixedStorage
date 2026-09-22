@@ -19,7 +19,10 @@ namespace MixedStorage
         private static readonly ConditionalWeakTable<SingleGoodAllower, StorageState> States = new ConditionalWeakTable<SingleGoodAllower, StorageState>();
         private static readonly ComponentKey SaveKey = new ComponentKey("MixedStorage.Allocation");
         private static readonly PropertyKey<string> SharesKey = new PropertyKey<string>("Shares");
-        private static readonly MethodInfo NotifyGood = AccessTools.Method(typeof(SingleGoodAllower), "InvokeDisallowedGoodsChangedEvent");
+        // The game's private announcement that a good's limit changed; Inventory and the game's caches of which
+        // buildings have room for each good listen to it. Looked up by signature, so an added overload cannot
+        // make the lookup ambiguous. Null when a game update renamed or changed it (see UnavailableReason).
+        private static readonly MethodInfo NotifyGood = AccessTools.Method(typeof(SingleGoodAllower), "InvokeDisallowedGoodsChangedEvent", new[] { typeof(string) });
         private static readonly HashSet<string> SupportedTemplates = new HashSet<string>(StringComparer.Ordinal)
         {
             "SmallWarehouse.Folktails", "MediumWarehouse.Folktails", "LargeWarehouse.Folktails",
@@ -27,6 +30,18 @@ namespace MixedStorage
             "SmallPile.Folktails", "LargePile.Folktails", "UndergroundPile.Folktails",
             "SmallIndustrialPile.IronTeeth", "LargeIndustrialPile.IronTeeth"
         };
+
+        // Set when the installed game lacks that announcement. Changing an allocation without it would set the
+        // new shares but leave the game unaware of the new limits, so allocations cannot change: Apply and copies
+        // are refused with this reason and mixed buildings stay mixed. Saved allocations still limit their
+        // buildings, and the game still starts; ModStarter logs the reason.
+        internal static string UnavailableReason => NotifyGood != null ? null :
+            "MixedStorage cannot change allocations with this game version: the game no longer has SingleGoodAllower.InvokeDisallowedGoodsChangedEvent(string). " +
+            "Existing allocations still apply. Install the MixedStorage version made for this game version.";
+
+        // Why a Duplicate settings copy from source (null when that building has no mixed-storage state) onto this
+        // building must be refused, or null: while allocations are frozen, no copy may set or leave one.
+        internal string FrozenCopyReason(StorageState source) => Active || source?.Active == true ? UnavailableReason : null;
 
         public readonly SingleGoodAllower Allower;
         public readonly Inventory Inventory;
@@ -55,6 +70,8 @@ namespace MixedStorage
 
         public static StorageState Get(BaseComponent entity) => Get(entity.GetComponent<SingleGoodAllower>());
 
+        // Also runs on LateGamePerformance's worker threads, one worker per storage (see LimitPatch). Shares is only
+        // replaced on the main thread, never changed in place.
         public int Limit(string good)
         {
             if (_limits == null || _cachedCapacity != Inventory.Capacity)
@@ -74,7 +91,11 @@ namespace MixedStorage
             return draft;
         }
 
-        public bool CanApply(IReadOnlyDictionary<string, int> draft, out string error) => AllocationPlan.CanApply(draft, this, out error);
+        public bool CanApply(IReadOnlyDictionary<string, int> draft, out string error)
+        {
+            error = UnavailableReason;
+            return error == null && AllocationPlan.CanApply(draft, this, out error);
+        }
 
         int IStorageContents.Capacity => Inventory.Capacity;
         IEnumerable<string> IStorageContents.Goods { get { foreach (string good in Inventory.InputGoods) yield return good; } }
@@ -113,7 +134,9 @@ namespace MixedStorage
         // which buildings have room for each good.
         public void Deactivate()
         {
-            if (!Active) return;
+            // Without the announcement the building stays mixed (see UnavailableReason), and AllowPatch then keeps
+            // the base game's copy from switching its good.
+            if (!Active || UnavailableReason != null) return;
             var previous = Shares;
             SetShares(null);
             // While these fire, the building still has its representative good; the visuals must follow
@@ -125,6 +148,7 @@ namespace MixedStorage
 
         private void Notify(string good) => NotifyGood.Invoke(Allower, new object[] { good });
 
+        // Also runs on LateGamePerformance's save workers (see SavePatch).
         public void Save(IEntitySaver saver)
         {
             if (Active) saver.GetComponent(SaveKey).Set(SharesKey, AllocationPlan.Serialize(Shares));
