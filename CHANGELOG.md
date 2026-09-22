@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.0.0
+
+First official release. Everything from v0.5.8, plus fixes from a code review before release.
+
+- The game's Duplicate settings tool now works both ways. Copying from a mixed building still copies its percentages, and a target that cannot take them is left as it was. Copying from a normal building, or one set to store nothing, now turns a mixed building back into a normal one; before, the mixed allocation silently stayed. This is also the way to leave mixed storage.
+- Package the download so it extracts correctly on macOS and Linux. Earlier zips used Windows-only `\` folder separators.
+- If the installed BeaverBuddies is a build MixedStorage cannot work with, say what is missing in Player.log at startup and refuse multiplayer Apply with that reason, instead of Apply silently doing nothing. The game still starts. Any other Apply error is shown in the panel.
+- A damaged saved allocation no longer stops the whole save from loading; that building keeps its normal single good and the log says what was skipped.
+- The building list says "Mixed (1 good)". Remove the unused v0.4 triangle clipper. README covers removing the mod and notes that the mod's own text is English-only.
+
 ## v0.5.8
 
 - Keep the dev-mode (cheats) panel fully visible below the allocation editor, so its buttons, such as "Finish now" on an unfinished building, are no longer pushed off the bottom of the screen. The editor already left room for the Construction site panel; it now leaves room for the dev-mode panel as well. Layout is unchanged when dev mode is off.

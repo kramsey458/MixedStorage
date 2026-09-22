@@ -4,9 +4,9 @@
 
 Divide a building's capacity by percentage. For example, a 1,200-capacity warehouse can reserve **50% for carrots (600)** and **50% for gears (600)**. Percentages reserve space; they do not create goods or instantly fill the building.
 
-**[Download MixedStorage v0.5.8](https://github.com/timbermods/MixedStorage/releases/download/v0.5.8/MixedStorage-v0.5.8.zip)** · [Release notes](https://github.com/timbermods/MixedStorage/releases/tag/v0.5.8) · [Report a problem](https://github.com/timbermods/MixedStorage/issues) · [Website](https://timbermods.github.io/MixedStorage/)
+**[Download MixedStorage v1.0.0](https://github.com/timbermods/MixedStorage/releases/download/v1.0.0/MixedStorage-v1.0.0.zip)** · [Release notes](https://github.com/timbermods/MixedStorage/releases/tag/v1.0.0) · [Report a problem](https://github.com/timbermods/MixedStorage/issues) · [Website](https://timbermods.github.io/MixedStorage/)
 
-> **v0.5.8** is the current release, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer.
+> **v1.0.0** is the current release, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer.
 
 <img width="625" height="1112" alt="image" src="https://github.com/user-attachments/assets/862e5c13-33a0-47ed-9515-9e2dffefe3a9" />
 
@@ -22,7 +22,7 @@ Divide a building's capacity by percentage. For example, a 1,200-capacity wareho
 
 ## Install
 
-1. Download **MixedStorage-v0.5.8.zip** above. On the release page, choose that file under **Assets**, not **Source code**.
+1. Download **MixedStorage-v1.0.0.zip** above. On the release page, choose that file under **Assets**, not **Source code**.
 2. Close Timberborn. Extract the ZIP's **MixedStorage** folder into your Timberborn **Mods** folder—normally `Documents\Timberborn\Mods` on Windows.
 3. Check that `Documents\Timberborn\Mods\MixedStorage\version-1.1\manifest.json` exists. Avoid an extra nested MixedStorage folder.
 4. Install **Harmony 2.4.1 or newer** if needed. Enable **Harmony** and **MixedStorage** in the game's mod manager, then restart when prompted.
@@ -90,7 +90,7 @@ Applied allocations synchronize through BeaverBuddies. Apply may briefly show a 
 | Paste is rejected | The destination must accept every good with a nonzero copied percentage. |
 | Lower limit is rejected | Wait for incoming deliveries to finish. |
 | Startup mentions the old addon | Remove or disable MixedStorage-BeaverBuddies, then fully restart. |
-| Apply says multiplayer support could not start with the installed BeaverBuddies | Install the BeaverBuddies build named under [Compatibility and testing](#compatibility-and-testing) on every computer. Single-player still works; Player.log names what is missing. |
+| Apply says multiplayer support could not start with the installed BeaverBuddies | Install the BeaverBuddies build named under [Compatibility and testing](#compatibility-and-testing) on every computer. Player.log names what is missing. Single-player usually still works; if even that is refused, disable BeaverBuddies for single-player games. |
 | Apply shows "Apply failed" | Report it with your Player.log; the message and log say what went wrong. |
 | Panel or visuals look wrong | Include a screenshot, resolution/UI scale, building type, and allocations in a report. |
 
@@ -104,7 +104,7 @@ Close Timberborn, then disable MixedStorage in the mod manager or delete its fol
 
 Built against **Timberborn 1.1.2.4**. Multiplayer integration was developed against **BeaverBuddies Stability Preview for Timberborn 1.1**; other builds are not guaranteed compatible.
 
-Players have reported successful use of earlier builds, and the **v0.5.8 layout, including the dev-mode panel, and the v0.5.7 storage visuals have been verified in game**. Automated allocation, geometry, native API, and optional multiplayer loading checks also pass, but these do not replace live gameplay testing.
+Players have reported successful use of earlier builds, and the **v0.5.8 layout, including the dev-mode panel, and the v0.5.7 storage visuals have been verified in game**; v1.0.0 leaves both unchanged. The v1.0.0 changes (Duplicate settings leaving mixed storage, error messages, and loading damaged saves) have not been played in game yet. Automated allocation, geometry, native API, and optional multiplayer loading checks also pass, but these do not replace live gameplay testing.
 
 See the [changelog](CHANGELOG.md) for version history and [developer notes](docs/DEVELOPMENT.md) for build instructions and technical details.
 

@@ -22,7 +22,7 @@ namespace MixedStorage
             if (OptionalMultiplayer.Failure != null)
                 Debug.LogError("[MixedStorage] " + OptionalMultiplayer.UnavailableReason + "\n" + OptionalMultiplayer.Failure);
             new Harmony("kyler.mixedstorage").PatchAll(typeof(ModStarter).Assembly);
-            Debug.Log("[MixedStorage] 0.5.8 loaded; warehouse and pile allocations for Timberborn 1.1.2.4.");
+            Debug.Log("[MixedStorage] " + typeof(ModStarter).Assembly.GetName().Version.ToString(3) + " loaded; warehouse and pile allocations for Timberborn 1.1.2.4.");
         }
     }
 
