@@ -31,6 +31,8 @@ namespace MixedStorage
         {
             public string Id;
             public string Name;
+            public bool Accepted;
+            public Label NameLabel;
             public VisualElement Root;
             public TextField Percent;
             public Label Limit;
@@ -258,7 +260,7 @@ namespace MixedStorage
             _contentsSummary.Add(_contentsEmpty);
             foreach (var id in _draft.Keys.OrderBy(DisplayName, StringComparer.CurrentCultureIgnoreCase).ThenBy(x => x, StringComparer.Ordinal))
             {
-                var row = new Row { Id = id, Name = DisplayName(id), Root = Horizontal(), Valid = true };
+                var row = new Row { Id = id, Name = DisplayName(id), Accepted = _state.Inventory.Takes(id), Root = Horizontal(), Valid = true };
                 CreateSummaryCard(row);
                 row.Root.style.paddingTop = row.Root.style.paddingBottom = 1;
                 row.Root.style.borderBottomWidth = 1;
@@ -274,9 +276,11 @@ namespace MixedStorage
                 details.style.flexBasis = 0;
                 details.style.flexShrink = 1;
                 details.style.minWidth = 0;
-                var name = Text(row.Name, 13);
-                name.style.whiteSpace = WhiteSpace.Normal;
-                details.Add(name);
+                // A saved allocation can name a good this building no longer accepts; a good the game no longer
+                // knows is already named "(unavailable)".
+                row.NameLabel = Text(row.Name + (row.Accepted || !_goods.HasGood(id) ? "" : " (not accepted here)"), 13);
+                row.NameLabel.style.whiteSpace = WhiteSpace.Normal;
+                details.Add(row.NameLabel);
                 row.Stock = Text("", 11);
                 row.Stock.style.color = Muted;
                 details.Add(row.Stock);
@@ -347,16 +351,15 @@ namespace MixedStorage
 
         private void Validate()
         {
-            bool validFields = _rows.All(x => x.Valid);
-            long total = _draft.Values.Sum(x => (long)x);
-            bool valid = validFields && AllocationPlan.IsValid(_draft) && _draft.All(x => x.Value == 0 || _state.Inventory.Takes(x.Key));
+            var (valid, status) = AllocationPlan.DraftStatus(_draft, _state.Inventory.Takes, _rows.All(x => x.Valid));
             _apply.SetEnabled(valid && !_state.Pending);
             _copy.SetEnabled(valid);
             _paste.SetEnabled(_copiedAllocation != null && !_state.Pending);
-            _total.text = !validFields ? "Enter valid percentages (0–100, 2 decimals)" :
-                total == AllocationPlan.Total ? "100% / 100% allocated" :
-                (total / 100m).ToString("0.##") + "% / 100% — " + (Math.Abs(total - AllocationPlan.Total) / 100m).ToString("0.##") + (total < AllocationPlan.Total ? "% remaining" : "% over");
+            _total.text = status;
             _total.style.color = valid ? Green : Error;
+            // Point at the goods that keep Apply off.
+            foreach (var row in _rows)
+                row.NameLabel.style.color = !row.Accepted && _draft[row.Id] > 0 ? new StyleColor(Error) : new StyleColor(StyleKeyword.Null);
             _preview = valid ? AllocationPlan.Capacities(_draft, _state.Inventory.Capacity) : null;
             foreach (var row in _rows) row.Limit.text = _preview != null ? _preview[row.Id].ToString() : "—";
             int zeroSlots = _preview == null ? 0 : _draft.Count(x => x.Value > 0 && _preview[x.Key] == 0);

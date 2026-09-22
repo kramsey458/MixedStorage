@@ -18,7 +18,7 @@ Percentages use integer units totaling 10,000. Whole-item limits use largest-rem
 
 The game's Duplicate settings tool calls `SingleGoodAllower.DuplicateFrom`. A mixed source applies its allocation to the target through the same checks as Apply. They run before the base game's copy, so when they reject it the whole copy is skipped and logged, and the target is left as it was whether or not it was mixed. Any other source gives the target that building's single good, or none, as in the base game, so a mixed target first leaves mixed mode (`StorageState.Deactivate`). That is the only way back to the base game's rules. Leaving mixed mode announces every formerly allocated good, because the game's `InventoryRegistry` caches which buildings have room for each good and only updates a good when it is announced. During those announcements the visuals are pointed at the representative good, so the pile keeps showing what it holds. Loading also mirrors the save: a building loaded without an allocation (for example by the map editor's undo) leaves mixed mode.
 
-Persistence uses the MixedStorage mod ID and `MixedStorage.Allocation` save key. An unreadable saved allocation is logged and ignored, so the building keeps the single good the base game saved alongside it instead of stopping the whole save from loading. Applying settings uses the multiplayer command path when available.
+Persistence uses the MixedStorage mod ID and `MixedStorage.Allocation` save key. An unreadable saved allocation is logged and ignored, so the building keeps the single good the base game saved alongside it instead of stopping the whole save from loading. A readable one can still name a good the building no longer accepts, for example after a goods mod is removed. The editor marks that row "(not accepted here)", or "(unavailable)" when the game no longer knows the good, and until it is set to 0% the total line says "Set unavailable goods to 0% before applying" instead of a red "100% / 100% allocated" (`AllocationPlan.DraftStatus`). Applying settings uses the multiplayer command path when available.
 
 ## Optional DLL loading
 
@@ -42,7 +42,7 @@ The mod reuses the installed game's styles and assets: `NineSliceVisualElement` 
 
 ## Validation
 
-- 16,066 allocation assertions: 2,000 randomized splits, lists up to 100 goods, capacities 20/30/180/200/1000/1200, validation, rounding, persistence (every malformed saved value fails the one way loading handles), delivery guards, and Supply order (2,000 randomized stock levels, each carrying the same good as the unfiltered order it replaced).
+- 17,075 allocation assertions: 2,000 randomized splits, lists up to 100 goods, capacities 20/30/180/200/1000/1200, validation, rounding, persistence (every malformed saved value fails the one way loading handles), delivery guards, Supply order (2,000 randomized stock levels, each carrying the same good as the unfiltered order it replaced), and the editor's total line (1,000 randomized drafts, each allowing Apply exactly as before).
 - All 11 supported template names and storage categories checked against the game's Blueprints.zip.
 - 201 whole-cell partition cases covering boundary ownership, complete topology, compact vertices, per-vertex attributes, and unknown-topology fallback.
 - 400 random piles (plain and rotated/scaled transforms, random section boundaries) whose extracted sections are compared triangle by triangle with the original algorithm that transformed and kept every vertex, plus the whole-mesh fit used for bulk surfaces.
