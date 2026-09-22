@@ -144,6 +144,20 @@ for (int run = 0; run < 2000; run++)
     outcomes.Add(plan);
 }
 Check(outcomes.Count == 4, "Randomized copies reach every outcome");
+
+// What DuplicatePatch does with each plan (AllocationPlan.Steps): only a leave deactivates, only a refusal is logged,
+// and a refusal touches nothing, so a refused copy can neither wipe an allocation nor silently keep a stale one.
+foreach (var plan in Enum.GetValues<CopyPlan>())
+{
+    var steps = AllocationPlan.Steps(plan);
+    Check(((steps & CopySteps.LeaveMixed) != 0) == (plan == CopyPlan.LeaveMixed), "Only leaving mixed mode deactivates the target");
+    Check(((steps & CopySteps.LogRefusal) != 0) == (plan == CopyPlan.Refuse), "Only a refused copy is logged");
+    Check(((steps & CopySteps.ApplyAllocation) != 0) == (plan == CopyPlan.CopyAllocation), "Only a mixed source's allocation is applied");
+}
+Check(AllocationPlan.Steps(CopyPlan.Refuse) == CopySteps.LogRefusal, "A refused copy changes nothing on the target: no leave, no base game copy, no apply");
+Check(AllocationPlan.Steps(CopyPlan.LeaveMixed) == (CopySteps.LeaveMixed | CopySteps.RunBaseGame), "Leaving mixed mode comes first, then the base game gives the target the source's good");
+Check(AllocationPlan.Steps(CopyPlan.CopyAllocation) == (CopySteps.RunBaseGame | CopySteps.ApplyAllocation), "A copied allocation applies after the base game's copy");
+Check(AllocationPlan.Steps(CopyPlan.BaseGame) == CopySteps.RunBaseGame, "Anything else is the base game's copy");
 Console.WriteLine($"PASS: {assertions:N0} assertions, including 2,000 randomized allocations, 2,000 randomized copies checked in both goods orders, 100-good lists, rounding, persistence, validation, copied settings, and delivery guards.");
 
 // A building for the allocation guards: capacity, accepted goods, stock and incoming deliveries.

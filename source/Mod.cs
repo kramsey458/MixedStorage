@@ -73,11 +73,12 @@ namespace MixedStorage
     {
         static void Postfix(SingleGoodAllower __instance, IEntityLoader entityLoader) => StorageState.Get(__instance)?.Load(entityLoader);
     }
-    // The game's Duplicate settings tool (AllocationPlan.PlanCopy). A mixed source copies its allocation. Any
-    // other source gives the target that building's single good (or none), as in the base game, so a mixed
-    // target leaves mixed mode first; otherwise AllowPatch would silently keep the old allocation. A refused
-    // copy keeps the target's allocation or single good; the tool still copies the building's other settings
-    // (the storage mode, for example) separately. BeaverBuddies replays this on every player (DuplicationEvent).
+    // The game's Duplicate settings tool: AllocationPlan.PlanCopy decides and AllocationPlan.Steps says what to
+    // do, both covered by the allocation tests. A mixed source copies its allocation. Any other source gives the
+    // target that building's single good (or none), as in the base game, so a mixed target leaves mixed mode
+    // first; otherwise AllowPatch would silently keep the old allocation. A refused copy keeps the target's
+    // allocation or single good; the tool still copies the building's other settings (the storage mode, for
+    // example) separately. BeaverBuddies replays this on every player (DuplicationEvent).
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.DuplicateFrom))]
     internal static class DuplicatePatch
     {
@@ -87,15 +88,13 @@ namespace MixedStorage
             __state = false;
             var target = StorageState.Get(__instance);
             if (target == null) return true;
-            switch (AllocationPlan.PlanCopy(StorageState.Get(source)?.Shares, source.AllowedGood, target.Active, target, out string error))
-            {
-                case CopyPlan.CopyAllocation: return __state = true;
-                case CopyPlan.LeaveMixed: target.Deactivate(); return true;
-                case CopyPlan.Refuse:
-                    Debug.LogWarning("[MixedStorage] Copied allocations were not applied to " + __instance.Name + ": " + error);
-                    return false;
-                default: return true;
-            }
+            var plan = AllocationPlan.PlanCopy(StorageState.Get(source)?.Shares, source.AllowedGood, target.Active, target, out string error);
+            var steps = AllocationPlan.Steps(plan);
+            if ((steps & CopySteps.LeaveMixed) != 0) target.Deactivate();
+            if ((steps & CopySteps.LogRefusal) != 0)
+                Debug.LogWarning("[MixedStorage] Copied allocations were not applied to " + __instance.Name + ": " + error);
+            __state = (steps & CopySteps.ApplyAllocation) != 0;
+            return (steps & CopySteps.RunBaseGame) != 0;
         }
 
         static void Postfix(SingleGoodAllower __instance, SingleGoodAllower source, bool __state)

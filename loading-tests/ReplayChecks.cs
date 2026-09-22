@@ -28,7 +28,7 @@ internal static class ReplayChecks
             Method("DisallowPatch", "Prefix"), Method("LimitPatch", "Prefix"), Method("VisualizerPatch", "Prefix") };
         var (visited, problems) = Walk(main, roots);
         if (problems.Count > 0) throw new Exception("The replayed Duplicate settings path reads per-player state:\n" + string.Join("\n", problems));
-        foreach (var expected in new[] { "AllocationPlan.PlanCopy", "AllocationPlan.CanApply", "AllocationPlan.CanLeave", "StorageState.Deactivate",
+        foreach (var expected in new[] { "AllocationPlan.PlanCopy", "AllocationPlan.Steps", "AllocationPlan.CanApply", "AllocationPlan.CanLeave", "StorageState.Deactivate",
                      "StorageState.TryApply", "StorageState.Publish", "StorageState.MixedStorage.IStorageContents.Incoming" })
             if (!visited.Contains(expected)) throw new Exception("The replay scan never reached " + expected + ".");
         // Controls: the scan finds per-player state where the mod does use it.

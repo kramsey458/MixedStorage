@@ -20,6 +20,11 @@ namespace MixedStorage
     // What the game's Duplicate settings tool does to a building this mod manages.
     public enum CopyPlan { BaseGame, CopyAllocation, LeaveMixed, Refuse }
 
+    // What DuplicatePatch does for a plan, in this order: leave mixed mode, let the base game copy the single
+    // good, apply the copied allocation afterwards, and log a refusal.
+    [Flags]
+    public enum CopySteps { None = 0, LeaveMixed = 1, RunBaseGame = 2, ApplyAllocation = 4, LogRefusal = 8 }
+
     // Integer hundredths of a percent: validation never depends on float tolerances.
     public static class AllocationPlan
     {
@@ -124,6 +129,21 @@ namespace MixedStorage
             // The base game leaves the target unchanged when it does not take the source's good.
             if (!targetMixed || sourceGood != null && !target.Takes(sourceGood)) return CopyPlan.BaseGame;
             return CanLeave(sourceGood, target, out error) ? CopyPlan.LeaveMixed : CopyPlan.Refuse;
+        }
+
+        // What DuplicatePatch does for each plan, kept here so the allocation tests cover it. A copied allocation
+        // lets the base game give the target the source's representative good first (AllowPatch ignores that on
+        // a mixed target), then applies. A leave happens before the base game's copy, which AllowPatch would
+        // otherwise block. A refusal changes nothing on the target and is logged.
+        public static CopySteps Steps(CopyPlan plan)
+        {
+            switch (plan)
+            {
+                case CopyPlan.CopyAllocation: return CopySteps.RunBaseGame | CopySteps.ApplyAllocation;
+                case CopyPlan.LeaveMixed: return CopySteps.LeaveMixed | CopySteps.RunBaseGame;
+                case CopyPlan.Refuse: return CopySteps.LogRefusal;
+                default: return CopySteps.RunBaseGame;
+            }
         }
 
         public static string Serialize(IReadOnlyDictionary<string, int> shares)
