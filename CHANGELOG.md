@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.1.0
+
+Fixes and checks from a review of v1.0.0. **All co-op players must update together.** Saves load both ways with v1.0.0.
+
+- Copy Settings from a building set to store nothing, such as one just built, now keeps a mixed building's allocation, so copying the storage mode from a new building no longer wipes it. To turn a mixed building back into a normal one, give another building a single good in the goods dropdown of the game's building list and copy from that.
+- Copy Settings no longer turns a mixed building back into a normal one while a delivery already on its way would no longer fit. The building stays mixed and Player.log says why, as for a copied mixed allocation. Its other copied settings, such as the storage mode, still apply.
+- The storage panel explains why Apply is unavailable when a saved allocation includes a good the building no longer accepts: those goods are marked "(not accepted here)" and the total reads "Set unavailable goods to 0% before applying".
+- Mixed storage in Supply mode no longer searches the district for goods it holds none of. Haulers still pick the same goods as before.
+- MixedStorage's patches that replace a game method now run after other mods' patches on that method, so every co-op player runs them in the same order. BeaverBuddies' goods-dropdown events on a mixed building now always reach MixedStorage's refusal on replay instead of sometimes being dropped locally.
+- If a game update removes the method MixedStorage uses to tell the game that a good's limit changed, the game still starts. Player.log says why, existing allocations keep working, and Apply and Copy Settings that would change an allocation are refused with that reason instead of failing partway through.
+- Website: the download buttons offer GitHub's Latest release and always the MixedStorage zip, never another file attached to the release.
+- Development: the version is set once, in Directory.Build.props. The build checks every Harmony patch target, injected field and reflected game member against the installed game, the two patch names LateGamePerformance trusts, and that the replayed Copy Settings path reads only shared simulation state. GitHub Actions runs the allocation, website and version checks on every pull request.
+
 ## v1.0.0
 
 First official release. Everything from v0.5.8, plus fixes from a code review before release.
