@@ -52,8 +52,8 @@ namespace MixedStorage
             __result = Decision.ReleaseNow();
             if (!state.Inventory.Enabled || !__instance.GetComponent<GoodSupplier>().IsSupplying) return false;
             var finder = agent.GetComponent<CarrierInventoryFinder>();
-            foreach (string good in state.Shares.Keys.OrderByDescending(x => state.Inventory.UnreservedAmountInStock(x))
-                         .ThenBy(x => x, StringComparer.Ordinal))
+            // Offer the most stocked goods first; goods with nothing to carry are skipped without a district search.
+            foreach (string good in AllocationPlan.SupplyCandidates(state.Shares.Keys, state.Inventory.UnreservedAmountInStock))
             {
                 if (!finder.TryCarryToAnyInventory(good, state.Inventory, CanGiveTo)) continue;
                 __result = Decision.ReleaseNextTick();

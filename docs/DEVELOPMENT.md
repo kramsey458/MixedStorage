@@ -14,7 +14,7 @@ Run allocation checks separately with `dotnet run --project tests/AllocationTest
 
 ## Allocation and persistence
 
-Percentages use integer units totaling 10,000. Whole-item limits use largest-remainder rounding with ordinal good-ID ordering for ties. Incoming reservations guard against conflicting limit reductions; existing excess stock is preserved. Copy/paste transfers percentages atomically into a draft and rejects incompatible goods. Hauling mode and priority are not copied.
+Percentages use integer units totaling 10,000. Whole-item limits use largest-remainder rounding with ordinal good-ID ordering for ties. Incoming reservations guard against conflicting limit reductions; existing excess stock is preserved. Copy/paste transfers percentages atomically into a draft and rejects incompatible goods. Hauling mode and priority are not copied. In Supply mode a mixed building offers its allocated goods with the most unreserved stock first, ordinal good IDs breaking ties (`AllocationPlan.SupplyCandidates`). Goods without unreserved stock are skipped: the game's search for a building to take one scans the whole district and can only fail, so skipping them changes no outcome.
 
 The game's Duplicate settings tool calls `SingleGoodAllower.DuplicateFrom`. A mixed source applies its allocation to the target through the same checks as Apply. They run before the base game's copy, so when they reject it the whole copy is skipped and logged, and the target is left as it was whether or not it was mixed. Any other source gives the target that building's single good, or none, as in the base game, so a mixed target first leaves mixed mode (`StorageState.Deactivate`). That is the only way back to the base game's rules. Leaving mixed mode announces every formerly allocated good, because the game's `InventoryRegistry` caches which buildings have room for each good and only updates a good when it is announced. During those announcements the visuals are pointed at the representative good, so the pile keeps showing what it holds. Loading also mirrors the save: a building loaded without an allocation (for example by the map editor's undo) leaves mixed mode.
 
@@ -42,7 +42,7 @@ The mod reuses the installed game's styles and assets: `NineSliceVisualElement` 
 
 ## Validation
 
-- 10,061 allocation assertions: 2,000 randomized splits, lists up to 100 goods, capacities 20/30/180/200/1000/1200, validation, rounding, persistence (every malformed saved value fails the one way loading handles), and delivery guards.
+- 16,066 allocation assertions: 2,000 randomized splits, lists up to 100 goods, capacities 20/30/180/200/1000/1200, validation, rounding, persistence (every malformed saved value fails the one way loading handles), delivery guards, and Supply order (2,000 randomized stock levels, each carrying the same good as the unfiltered order it replaced).
 - All 11 supported template names and storage categories checked against the game's Blueprints.zip.
 - 201 whole-cell partition cases covering boundary ownership, complete topology, compact vertices, per-vertex attributes, and unknown-topology fallback.
 - 400 random piles (plain and rotated/scaled transforms, random section boundaries) whose extracted sections are compared triangle by triangle with the original algorithm that transformed and kept every vertex, plus the whole-mesh fit used for bulk surfaces.

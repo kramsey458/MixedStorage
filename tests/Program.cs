@@ -65,6 +65,38 @@ Check(AllocationPlan.Deserialize(AllocationPlan.Serialize(unusual)).Keys.Single(
 Check(AllocationPlan.ConflictsWithDelivery(45, 10, 50), "Reject incoming delivery over new cap");
 Check(!AllocationPlan.ConflictsWithDelivery(40, 10, 50), "Allow delivery exactly to cap");
 Check(!AllocationPlan.ConflictsWithDelivery(70, 0, 50), "Existing excess stock can remain without deletion");
+
+// Supply mode (SupplyPatch) offers the goods with the most unreserved stock first. A good with none has nothing to
+// carry, so the game's district-wide search for a building to take it could only fail: it is not offered.
+string SupplyOrder(IReadOnlyDictionary<string, int> unreserved) =>
+    string.Join(",", AllocationPlan.SupplyCandidates(unreserved.Keys, x => unreserved[x]));
+var supplyStock = new Dictionary<string, int> { ["A"] = 0, ["B"] = 5, ["C"] = 0, ["D"] = 5 };
+Check(SupplyOrder(supplyStock) == "B,D", "Supply offers only goods with unreserved stock, ties in ordinal order; got " + SupplyOrder(supplyStock));
+Check(SupplyOrder(new Dictionary<string, int> { ["Log"] = 1, ["Plank"] = 7, ["Gear"] = 3 }) == "Plank,Gear,Log", "Supply offers the most stock first");
+Check(SupplyOrder(new Dictionary<string, int> { ["b"] = 3, ["a"] = 3, ["B"] = 3 }) == "B,a,b", "Supply ties use ordinal good IDs, not the player's culture");
+Check(SupplyOrder(new Dictionary<string, int> { ["Log"] = -1, ["Plank"] = 0 }) == "" && SupplyOrder(new Dictionary<string, int>()) == "",
+    "Supply offers nothing without unreserved stock");
+// The same carry as the unfiltered order this replaced, for every input. SupplyPatch carries the first offered good
+// that the game's TryCarryToAnyInventory accepts, and that never accepts a good without unreserved stock: it caps
+// the load at that stock (CarryAmountCalculator.AmountToCarry) and fails, reserving nothing, when that is 0.
+var supplyRng = new Random(55);
+var supplyNames = new[] { "A", "a", "B", "b", "Log", "log", "Plank", "Gear", "Bread", "Berries", "Ä", "Mod.Good" };
+int searchesSaved = 0;
+for (int run = 0; run < 2000; run++)
+{
+    var unreserved = supplyNames.OrderBy(_ => supplyRng.Next()).Take(supplyRng.Next(0, supplyNames.Length + 1))
+        .ToDictionary(x => x, _ => supplyRng.Next(-1, 4));
+    var taken = unreserved.Keys.Where(_ => supplyRng.Next(3) > 0).ToHashSet();
+    bool Carries(string good) => unreserved[good] > 0 && taken.Contains(good);
+    var before = unreserved.Keys.OrderByDescending(x => unreserved[x]).ThenBy(x => x, StringComparer.Ordinal).ToList();
+    var after = AllocationPlan.SupplyCandidates(unreserved.Keys, x => unreserved[x]).ToList();
+    Check(before.FirstOrDefault(Carries) == after.FirstOrDefault(Carries), "Supply carries the same good as before");
+    Check(after.SequenceEqual(before.Take(after.Count)) && after.All(x => unreserved[x] > 0), "Supply drops only goods without unreserved stock");
+    Check(after.SequenceEqual(AllocationPlan.SupplyCandidates(unreserved.Keys.Reverse(), x => unreserved[x])), "Supply order is independent of allocation order");
+    int Searches(List<string> order) => order.TakeWhile(x => !Carries(x)).Count() + (order.Any(Carries) ? 1 : 0);
+    searchesSaved += Searches(before) - Searches(after);
+}
+Check(searchesSaved > 0, "The randomized Supply checks include searches the filter skips");
 var maxPlan = AllocationPlan.Max(new[] { "Log", "Plank", "ScrapMetal" }, "Plank");
 Check(maxPlan["Plank"] == 10000 && maxPlan["Log"] == 0 && maxPlan["ScrapMetal"] == 0, "Max clears every other good");
 Reject(() => AllocationPlan.Max(new[] { "Log" }, "Bread"), "Max rejects unavailable good");

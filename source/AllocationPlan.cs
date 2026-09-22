@@ -63,6 +63,14 @@ namespace MixedStorage
             return result;
         }
 
+        // Supply mode's order: most unreserved stock first, with an ordinal good-ID tie break so every multiplayer
+        // peer tries the goods in the same order. A good without unreserved stock is left out. The game's search
+        // for a building to take it scans the whole district, then can only fail, because the load is capped at
+        // that stock; and goods without stock sort last, so leaving them out never changes which good is carried.
+        public static IEnumerable<string> SupplyCandidates(IEnumerable<string> goods, Func<string, int> unreserved) =>
+            goods.Select(x => (Good: x, Stock: unreserved(x))).Where(x => x.Stock > 0)
+                .OrderByDescending(x => x.Stock).ThenBy(x => x.Good, StringComparer.Ordinal).Select(x => x.Good);
+
         public static bool ConflictsWithDelivery(int stock, int incoming, int limit) =>
             incoming > 0 && (long)stock + incoming > limit;
 
