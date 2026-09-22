@@ -12,6 +12,8 @@ Replace example paths with your installation paths. BeaverBuddies is required to
 
 Run allocation checks separately with `dotnet run --project tests/AllocationTests.csproj -c Release`. Use `build.ps1` for the full dependency-aware checks.
 
+The allocation checks need no game files, so GitHub Actions also runs them on every pull request and push to `main` (`.github/workflows/tests.yml`); the loading and visual checks load the game's assemblies and run only in `build.ps1`.
+
 ## Allocation and persistence
 
 Percentages use integer units totaling 10,000. Whole-item limits use largest-remainder rounding with ordinal good-ID ordering for ties. Incoming reservations guard against conflicting limit reductions; existing excess stock is preserved. Copy/paste transfers percentages atomically into a draft and rejects incompatible goods. Hauling mode and priority are not copied.
