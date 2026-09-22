@@ -62,12 +62,10 @@ First official release. Everything from v0.5.8, plus fixes from a code review be
 - Align percentage controls and limits with their headers; wrap the capacity summary and reduce horizontal padding.
 - Widen the editor to 440 UI units, bounded by the viewport, expanding left from the sidebar edge. Preserve the fixed Apply/Revert/total footer and screen-height cap.
 
-
 ## v0.5.1
 
 - Bound the allocation panel to available screen height and scroll its content independently.
 - Keep allocation totals and Apply/Clear/Revert controls outside the scrolling body.
-
 
 ## v0.5.0
 
@@ -76,26 +74,22 @@ First official release. Everything from v0.5.8, plus fixes from a code review be
 - Reject the obsolete separate addon with clear upgrade instructions. Preserve allocation save keys.
 - Add isolated loading tests with and without BeaverBuddies and legacy-addon detection.
 
-
 ## v0.4.3
 
 - Replace triangle clipping with complete native cell selection at allocation boundaries.
 - Validate primary/secondary mesh topology before selecting cells. Fit continuous or unrecognized meshes into their sections without cutting faces.
 - Keep exact gameplay limits; visual proportions approximate whole cells. Add partition and topology regression checks.
 
-
 ## v0.4.2
 
 - Replace the small inline contents summary with readable cards: 30px goods icons, bold names, 19px stored/limit counts, allocation percentages and stock fill bars.
 - Keep incoming and excess counts visible, and bound the summary height for large goods lists.
-
 
 ## v0.4.1 (visual prototype fix)
 
 - Fix ambiguous native method lookup that caused mixed visuals to fall back to one good.
 - Resolve rendering methods by their argument types and validate nine native API signatures against the installed game assemblies.
 - Include full exception details in rendering fallback warnings.
-
 
 ## v0.4.0 (visual prototype)
 
@@ -104,12 +98,10 @@ First official release. Everything from v0.5.8, plus fixes from a code review be
 - Coalesce visual updates to at most five rebuilds per building per second.
 - Add offline mesh-clipping tests. In-game appearance and performance remain unverified.
 
-
 ## v0.3.1
 
 - Add a live top summary of applied percentages, stored quantities and limits for all allocated or stocked goods.
 - Include incoming deliveries and excess stock, independently of search and filters.
-
 
 ## v0.3.0
 
@@ -118,11 +110,9 @@ First official release. Everything from v0.5.8, plus fixes from a code review be
 - Preserve exact percentages and recalculate limits for each destination capacity.
 - Reject incompatible pastes atomically; apply changes through the existing multiplayer event path.
 
-
 ## v0.2.0
 
 - Use MixedStorage naming throughout the mod, multiplayer addon, assemblies, IDs, UI identifiers and allocation save data.
-
 - Add Folktails small, large and underground piles.
 - Add Iron Teeth small and large industrial piles.
 - Preserve each storage building's native accepted goods and capacity.
