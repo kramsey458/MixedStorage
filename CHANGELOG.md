@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.5.8 (pre-release)
+## v0.5.8
 
 - Keep the dev-mode (cheats) panel fully visible below the allocation editor, so its buttons, such as "Finish now" on an unfinished building, are no longer pushed off the bottom of the screen. The editor already left room for the Construction site panel; it now leaves room for the dev-mode panel as well. Layout is unchanged when dev mode is off.
 

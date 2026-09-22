@@ -6,7 +6,7 @@ Divide a building's capacity by percentage. For example, a 1,200-capacity wareho
 
 **[Download MixedStorage v0.5.8](https://github.com/timbermods/MixedStorage/releases/download/v0.5.8/MixedStorage-v0.5.8.zip)** · [Release notes](https://github.com/timbermods/MixedStorage/releases/tag/v0.5.8) · [Report a problem](https://github.com/timbermods/MixedStorage/issues) · [Website](https://timbermods.github.io/MixedStorage/)
 
-> **v0.5.8 is a prerelease**, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer. Recent layout changes still need more in-game testing.
+> **v0.5.8** is the current release, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer.
 
 <img width="625" height="1112" alt="image" src="https://github.com/user-attachments/assets/862e5c13-33a0-47ed-9515-9e2dffefe3a9" />
 
@@ -96,7 +96,7 @@ Applied allocations synchronize through BeaverBuddies. Apply may briefly show a 
 
 Built against **Timberborn 1.1.2.4**. Multiplayer integration was developed against **BeaverBuddies Stability Preview for Timberborn 1.1**; other builds are not guaranteed compatible.
 
-Players have reported successful use of earlier builds, and the **v0.5.7 layout and storage visuals have been verified in game**. Automated allocation, geometry, native API, and optional multiplayer loading checks also pass, but these do not replace live gameplay testing. **The v0.5.8 change to the dev-mode panel has not yet been verified in game.**
+Players have reported successful use of earlier builds, and the **v0.5.8 layout, including the dev-mode panel, and the v0.5.7 storage visuals have been verified in game**. Automated allocation, geometry, native API, and optional multiplayer loading checks also pass, but these do not replace live gameplay testing.
 
 See the [changelog](CHANGELOG.md) for version history and [developer notes](docs/DEVELOPMENT.md) for build instructions and technical details.
 
