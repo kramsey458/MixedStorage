@@ -23,6 +23,14 @@ var main = Assembly.Load(File.ReadAllBytes(mainPath));
 if (main.GetReferencedAssemblies().Any(a => a.Name!.Contains("BeaverBuddies") || a.Name.Contains("MultiplayerBridge")))
     throw new Exception("Main mod has a hard multiplayer dependency.");
 var types = main.GetTypes(); // Same eager enumeration used by Timberborn's mod loader.
+// Lockstep co-op rule: a prefix that replaces a simulation method (returns false) runs after every other prefix on
+// that method, so each player runs them in the same order. Priority.Last is 0.
+foreach (var patch in new[] { "MixedStorage.SupplyPatch", "MixedStorage.ObtainPatch" })
+{
+    var prefix = main.GetType(patch)!.GetMethod("Prefix", BindingFlags.NonPublic | BindingFlags.Static)!;
+    if (!prefix.GetCustomAttributesData().Any(a => a.AttributeType.FullName == "HarmonyLib.HarmonyPriority" && Equals(a.ConstructorArguments[0].Value, 0)))
+        throw new Exception(patch + ".Prefix replaces a simulation method without [HarmonyPriority(Priority.Last)].");
+}
 var init = main.GetType("MixedStorage.OptionalMultiplayer")!.GetMethod("Initialize")!;
 if (mode == "legacy")
 {
