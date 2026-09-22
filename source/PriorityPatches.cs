@@ -77,6 +77,8 @@ namespace MixedStorage
     internal static class MixedDropdownLabelPatch
     {
         static MethodBase TargetMethod() => AccessTools.Method("Timberborn.StockpilesUI.StockpileDropdownProvider:FormatDisplayText");
+        // Replaces the original (returns false): run after any other mod's prefix, like the hauling prefixes above.
+        [HarmonyPriority(Priority.Last)]
         static bool Prefix(BaseComponent __instance, bool selected, ref string __result)
         {
             var state = StorageState.Get(__instance);

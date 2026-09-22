@@ -23,14 +23,21 @@ var main = Assembly.Load(File.ReadAllBytes(mainPath));
 if (main.GetReferencedAssemblies().Any(a => a.Name!.Contains("BeaverBuddies") || a.Name.Contains("MultiplayerBridge")))
     throw new Exception("Main mod has a hard multiplayer dependency.");
 var types = main.GetTypes(); // Same eager enumeration used by Timberborn's mod loader.
-// Lockstep co-op rule: a prefix that replaces a simulation method (returns false) runs after every other prefix on
-// that method, so each player runs them in the same order. Priority.Last is 0.
-foreach (var patch in new[] { "MixedStorage.SupplyPatch", "MixedStorage.ObtainPatch" })
-{
-    var prefix = main.GetType(patch)!.GetMethod("Prefix", BindingFlags.NonPublic | BindingFlags.Static)!;
-    if (!prefix.GetCustomAttributesData().Any(a => a.AttributeType.FullName == "HarmonyLib.HarmonyPriority" && Equals(a.ConstructorArguments[0].Value, 0)))
-        throw new Exception(patch + ".Prefix replaces a simulation method without [HarmonyPriority(Priority.Last)].");
-}
+// Lockstep co-op rule: a prefix that can replace the original (returns false) runs after every other prefix on that
+// method, so each player runs them in the same order. Harmony treats every prefix returning bool as one that can skip
+// the original, so every such prefix of every patch class is checked. Priority.Last is 0.
+bool HasAttribute(MemberInfo member, string name) => member.GetCustomAttributesData().Any(a => a.AttributeType.FullName == "HarmonyLib." + name);
+var replacing = types.Where(t => HasAttribute(t, "HarmonyPatch"))
+    .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly))
+    .Where(m => m.ReturnType == typeof(bool) && (m.Name == "Prefix" || HasAttribute(m, "HarmonyPrefix")))
+    .ToList();
+if (replacing.Count == 0) throw new Exception("No replacing prefixes found; the priority check is not reading the patch classes.");
+var unordered = replacing
+    .Where(m => !m.GetCustomAttributesData().Any(a => a.AttributeType.FullName == "HarmonyLib.HarmonyPriority" && Equals(a.ConstructorArguments[0].Value, 0)))
+    .Select(m => m.DeclaringType!.FullName + "." + m.Name).OrderBy(x => x, StringComparer.Ordinal).ToList();
+if (unordered.Count > 0)
+    throw new Exception(string.Join(", ", unordered) + " can replace the original method without [HarmonyPriority(Priority.Last)].");
+if (mode == "without") Console.WriteLine($"PASS: all {replacing.Count} prefixes that can replace a game method run last.");
 var init = main.GetType("MixedStorage.OptionalMultiplayer")!.GetMethod("Initialize")!;
 if (mode == "legacy")
 {
