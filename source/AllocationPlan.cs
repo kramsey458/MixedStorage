@@ -49,6 +49,20 @@ namespace MixedStorage
             shares.All(x => !string.IsNullOrEmpty(x.Key) && x.Value >= 0 && x.Value <= Total) &&
             shares.Sum(x => (long)x.Value) == Total;
 
+        // The editor's total line, and whether its draft may be applied or copied. A saved allocation can still name a
+        // good this building does not accept, for example after a goods mod was removed. Such a draft can total
+        // 100% and still not apply (StorageState.CanApply), so the line says what to change instead.
+        public static (bool Valid, string Text) DraftStatus(IReadOnlyDictionary<string, int> draft, Func<string, bool> takes, bool fieldsValid)
+        {
+            if (!fieldsValid) return (false, "Enter valid percentages (0–100, 2 decimals)");
+            long total = draft.Values.Sum(x => (long)x);
+            if (total != Total)
+                return (false, (total / 100m).ToString("0.##") + "% / 100% — " + (Math.Abs(total - Total) / 100m).ToString("0.##") +
+                    (total < Total ? "% remaining" : "% over"));
+            if (draft.Any(x => x.Value > 0 && !takes(x.Key))) return (false, "Set unavailable goods to 0% before applying");
+            return (IsValid(draft), "100% / 100% allocated");
+        }
+
         public static Dictionary<string, int> Capacities(IReadOnlyDictionary<string, int> shares, int capacity)
         {
             if (!IsValid(shares)) throw new ArgumentException("Allocations must total exactly 100%.");
@@ -62,6 +76,14 @@ namespace MixedStorage
                 result[item.Key]++;
             return result;
         }
+
+        // Supply mode's order: most unreserved stock first, with an ordinal good-ID tie break so every multiplayer
+        // peer tries the goods in the same order. A good without unreserved stock is left out. The game's search
+        // for a building to take it scans the whole district, then can only fail, because the load is capped at
+        // that stock; and goods without stock sort last, so leaving them out never changes which good is carried.
+        public static IEnumerable<string> SupplyCandidates(IEnumerable<string> goods, Func<string, int> unreserved) =>
+            goods.Select(x => (Good: x, Stock: unreserved(x))).Where(x => x.Stock > 0)
+                .OrderByDescending(x => x.Stock).ThenBy(x => x.Good, StringComparer.Ordinal).Select(x => x.Good);
 
         public static bool ConflictsWithDelivery(int stock, int incoming, int limit) =>
             incoming > 0 && (long)stock + incoming > limit;
