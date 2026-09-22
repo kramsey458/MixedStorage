@@ -24,16 +24,21 @@ if (main.GetReferencedAssemblies().Any(a => a.Name!.Contains("BeaverBuddies") ||
     throw new Exception("Main mod has a hard multiplayer dependency.");
 var types = main.GetTypes(); // Same eager enumeration used by Timberborn's mod loader.
 // Lockstep co-op rule: a prefix that can replace the original (returns false) runs after every other prefix on that
-// method, so each player runs them in the same order. Harmony treats every prefix returning bool as one that can skip
-// the original, so every such prefix of every patch class is checked. Priority.Last is 0.
+// method, so each player runs them in the same order. Priority.Last is 0. In Harmony 2.4.1 only a prefix's bool return
+// can stop the original (__runOriginal is passed by value), so every prefix returning bool is checked. Patch classes
+// and prefixes are found the way PatchAll finds them: any type carrying a HarmonyLib.HarmonyAttribute subclass (not
+// only [HarmonyPatch]), then any declared method named Prefix or marked [HarmonyPrefix]. A method's own
+// [HarmonyPriority] overrides its class's, as PatchClassProcessor merges them.
 bool HasAttribute(MemberInfo member, string name) => member.GetCustomAttributesData().Any(a => a.AttributeType.FullName == "HarmonyLib." + name);
-var replacing = types.Where(t => HasAttribute(t, "HarmonyPatch"))
-    .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly))
+bool IsHarmonyAttribute(Type type) => type != null && (type.FullName == "HarmonyLib.HarmonyAttribute" || IsHarmonyAttribute(type.BaseType));
+object PriorityOf(MemberInfo member) => member.GetCustomAttributesData().FirstOrDefault(a => a.AttributeType.FullName == "HarmonyLib.HarmonyPriority")?.ConstructorArguments[0].Value;
+var replacing = types.Where(t => t.GetCustomAttributesData().Any(a => IsHarmonyAttribute(a.AttributeType)))
+    .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly))
     .Where(m => m.ReturnType == typeof(bool) && (m.Name == "Prefix" || HasAttribute(m, "HarmonyPrefix")))
     .ToList();
 if (replacing.Count == 0) throw new Exception("No replacing prefixes found; the priority check is not reading the patch classes.");
 var unordered = replacing
-    .Where(m => !m.GetCustomAttributesData().Any(a => a.AttributeType.FullName == "HarmonyLib.HarmonyPriority" && Equals(a.ConstructorArguments[0].Value, 0)))
+    .Where(m => !Equals(PriorityOf(m) ?? PriorityOf(m.DeclaringType!), 0))
     .Select(m => m.DeclaringType!.FullName + "." + m.Name).OrderBy(x => x, StringComparer.Ordinal).ToList();
 if (unordered.Count > 0)
     throw new Exception(string.Join(", ", unordered) + " can replace the original method without [HarmonyPriority(Priority.Last)].");
