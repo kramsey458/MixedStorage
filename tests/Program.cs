@@ -118,6 +118,8 @@ Status(new Dictionary<string, int> { ["Log"] = 5000, ["Plank"] = 1000 }, x => x 
     "The total is reported before goods this building does not accept");
 Status(new Dictionary<string, int> { ["A"] = 6000, ["B"] = 5000 }, _ => true, true, false, "110% / 100% — 10% over", "An over-allocated total");
 Status(new Dictionary<string, int>(), _ => true, true, false, "0% / 100% — 100% remaining", "An empty draft");
+Status(new Dictionary<string, int> { ["A"] = 10001, ["B"] = -1 }, _ => true, true, false, "100% / 100% allocated",
+    "A 100% total with a share out of range still cannot be applied");
 CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
 Status(new Dictionary<string, int> { ["A"] = 3333 }, _ => true, true, false, "33,33% / 100% — 66,67% remaining", "The total uses the player's number format");
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;

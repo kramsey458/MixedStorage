@@ -42,7 +42,7 @@ The mod reuses the installed game's styles and assets: `NineSliceVisualElement` 
 
 ## Validation
 
-- 17,075 allocation assertions: 2,000 randomized splits, lists up to 100 goods, capacities 20/30/180/200/1000/1200, validation, rounding, persistence (every malformed saved value fails the one way loading handles), delivery guards, Supply order (2,000 randomized stock levels, each carrying the same good as the unfiltered order it replaced), and the editor's total line (1,000 randomized drafts, each allowing Apply exactly as before).
+- 17,076 allocation assertions: 2,000 randomized splits, lists up to 100 goods, capacities 20/30/180/200/1000/1200, validation, rounding, persistence (every malformed saved value fails the one way loading handles), delivery guards, Supply order (2,000 randomized stock levels, each carrying the same good as the unfiltered order it replaced), and the editor's total line (1,000 randomized drafts, each allowing Apply exactly as before).
 - All 11 supported template names and storage categories checked against the game's Blueprints.zip.
 - 201 whole-cell partition cases covering boundary ownership, complete topology, compact vertices, per-vertex attributes, and unknown-topology fallback.
 - 400 random piles (plain and rotated/scaled transforms, random section boundaries) whose extracted sections are compared triangle by triangle with the original algorithm that transformed and kept every vertex, plus the whole-mesh fit used for bulk surfaces.
