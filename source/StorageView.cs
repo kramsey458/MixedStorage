@@ -487,13 +487,17 @@ namespace MixedStorage
                 _panel.style.height = height;
         }
 
-        // The game stacks its own fragments under this one in the same column, such as the construction
-        // site's materials. Reserve their height so they stay on screen instead of being pushed past its bottom.
+        // The game stacks its own panels under this one in the same column: the construction site's
+        // materials (a sibling fragment) and, with dev mode on, the debug panel with buttons like
+        // "Finish now" (DiagnosticFragments, a sibling of Fragments directly under the EntityPanel).
+        // Reserve their height so they stay on screen instead of being pushed past its bottom.
+        // The walk includes the EntityPanel's own children; its absolutely positioned ones (the description
+        // hider and the side fragments) take no space and are skipped below.
         private float SpaceBelow()
         {
             if (_entityPanel == null) return 0;
             float below = 0;
-            for (var node = _panel; node.parent != null && node.parent != _entityPanel; node = node.parent)
+            for (var node = _panel; node != _entityPanel && node.parent != null; node = node.parent)
             {
                 var parent = node.parent;
                 float edge = node.layout.yMax;
