@@ -2,7 +2,8 @@ name: Tests
 
 # The mod builds against the game's own assemblies, which cannot be redistributed, so it is not built here, and the
 # loading and visual tests (which load those assemblies) run only in build.ps1. tests/AllocationTests.csproj compiles
-# only source/AllocationPlan.cs and references no game or package DLLs, so the allocation assertions run here.
+# only source/AllocationPlan.cs and references no game or package DLLs, so the allocation assertions run here, and so
+# do the website's download-button checks (tests/test-site.mjs: Node only, no packages, no network).
 on:
   push:
     branches: [main]
@@ -30,5 +31,12 @@ jobs:
       # the one just installed, on the runner only (a global.json in the repository would also pin mod builds).
       - name: Pin the .NET 8 SDK
         run: dotnet new globaljson --sdk-version ${{ steps.dotnet.outputs.dotnet-version }} --force
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
       - name: Allocation tests
         run: dotnet run --project tests/AllocationTests.csproj -c Release
+      # Runs even when the allocation tests failed, so one run reports both.
+      - name: Site checks
+        if: ${{ !cancelled() }}
+        run: node tests/test-site.mjs
