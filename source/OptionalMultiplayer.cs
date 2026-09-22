@@ -11,9 +11,15 @@ namespace MixedStorage
         private static bool _started;
         private static bool _resolverInstalled;
 
+        // Set when BeaverBuddies is installed but the bridge could not start. The game still starts and
+        // single-player allocations still work; multiplayer Apply is refused with this message.
+        public static string UnavailableReason { get; private set; }
+        public static Exception Failure { get; private set; }
+
         public static bool Initialize()
         {
             if (_started) return true;
+            if (Failure != null) return false;
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             if (assemblies.Any(a => a.GetName().Name == "MixedStorage.BeaverBuddies"))
                 throw new InvalidOperationException("MixedStorage now includes multiplayer support. Remove or disable the old MixedStorage-BeaverBuddies addon and restart Timberborn.");
@@ -38,9 +44,12 @@ namespace MixedStorage
                     }
                     catch (Exception ex)
                     {
-                        // Without the bridge, allocations would not synchronize and players would desync.
-                        throw new InvalidOperationException("MixedStorage's multiplayer support does not work with the installed BeaverBuddies version (" +
-                            ex.GetBaseException().Message + "). Install the BeaverBuddies version named in MixedStorage's README, or disable BeaverBuddies.", ex);
+                        // Throwing here would stop every later mod and the game from starting. Without the
+                        // bridge, AllocationCommands refuses to apply in multiplayer, so nobody desyncs.
+                        Failure = ex;
+                        UnavailableReason = "MixedStorage's multiplayer support could not start with the installed BeaverBuddies (" +
+                            ex.GetBaseException().Message + "). Install the BeaverBuddies version named in MixedStorage's README on every computer.";
+                        return false;
                     }
                     _started = true;
                     return true;

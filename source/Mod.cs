@@ -19,6 +19,8 @@ namespace MixedStorage
         public void StartMod(IModEnvironment environment)
         {
             OptionalMultiplayer.Initialize();
+            if (OptionalMultiplayer.Failure != null)
+                Debug.LogError("[MixedStorage] " + OptionalMultiplayer.UnavailableReason + "\n" + OptionalMultiplayer.Failure);
             new Harmony("kyler.mixedstorage").PatchAll(typeof(ModStarter).Assembly);
             Debug.Log("[MixedStorage] 0.5.8 loaded; warehouse and pile allocations for Timberborn 1.1.2.4.");
         }
@@ -71,22 +73,34 @@ namespace MixedStorage
     {
         static void Postfix(SingleGoodAllower __instance, IEntityLoader entityLoader) => StorageState.Get(__instance)?.Load(entityLoader);
     }
-    // The game's Duplicate settings tool. A mixed source copies its allocation. Any other source gives
-    // the target that building's single good (or none), as in the base game, so a mixed target leaves
-    // mixed mode first; otherwise AllowPatch would silently keep the old allocation.
+    // The game's Duplicate settings tool. A mixed source copies its allocation, or leaves the target as it
+    // was when the allocation cannot apply there. Any other source gives the target that building's single
+    // good (or none), as in the base game, so a mixed target leaves mixed mode first; otherwise AllowPatch
+    // would silently keep the old allocation.
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.DuplicateFrom))]
     internal static class DuplicatePatch
     {
-        static void Prefix(SingleGoodAllower __instance, SingleGoodAllower source)
+        static bool Prefix(SingleGoodAllower __instance, SingleGoodAllower source, out bool __state)
         {
+            __state = false;
             var target = StorageState.Get(__instance);
-            if (target?.Active != true || StorageState.Get(source)?.Active == true) return;
+            if (target == null) return true;
+            var from = StorageState.Get(source);
+            if (from?.Active == true)
+            {
+                if (target.CanApply(from.Shares, out string error)) return __state = true;
+                Debug.LogWarning("[MixedStorage] Copied allocations were not applied to " + __instance.Name + ": " + error);
+                return false;
+            }
             // The base game leaves the target unchanged when it does not take the source's good.
-            if (source.AllowedGood != null && !target.Inventory.Takes(source.AllowedGood)) return;
-            target.Deactivate();
+            if (source.AllowedGood == null || target.Inventory.Takes(source.AllowedGood)) target.Deactivate();
+            return true;
         }
 
-        static void Postfix(SingleGoodAllower __instance, SingleGoodAllower source) => StorageState.Get(__instance)?.Duplicate(StorageState.Get(source));
+        static void Postfix(SingleGoodAllower __instance, SingleGoodAllower source, bool __state)
+        {
+            if (__state) StorageState.Get(__instance).Duplicate(StorageState.Get(source));
+        }
     }
     [HarmonyPatch(typeof(StockpileVisualizers), "OnDisallowedGoodsChanged")]
     internal static class VisualizerPatch
@@ -94,7 +108,8 @@ namespace MixedStorage
         static bool Prefix(StockpileVisualizers __instance, ref DisallowedGoodsChangedEventArgs e)
         {
             var state = StorageState.Get(__instance);
-            if (state?.Active != true) return true;
+            // While the mod announces goods (applying or leaving mixed mode), show the representative good.
+            if (state == null || !state.Active && !state.InternalChange) return true;
             if (!state.Allower.HasAllowedGood) return false;
             e = new DisallowedGoodsChangedEventArgs(state.Allower.AllowedGood);
             return true;

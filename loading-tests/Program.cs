@@ -33,15 +33,27 @@ if (mode == "legacy")
 }
 if (mode == "incompatible")
 {
-    try { init.Invoke(null, null); throw new Exception("Incompatible BeaverBuddies was accepted."); }
-    catch (TargetInvocationException ex) when (ex.InnerException is InvalidOperationException &&
-        ex.InnerException.Message.Contains("does not work with the installed BeaverBuddies") && ex.InnerException.Message.Contains("ReplayEvent.DoPrefix"))
-    {
-        if (main.GetType("MixedStorage.AllocationCommands")!.GetField("MultiplayerSubmit")!.GetValue(null) != null)
-            throw new Exception("Multiplayer submit delegate installed for an incompatible BeaverBuddies.");
-        Console.WriteLine("PASS: incompatible BeaverBuddies rejected at startup: " + ex.InnerException.Message);
-        return;
-    }
+    // The game must still start: the bridge is skipped with a reason, and nothing is installed.
+    var optional = main.GetType("MixedStorage.OptionalMultiplayer")!;
+    if ((bool)init.Invoke(null, null)!) throw new Exception("Incompatible BeaverBuddies was accepted.");
+    var reason = (string)optional.GetProperty("UnavailableReason")!.GetValue(null)!;
+    if (reason == null || !reason.Contains("(BeaverBuddies has no ReplayEvent.DoPrefix)") || optional.GetProperty("Failure")!.GetValue(null) == null)
+        throw new Exception("Missing or wrong reason for the incompatible BeaverBuddies: " + reason);
+    if (main.GetType("MixedStorage.AllocationCommands")!.GetField("MultiplayerSubmit")!.GetValue(null) != null)
+        throw new Exception("Multiplayer submit delegate installed for an incompatible BeaverBuddies.");
+    if ((bool)init.Invoke(null, null)! || AppDomain.CurrentDomain.GetAssemblies().Count(a => a.GetName().Name == "MixedStorage.MultiplayerBridge") != 1)
+        throw new Exception("A failed bridge is loaded again on the next initialization.");
+    // Without the bridge, Apply may only change allocations locally when BeaverBuddies is not connected,
+    // and must treat an unreadable BeaverBuddies as connected.
+    var singlePlayer = main.GetType("MixedStorage.AllocationCommands")!.GetMethod("IsSinglePlayer", BindingFlags.NonPublic | BindingFlags.Static)!;
+    var stub = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "BeaverBuddies");
+    var connection = stub.GetType("BeaverBuddies.IO.StubConnection")!.GetField("Connected")!;
+    if (!(bool)singlePlayer.Invoke(null, new object[] { stub })!) throw new Exception("Single-player BeaverBuddies was treated as connected.");
+    connection.SetValue(null, true);
+    if ((bool)singlePlayer.Invoke(null, new object[] { stub })!) throw new Exception("Connected BeaverBuddies was treated as single-player.");
+    if ((bool)singlePlayer.Invoke(null, new object[] { typeof(object).Assembly })!) throw new Exception("Unreadable BeaverBuddies was treated as single-player.");
+    Console.WriteLine("PASS: incompatible BeaverBuddies skipped without stopping startup (" + reason + "); multiplayer Apply refused without the bridge.");
+    return;
 }
 bool loaded = (bool)init.Invoke(null, null)!;
 if (loaded != (mode == "with")) throw new Exception("Incorrect optional loading result.");

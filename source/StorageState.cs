@@ -74,7 +74,7 @@ namespace MixedStorage
             return draft;
         }
 
-        public bool TryApply(IReadOnlyDictionary<string, int> draft, out string error)
+        public bool CanApply(IReadOnlyDictionary<string, int> draft, out string error)
         {
             error = null;
             if (!AllocationPlan.IsValid(draft)) { error = "Percentages must total exactly 100%."; return false; }
@@ -87,6 +87,12 @@ namespace MixedStorage
                 if (AllocationPlan.ConflictsWithDelivery(Inventory.AmountInStock(good), Inventory.ReservedCapacity(good), limit))
                 { error = "Wait for incoming deliveries to finish before lowering their limits."; return false; }
             }
+            return true;
+        }
+
+        public bool TryApply(IReadOnlyDictionary<string, int> draft, out string error)
+        {
+            if (!CanApply(draft, out error)) return false;
             SetShares(draft);
             Publish();
             return true;
@@ -94,7 +100,7 @@ namespace MixedStorage
 
         private void SetShares(IReadOnlyDictionary<string, int> shares)
         {
-            Shares = shares.Where(x => x.Value > 0).ToDictionary(x => x.Key, x => x.Value, StringComparer.Ordinal);
+            Shares = shares?.Where(x => x.Value > 0).ToDictionary(x => x.Key, x => x.Value, StringComparer.Ordinal);
             _limits = null;
             Revision++;
         }
@@ -115,11 +121,14 @@ namespace MixedStorage
         // which buildings have room for each good.
         public void Deactivate()
         {
+            if (!Active) return;
             var previous = Shares;
-            Shares = null;
-            _limits = null;
-            Revision++;
-            foreach (string good in previous.Keys) Notify(good);
+            SetShares(null);
+            // While these fire, the building still has its representative good; the visuals must follow
+            // that good (VisualizerPatch), not whichever formerly allocated good is announced last.
+            InternalChange = true;
+            try { foreach (string good in previous.Keys) Notify(good); }
+            finally { InternalChange = false; }
         }
 
         private void Notify(string good) => NotifyGood.Invoke(Allower, new object[] { good });
@@ -131,20 +140,26 @@ namespace MixedStorage
 
         public void Load(IEntityLoader loader)
         {
-            if (!loader.TryGetComponent(SaveKey, out var component) || !component.Has(SharesKey)) return;
+            // The state mirrors the save, also when the map editor's undo reloads an existing building.
+            if (!loader.TryGetComponent(SaveKey, out var component) || !component.Has(SharesKey))
+            {
+                if (Active) SetShares(null);
+                return;
+            }
             string saved = component.Get(SharesKey);
             try { SetShares(AllocationPlan.Deserialize(saved)); }
             catch (FormatException ex)
             {
                 // One unreadable building must not stop the whole save from loading. It keeps the
                 // single good the base game saved alongside it, and the warning says what was lost.
+                if (Active) SetShares(null);
                 Debug.LogWarning("[MixedStorage] Ignoring an unreadable saved allocation for " + Allower.Name + " (" + ex.Message + "): " + saved);
             }
         }
 
         public void Duplicate(StorageState source)
         {
-            if (source == null || !source.Active || TryApply(source.Shares, out string error)) return;
+            if (TryApply(source.Shares, out string error)) return;
             Debug.LogWarning("[MixedStorage] Copied allocations were not applied to " + Allower.Name + ": " + error);
         }
     }

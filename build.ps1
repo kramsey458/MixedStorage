@@ -24,25 +24,33 @@ if ($LASTEXITCODE -ne 0) { throw 'Allocation tests failed.' }
 dotnet run --project (Join-Path $PSScriptRoot 'visual-tests\VisualTests.csproj') -c Release "-p:GameDir=$GameDir" "-p:HarmonyPath=$HarmonyPath" -- $GameDir
 if ($LASTEXITCODE -ne 0) { throw 'Visual geometry tests failed.' }
 $dist = Join-Path $PSScriptRoot 'dist'
-foreach ($name in @('MixedStorage')) {
-    $versionDirectory = Join-Path $dist "$name\version-1.1"
-    New-Item -ItemType Directory -Force $versionDirectory | Out-Null
-    Copy-Item -LiteralPath (Join-Path $PSScriptRoot "packaging\$name\version-1.1\manifest.json") -Destination $versionDirectory
-}
-Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'source\bin\Release\netstandard2.1\MixedStorage.dll') -Destination (Join-Path $dist 'MixedStorage\version-1.1')
-Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'README.md') -Destination (Join-Path $dist 'MixedStorage')
+# Start from an empty staging folder so files from earlier builds are never packed.
+$staging = Join-Path $dist 'MixedStorage'
+if (Test-Path -LiteralPath $staging) { Remove-Item -LiteralPath $staging -Recurse -Force }
+$versionDirectory = Join-Path $staging 'version-1.1'
+New-Item -ItemType Directory -Force $versionDirectory | Out-Null
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'packaging\MixedStorage\version-1.1\manifest.json') -Destination $versionDirectory
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'source\bin\Release\netstandard2.1\MixedStorage.dll') -Destination $versionDirectory
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'README.md') -Destination $staging
+$manifest = Get-Content -LiteralPath (Join-Path $versionDirectory 'manifest.json') -Raw | ConvertFrom-Json
+$zip = Join-Path $dist "MixedStorage-v$($manifest.Version).zip"
+$partial = Join-Path $dist "MixedStorage-v$($manifest.Version).partial.zip"
+foreach ($file in @($zip, $partial)) { if (Test-Path -LiteralPath $file) { Remove-Item -LiteralPath $file } }
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-foreach ($name in @('MixedStorage')) {
-    $manifest = Get-Content -LiteralPath (Join-Path $dist "$name\version-1.1\manifest.json") -Raw | ConvertFrom-Json
-    $zip = Join-Path $dist "$name-v$($manifest.Version).zip"
-    if (Test-Path -LiteralPath $zip) { Remove-Item -LiteralPath $zip }
+try {
     # Windows' tar writes the '/' separators the zip format requires. Compress-Archive in Windows
     # PowerShell 5.1 writes '\', which some macOS and Linux tools extract as flat file names.
-    & (Join-Path $env:SystemRoot 'System32\tar.exe') -a -c -f $zip -C $dist $name
+    & (Join-Path $env:SystemRoot 'System32\tar.exe') -a -c -f $partial -C $dist 'MixedStorage'
     if ($LASTEXITCODE -ne 0) { throw 'Packaging failed.' }
-    $archive = [IO.Compression.ZipFile]::OpenRead($zip)
-    try { $entries = @($archive.Entries | ForEach-Object { $_.FullName }) } finally { $archive.Dispose() }
-    if ($entries | Where-Object { $_.Contains('\') }) { throw "Zip entry names must use '/': $($entries -join ', ')" }
-    if ($entries -notcontains "$name/version-1.1/$name.dll") { throw "Zip is missing $name/version-1.1/$name.dll: $($entries -join ', ')" }
+    $archive = [IO.Compression.ZipFile]::OpenRead($partial)
+    try { $files = @($archive.Entries | Where-Object { !$_.FullName.EndsWith('/') } | ForEach-Object { $_.FullName } | Sort-Object) }
+    finally { $archive.Dispose() }
+    $expected = @('MixedStorage/README.md', 'MixedStorage/version-1.1/manifest.json', 'MixedStorage/version-1.1/MixedStorage.dll') | Sort-Object
+    if (($files -join '|') -cne ($expected -join '|')) { throw "Unexpected zip contents: $($files -join ', ')" }
+    # Only a checked zip gets the release name.
+    Move-Item -LiteralPath $partial -Destination $zip
 }
-Write-Output "Built and packaged the unified mod in $dist"
+finally {
+    if (Test-Path -LiteralPath $partial) { Remove-Item -LiteralPath $partial }
+}
+Write-Output "Built and packaged the unified mod in $zip"

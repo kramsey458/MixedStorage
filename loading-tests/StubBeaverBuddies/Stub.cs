@@ -14,7 +14,13 @@ namespace BeaverBuddies.IO
 {
     public interface EventIO
     {
-        static bool IsNull => true;
+        static bool IsNull => !StubConnection.Connected;
+    }
+
+    // Lets the loading test switch between single-player and a multiplayer connection.
+    public static class StubConnection
+    {
+        public static bool Connected;
     }
 }
 
