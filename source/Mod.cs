@@ -76,7 +76,8 @@ namespace MixedStorage
     // The game's Duplicate settings tool (AllocationPlan.PlanCopy). A mixed source copies its allocation. Any
     // other source gives the target that building's single good (or none), as in the base game, so a mixed
     // target leaves mixed mode first; otherwise AllowPatch would silently keep the old allocation. A refused
-    // copy leaves the target as it was. BeaverBuddies replays this on every player (DuplicationEvent).
+    // copy keeps the target's allocation or single good; the tool still copies the building's other settings
+    // (the storage mode, for example) separately. BeaverBuddies replays this on every player (DuplicationEvent).
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.DuplicateFrom))]
     internal static class DuplicatePatch
     {
