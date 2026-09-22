@@ -42,12 +42,13 @@ The mod reuses the installed game's styles and assets: `NineSliceVisualElement` 
 
 ## Validation
 
-- 10,079 allocation assertions: 2,000 randomized splits, lists up to 100 goods, capacities 20/30/180/200/1000/1200, validation, rounding, persistence (every malformed saved value fails the one way loading handles), Duplicate settings decisions, and delivery guards.
+- 12,080 allocation assertions: 2,000 randomized splits, lists up to 100 goods, capacities 20/30/180/200/1000/1200, validation, rounding, persistence (every malformed saved value fails the one way loading handles), Duplicate settings decisions (including 2,000 random copies that must decide the same whatever order the goods are listed in), and delivery guards.
 - All 11 supported template names and storage categories checked against the game's Blueprints.zip.
 - 201 whole-cell partition cases covering boundary ownership, complete topology, compact vertices, per-vertex attributes, and unknown-topology fallback.
 - 400 random piles (plain and rotated/scaled transforms, random section boundaries) whose extracted sections are compared triangle by triangle with the original algorithm that transformed and kept every vertex, plus the whole-mesh fit used for bulk surfaces.
 - Nine native rendering API signatures checked against installed game assemblies; the old ambiguous Initialize lookup is reproduced as a regression check.
 - Isolated loading processes with and without BeaverBuddies check eager main-type enumeration, bridge event discovery, delegate installation, repeated initialization, and obsolete-addon rejection. A stub BeaverBuddies with one member missing (`loading-tests/StubBeaverBuddies`) checks that an incompatible build is skipped without stopping startup, that the reason names exactly that member, that a failed bridge is not loaded twice, and that Apply without the bridge only counts as single-player when BeaverBuddies reports no connection.
+- BeaverBuddies replays the Duplicate settings tool on every player. A loading check walks the IL of the patches that run inside that replay, and of every mod method they call, and fails if any of them reads the panel's message or pending state, the panel or renderer, submits a command, or reads a clock, input or random numbers (`loading-tests/ReplayChecks.cs`). Two control scans check that it finds such state where the mod does use it.
 
 Loading checks run under .NET, not inside Unity/Mono. They do not establish live multiplayer compatibility. Builds pass without compiler warnings; v0.5.8's layout has been visually verified in game, and v1.0.0 leaves it unchanged. The v1.0.0 Duplicate settings, startup and loading changes have not been exercised in game yet. The mod's startup log line reads its version from the assembly, so a release bump touches only the two `.csproj` files, the manifest, and the README and changelog.
 

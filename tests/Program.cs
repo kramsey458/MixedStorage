@@ -112,7 +112,39 @@ Check(Copy(null, "Berries", true, out _) == CopyPlan.Refuse, "A delivery of a go
 Check(Copy(null, "Potato", true, out _) == CopyPlan.Refuse, "Potato has no room while Carrot is in stock");
 target.StockOf.Remove("Carrot");
 Check(Copy(null, "Potato", true, out _) == CopyPlan.LeaveMixed, "Keeping the delivered good fits once nothing else is in stock");
-Console.WriteLine($"PASS: {assertions:N0} assertions, including 2,000 randomized allocations, 100-good lists, rounding, persistence, validation, copied settings, and delivery guards.");
+
+// BeaverBuddies replays a copy on every player with the same simulation state, but the game lists a building's
+// accepted goods in hash-set order. The decision must depend on its inputs alone, never on that order.
+var pool = Enumerable.Range(0, 12).Select(i => "Good" + i).ToArray();
+var outcomes = new HashSet<CopyPlan>();
+for (int run = 0; run < 2000; run++)
+{
+    int capacity = new[] { 30, 180, 200, 1200 }[run % 4];
+    var accepted = pool.Where(_ => rng.Next(3) > 0).DefaultIfEmpty(pool[0]).ToArray();
+    var forward = new FakeStorage(capacity, accepted);
+    var backward = new FakeStorage(capacity, accepted.Reverse().ToArray());
+    foreach (string good in accepted)
+    {
+        if (rng.Next(2) == 0) forward.StockOf[good] = backward.StockOf[good] = rng.Next(1, capacity / 4 + 1);
+        if (rng.Next(6) == 0) forward.IncomingOf[good] = backward.IncomingOf[good] = rng.Next(1, 10);
+    }
+    Dictionary<string, int> shares = null;
+    if (rng.Next(2) == 0)
+    {
+        var chosen = pool.Where(x => rng.Next(4) == 0 || x == accepted[0]).Where(x => rng.Next(8) > 0 || accepted.Contains(x)).ToArray();
+        var cuts = Enumerable.Range(0, chosen.Length - 1).Select(_ => rng.Next(10001)).Append(0).Append(10000).Order().ToArray();
+        shares = Enumerable.Range(0, chosen.Length).ToDictionary(i => chosen[i], i => cuts[i + 1] - cuts[i]);
+    }
+    string single = rng.Next(4) == 0 ? null : pool[rng.Next(pool.Length)];
+    bool mixed = rng.Next(3) > 0;
+    var plan = AllocationPlan.PlanCopy(shares, single, mixed, forward, out string forwardError);
+    var reordered = shares?.Reverse().ToDictionary(x => x.Key, x => x.Value);
+    Check(AllocationPlan.PlanCopy(reordered, single, mixed, backward, out string backwardError) == plan && backwardError == forwardError,
+        "The copy decision does not depend on the order of goods");
+    outcomes.Add(plan);
+}
+Check(outcomes.Count == 4, "Randomized copies reach every outcome");
+Console.WriteLine($"PASS: {assertions:N0} assertions, including 2,000 randomized allocations, 2,000 randomized copies checked in both goods orders, 100-good lists, rounding, persistence, validation, copied settings, and delivery guards.");
 
 // A building for the allocation guards: capacity, accepted goods, stock and incoming deliveries.
 sealed class FakeStorage : IStorageContents
