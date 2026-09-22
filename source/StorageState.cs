@@ -39,6 +39,10 @@ namespace MixedStorage
             "MixedStorage cannot change allocations with this game version: the game no longer has SingleGoodAllower.InvokeDisallowedGoodsChangedEvent(string). " +
             "Existing allocations still apply. Install the MixedStorage version made for this game version.";
 
+        // Why a Duplicate settings copy from source (null when that building has no mixed-storage state) onto this
+        // building must be refused, or null: while allocations are frozen, no copy may set or leave one.
+        internal string FrozenCopyReason(StorageState source) => Active || source?.Active == true ? UnavailableReason : null;
+
         public readonly SingleGoodAllower Allower;
         public readonly Inventory Inventory;
         public Dictionary<string, int> Shares { get; private set; }

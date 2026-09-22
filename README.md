@@ -91,7 +91,7 @@ Applied allocations synchronize through BeaverBuddies. Apply may briefly show a 
 | Lower limit is rejected | Wait for incoming deliveries to finish. |
 | Startup mentions the old addon | Remove or disable MixedStorage-BeaverBuddies, then fully restart. |
 | Apply says multiplayer support could not start with the installed BeaverBuddies | Install the BeaverBuddies build named under [Compatibility and testing](#compatibility-and-testing) on every computer. Player.log names what is missing. Single-player usually still works; if even that is refused, disable BeaverBuddies for single-player games. |
-| Apply says MixedStorage cannot change allocations with this game version | A game update changed something MixedStorage relies on. Existing allocations still apply, but none can change until you install the MixedStorage version made for your game version. |
+| Apply says MixedStorage cannot change allocations with this game version | A game update changed something MixedStorage relies on. Existing allocations still apply, but none can change (by Apply or Copy Settings) until you install the MixedStorage version made for your game version. In co-op, every player needs the same game version. |
 | Apply shows "Apply failed" | Report it with your Player.log; the message and log say what went wrong. |
 | Panel or visuals look wrong | Include a screenshot, resolution/UI scale, building type, and allocations in a report. |
 

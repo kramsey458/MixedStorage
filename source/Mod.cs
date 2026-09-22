@@ -22,11 +22,28 @@ namespace MixedStorage
             if (OptionalMultiplayer.Failure != null)
                 Debug.LogError("[MixedStorage] " + OptionalMultiplayer.UnavailableReason + "\n" + OptionalMultiplayer.Failure);
             // Throwing here would stop every later mod and the game from starting; allocations are frozen instead.
-            if (StorageState.UnavailableReason != null) Debug.LogError("[MixedStorage] " + StorageState.UnavailableReason);
+            string frozen = AllocationProblem();
+            if (frozen != null) Debug.LogError("[MixedStorage] " + frozen);
             // LateGamePerformance trusts LimitPatch and SavePatch by this id and their names; keep it.
             new Harmony("kyler.mixedstorage").PatchAll(typeof(ModStarter).Assembly);
             Debug.Log("[MixedStorage] " + typeof(ModStarter).Assembly.GetName().Version.ToString(3) + " loaded; warehouse and pile allocations for Timberborn 1.1.2.4.");
         }
+
+        // Why allocations cannot change with the installed game, or null; never throws. StartMod does not touch
+        // StorageState itself: its setup runs in ReadAllocationProblem, so even a StorageState that cannot load
+        // or initialize after a game update is reported here instead of thrown out of StartMod.
+        internal static string AllocationProblem()
+        {
+            try { return ReadAllocationProblem(); }
+            catch (System.Exception ex)
+            {
+                return "MixedStorage could not set up its storage state with this game version, so games with warehouses or piles " +
+                    "may fail to load. Install the MixedStorage version made for this game version, or disable MixedStorage.\n" + ex;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static string ReadAllocationProblem() => StorageState.UnavailableReason;
     }
 
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.Initialize))]
@@ -87,16 +104,24 @@ namespace MixedStorage
     // The game's Duplicate settings tool. A mixed source copies its allocation, or leaves the target as it
     // was when the allocation cannot apply there. Any other source gives the target that building's single
     // good (or none), as in the base game, so a mixed target leaves mixed mode first; otherwise AllowPatch
-    // would silently keep the old allocation.
+    // would silently keep the old allocation. While allocations are frozen (StorageState.UnavailableReason),
+    // a copy that would set or leave one is refused whole and logged, before anything else decides.
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.DuplicateFrom))]
     internal static class DuplicatePatch
     {
+        [HarmonyPriority(Priority.Last)]
         static bool Prefix(SingleGoodAllower __instance, SingleGoodAllower source, out bool __state)
         {
             __state = false;
             var target = StorageState.Get(__instance);
             if (target == null) return true;
             var from = StorageState.Get(source);
+            string frozen = target.FrozenCopyReason(from);
+            if (frozen != null)
+            {
+                Debug.LogWarning("[MixedStorage] Copied goods settings were not applied to " + __instance.Name + ": " + frozen);
+                return false;
+            }
             if (from?.Active == true)
             {
                 if (target.CanApply(from.Shares, out string error)) return __state = true;
