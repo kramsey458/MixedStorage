@@ -18,7 +18,7 @@ namespace MixedStorage
     }
 
     // What the game's Duplicate settings tool does to a building this mod manages.
-    public enum CopyPlan { BaseGame, CopyAllocation, LeaveMixed, Refuse }
+    public enum CopyPlan { BaseGame, CopyAllocation, LeaveMixed, Refuse, KeepAllocation }
 
     // What DuplicatePatch does for a plan, in this order: leave mixed mode, let the base game copy the single
     // good, apply the copied allocation afterwards, and log a refusal.
@@ -119,8 +119,10 @@ namespace MixedStorage
 
         // The game's Duplicate settings tool onto a building this mod manages. sourceShares is the source's
         // allocation, null unless it is mixed, and sourceGood its single good. A mixed source applies through
-        // the same checks as Apply. Any other source gives the target that good, or none, as in the base game,
-        // so a mixed target leaves mixed mode first, unless that conflicts with an incoming delivery.
+        // the same checks as Apply. A source set to store nothing, such as a building just placed, leaves a mixed
+        // target's allocation alone, so copying its other settings (the storage mode, for example) does not wipe
+        // it. Any other source gives the target that good, as in the base game, so a mixed target leaves mixed
+        // mode first, unless that conflicts with an incoming delivery.
         public static CopyPlan PlanCopy(IReadOnlyDictionary<string, int> sourceShares, string sourceGood, bool targetMixed,
             IStorageContents target, out string error)
         {
@@ -128,13 +130,15 @@ namespace MixedStorage
             if (sourceShares != null) return CanApply(sourceShares, target, out error) ? CopyPlan.CopyAllocation : CopyPlan.Refuse;
             // The base game leaves the target unchanged when it does not take the source's good.
             if (!targetMixed || sourceGood != null && !target.Takes(sourceGood)) return CopyPlan.BaseGame;
+            if (sourceGood == null) return CopyPlan.KeepAllocation;
             return CanLeave(sourceGood, target, out error) ? CopyPlan.LeaveMixed : CopyPlan.Refuse;
         }
 
         // What DuplicatePatch does for each plan, kept here so the allocation tests cover it. A copied allocation
         // lets the base game give the target the source's representative good first (AllowPatch ignores that on
         // a mixed target), then applies. A leave happens before the base game's copy, which AllowPatch would
-        // otherwise block. A refusal changes nothing on the target and is logged.
+        // otherwise block. A refusal changes nothing on the target and is logged. Keeping the allocation skips the
+        // base game's copy, which would clear the target's good (AllowPatch blocks that on a mixed target anyway).
         public static CopySteps Steps(CopyPlan plan)
         {
             switch (plan)
@@ -142,6 +146,7 @@ namespace MixedStorage
                 case CopyPlan.CopyAllocation: return CopySteps.RunBaseGame | CopySteps.ApplyAllocation;
                 case CopyPlan.LeaveMixed: return CopySteps.LeaveMixed | CopySteps.RunBaseGame;
                 case CopyPlan.Refuse: return CopySteps.LogRefusal;
+                case CopyPlan.KeepAllocation: return CopySteps.None;
                 default: return CopySteps.RunBaseGame;
             }
         }

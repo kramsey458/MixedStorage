@@ -91,7 +91,7 @@ Check(Copy(berriesCarrot, "Berries", false, out _) == CopyPlan.CopyAllocation, "
 Check(Copy(new Dictionary<string, int> { ["Log"] = 10000 }, "Log", true, out copyError) == CopyPlan.Refuse &&
     copyError == "Set unavailable goods to 0% before applying.", "A mixed source with goods the target does not take is refused");
 Check(Copy(null, "Berries", true, out copyError) == CopyPlan.LeaveMixed && copyError == null, "A normal source turns a mixed target back into a normal one");
-Check(Copy(null, null, true, out _) == CopyPlan.LeaveMixed, "A source storing nothing turns a mixed target back into a normal one");
+Check(Copy(null, null, true, out copyError) == CopyPlan.KeepAllocation && copyError == null, "A source storing nothing, such as a new building, keeps a mixed target's allocation");
 Check(Copy(null, "Log", true, out _) == CopyPlan.BaseGame, "A good the target does not take is left to the base game, which skips it");
 Check(Copy(null, "Berries", false, out _) == CopyPlan.BaseGame && Copy(null, null, false, out _) == CopyPlan.BaseGame, "A normal target follows the base game");
 // A hauler is bringing 10 Carrot. Leaving mixed mode gives Carrot no room, and Berries none while Carrot is in stock.
@@ -100,7 +100,7 @@ Check(Copy(berriesCarrot, "Berries", true, out _) == CopyPlan.CopyAllocation, "A
 Check(Copy(new Dictionary<string, int> { ["Berries"] = 10000 }, "Berries", true, out copyError) == CopyPlan.Refuse && copyError == DeliveryError,
     "A copied allocation that drops Carrot waits for the Carrot delivery");
 Check(Copy(null, "Berries", true, out copyError) == CopyPlan.Refuse && copyError == DeliveryError, "Leaving mixed mode for Berries waits for the Carrot delivery");
-Check(Copy(null, null, true, out copyError) == CopyPlan.Refuse && copyError == DeliveryError, "Leaving mixed mode for no good waits for the Carrot delivery");
+Check(Copy(null, null, true, out copyError) == CopyPlan.KeepAllocation && copyError == null, "A source storing nothing keeps the allocation without waiting for deliveries");
 Check(Copy(null, "Carrot", true, out copyError) == CopyPlan.Refuse && copyError == DeliveryError, "Carrot has no room either while Berries are in stock");
 Check(Copy(null, "Berries", false, out _) == CopyPlan.BaseGame, "A delivery does not stop the base game's copy onto a normal building");
 target.StockOf.Remove("Berries");
@@ -143,7 +143,7 @@ for (int run = 0; run < 2000; run++)
         "The copy decision does not depend on the order of goods");
     outcomes.Add(plan);
 }
-Check(outcomes.Count == 4, "Randomized copies reach every outcome");
+Check(outcomes.Count == Enum.GetValues<CopyPlan>().Length, "Randomized copies reach every outcome");
 
 // What DuplicatePatch does with each plan (AllocationPlan.Steps): only a leave deactivates, only a refusal is logged,
 // and a refusal touches nothing, so a refused copy can neither wipe an allocation nor silently keep a stale one.
@@ -158,6 +158,7 @@ Check(AllocationPlan.Steps(CopyPlan.Refuse) == CopySteps.LogRefusal, "A refused 
 Check(AllocationPlan.Steps(CopyPlan.LeaveMixed) == (CopySteps.LeaveMixed | CopySteps.RunBaseGame), "Leaving mixed mode comes first, then the base game gives the target the source's good");
 Check(AllocationPlan.Steps(CopyPlan.CopyAllocation) == (CopySteps.RunBaseGame | CopySteps.ApplyAllocation), "A copied allocation applies after the base game's copy");
 Check(AllocationPlan.Steps(CopyPlan.BaseGame) == CopySteps.RunBaseGame, "Anything else is the base game's copy");
+Check(AllocationPlan.Steps(CopyPlan.KeepAllocation) == CopySteps.None, "Keeping the allocation skips the base game's copy, which would clear the target's good");
 Console.WriteLine($"PASS: {assertions:N0} assertions, including 2,000 randomized allocations, 2,000 randomized copies checked in both goods orders, 100-good lists, rounding, persistence, validation, copied settings, and delivery guards.");
 
 // A building for the allocation guards: capacity, accepted goods, stock and incoming deliveries.
