@@ -61,10 +61,10 @@
       <h1>Many goods. <em>One building.</em></h1>
       <p class="lead">MixedStorage lets a single warehouse or pile hold several kinds of goods, and you choose how much space each one gets, by percentage.</p>
       <div class="btn-row">
-        <a class="btn btn--primary" data-download href="https://github.com/timbermods/MixedStorage/releases"><span data-download-label>Download the mod</span></a>
+        <a class="btn btn--primary" data-release-href="download" href="https://github.com/timbermods/MixedStorage/releases/latest"><span>Download <span data-release="tag">the mod</span></span></a>
         <a class="btn" href="install.html">Install guide</a>
       </div>
-      <p class="hero__meta"><span class="pill" data-release-kind hidden></span><span>Built for Timberborn 1.1.2.4</span><span class="dot">Requires Harmony</span><span class="dot">Multiplayer via BeaverBuddies (optional)</span></p>
+      <p class="hero__meta"><span class="pill" data-release-show="stable" hidden>Latest release</span><span class="pill" data-release-show="prerelease" hidden>Pre-release</span><span>Built for Timberborn 1.1.2.4</span><span class="dot">Requires Harmony</span><span class="dot">Multiplayer via BeaverBuddies (optional)</span></p>
     </div>
     <figure class="frame">
       <img src="assets/panel.webp" width="622" height="1114" fetchpriority="high"
@@ -255,7 +255,7 @@
   <div class="wrap">
     <div class="panel panel--blue note note--info">
       <h3>Project status</h3>
-      <p>MixedStorage 1.0.0 is the first official release. Its panel layout and storage visuals are unchanged from v0.5.8, which was checked in game. The 1.0.0 fixes (the game's Duplicate settings tool, clearer error messages, and loading damaged saves) haven't been played in game yet. Players have reported successful use of earlier builds, and automated checks cover the allocation math, mesh geometry, native game API calls, and optional multiplayer loading. Those checks don't replace live gameplay testing, particularly for multiplayer.</p>
+      <p>MixedStorage 1.1.0 is the current release. Its panel layout and storage visuals are unchanged from v0.5.8, which was checked in game. The changes since then (the game's Duplicate settings tool, clearer error messages, loading damaged saves, and in 1.1.0 the Supply mode order, the reason shown when Apply is unavailable, and patch order) haven't been played in game yet. Players have reported successful use of earlier builds, and automated checks cover the allocation math, mesh geometry, native game API calls, and optional multiplayer loading. Those checks don't replace live gameplay testing, particularly for multiplayer.</p>
       <p>Found something odd? <a href="troubleshooting.html">Check the troubleshooting guide</a> or <a href="https://github.com/timbermods/MixedStorage/issues" rel="noopener">open an issue</a>.</p>
     </div>
   </div>
@@ -266,10 +266,10 @@
     <h2>Ready to mix things up?</h2>
     <p class="lead">One download covers single-player and BeaverBuddies multiplayer.</p>
     <div class="btn-row">
-      <a class="btn btn--primary" data-download href="https://github.com/timbermods/MixedStorage/releases"><span data-download-label>Download the mod</span></a>
+      <a class="btn btn--primary" data-release-href="download" href="https://github.com/timbermods/MixedStorage/releases/latest"><span>Download <span data-release="tag">the mod</span></span></a>
       <a class="btn" href="faq.html">Read the FAQ</a>
     </div>
-    <p class="muted"><span class="pill" data-release-kind hidden></span></p>
+    <p class="muted"><span class="pill" data-release-show="stable" hidden>Latest release</span><span class="pill" data-release-show="prerelease" hidden>Pre-release</span></p>
   </div>
 </section>
 
@@ -292,7 +292,7 @@
       <div>
         <h2>Project</h2>
         <ul>
-          <li><a href="https://github.com/timbermods/MixedStorage/releases" data-release-link rel="noopener">Downloads &amp; releases</a></li>
+          <li><a href="https://github.com/timbermods/MixedStorage/releases" data-release-href="notes" rel="noopener">Downloads &amp; releases</a></li>
           <li><a href="https://github.com/timbermods/MixedStorage/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
           <li><a href="https://github.com/timbermods/MixedStorage/issues" rel="noopener">Report a problem</a></li>
           <li><a href="https://github.com/timbermods/MixedStorage" rel="noopener">Source on GitHub</a></li>
@@ -304,6 +304,7 @@
   </div>
 </footer>
 <script src="assets/site.js" defer></script>
+<script src="assets/release.js" defer data-repo="timbermods/MixedStorage" data-asset="^MixedStorage-v[\d.]+\.zip$"></script>
 <script src="assets/split.js" defer></script>
 <script src="assets/goods.js" defer></script>
 <script src="assets/demo.js" defer></script>
