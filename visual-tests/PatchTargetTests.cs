@@ -17,11 +17,11 @@ internal static class PatchTargetTests
     {
         var managed = Path.Combine(gameDir, "Timberborn_Data", "Managed");
         // The game loads all of its assemblies before mods start; string targets are looked up among loaded ones.
-        foreach (var file in Directory.GetFiles(managed, "Timberborn.*.dll")) Assembly.LoadFrom(file);
+        var game = Directory.GetFiles(managed, "Timberborn.*.dll").OrderBy(f => f, StringComparer.Ordinal).Select(Assembly.LoadFrom).ToList();
         var mod = Assembly.LoadFrom(modPath);
         var types = mod.GetTypes();
         var patches = HarmonyPatches(types);
-        LateGamePerformanceContract(mod, patches);
+        LateGamePerformanceContract(mod, patches, game);
         ReflectedMembers(types, managed);
         ConnectionState(mod, beaverBuddiesPath);
         Templates(mod, Path.Combine(gameDir, "Timberborn_Data", "StreamingAssets", "Modding", "Blueprints.zip"));
@@ -114,12 +114,36 @@ internal static class PatchTargetTests
     // LateGamePerformance runs two of these patches on worker threads and trusts them by (target "Type.Method",
     // Harmony id, patch "Namespace.Type.Method"): DistrictCounts.ReviewedPatches and SaveGuard.ReviewedPatches (read at
     // LateGamePerformance 0.4.26). A rename makes it stand down to the main thread, and so does any other patch on
-    // AllowedAmount, a Save, or the Inventory methods its counting workers call.
-    private static void LateGamePerformanceContract(Assembly mod, List<(MethodBase Target, MethodInfo Patch)> patches)
+    // AllowedAmount or the Inventory methods its counting workers call (DistrictCounts), or on a Save, anything a
+    // Save calls directly, or one of its shared saving helpers (SaveGuard). SaveGuard also watches the value
+    // serializers a Save loads from its fields; the Goods serializers among the helpers are the ones storages use.
+    private static void LateGamePerformanceContract(Assembly mod, List<(MethodBase Target, MethodInfo Patch)> patches, List<Assembly> game)
     {
         const string Id = "kyler.mixedstorage";
         var reviewed = new[] { ("SingleGoodAllower.AllowedAmount", "MixedStorage.LimitPatch.Prefix"), ("SingleGoodAllower.Save", "MixedStorage.SavePatch.Postfix") };
         var inventoryWorkerMethods = new[] { "GetCapacity", "LimitedAmount", "Gives", "AmountInStock", "get_Stock", "get_PublicInput" };
+        // SaveGuard.HelperTypeNames.
+        var savingHelpers = new[]
+        {
+            "Timberborn.WorldPersistence.EntitySaver", "Timberborn.WorldPersistence.ComponentKey", "Timberborn.Persistence.ObjectSaver",
+            "Timberborn.Persistence.ValueSaver", "Timberborn.Persistence.PropertyKey`1", "Timberborn.Persistence.ListKey`1",
+            "Timberborn.Persistence.SaveConversions", "Timberborn.Persistence.CommonNumberSerializer", "Timberborn.Persistence.InvariantDateTimeSerializer",
+            "Timberborn.SerializationSystem.SerializedObject", "Timberborn.SerializationSystem.PrimitiveTypeSerialization",
+            "Timberborn.WorldSerialization.SerializedEntity", "Timberborn.Goods.GoodAmountSerializer", "Timberborn.Goods.GoodRegistryValueSerializer",
+            "Timberborn.Goods.SerializedGoodValueSerializer"
+        };
+        // Every game component's Save(IEntitySaver), a superset of the ones LateGamePerformance lists, and what each
+        // calls directly.
+        var saveCallees = new Dictionary<(Module, int), string>();
+        int saves = 0;
+        foreach (var type in game.SelectMany(LoadableTypes).OrderBy(t => t.FullName, StringComparer.Ordinal))
+            foreach (var save in type.GetMethods(All).Where(m => m.Name == "Save" && m.GetParameters().Length == 1
+                         && m.GetParameters()[0].ParameterType.FullName == "Timberborn.WorldPersistence.IEntitySaver" && m.GetMethodBody() != null))
+            {
+                saves++;
+                foreach (var callee in IlReader.Calls(save)) saveCallees.TryAdd((callee.Module, callee.MetadataToken), type.Name + ".Save");
+            }
+        if (saves < 100) throw new Exception($"Only {saves} component Save methods found in the game; update this check.");
         string id = HarmonyId(mod);
         if (id != Id) throw new Exception($"ModStarter patches as Harmony id \"{id}\", but LateGamePerformance trusts MixedStorage's patches as \"{Id}\".");
         var found = patches.Select(p => (Target: p.Target.DeclaringType!.Name + "." + p.Target.Name, Patch: p.Patch.DeclaringType!.FullName + "." + p.Patch.Name, Method: p.Target)).ToList();
@@ -128,30 +152,39 @@ internal static class PatchTargetTests
                 throw new Exception($"LateGamePerformance trusts {entry.Item2} on {entry.Item1}, which the mod no longer has; update LateGamePerformance's ReviewedPatches together with the rename.");
         foreach (var p in found)
         {
+            if (reviewed.Contains((p.Target, p.Patch))) continue;
+            var declaring = p.Method.DeclaringType!;
+            string helper = declaring.IsGenericType ? declaring.GetGenericTypeDefinition().FullName! : declaring.FullName!;
             bool watched = p.Method.Name == "AllowedAmount" || p.Method.Name == "Save"
-                || p.Method.DeclaringType!.FullName == "Timberborn.InventorySystem.Inventory" && inventoryWorkerMethods.Contains(p.Method.Name);
-            if (watched && !reviewed.Contains((p.Target, p.Patch)))
+                || declaring.FullName == "Timberborn.InventorySystem.Inventory" && inventoryWorkerMethods.Contains(p.Method.Name);
+            if (watched)
                 throw new Exception($"{p.Patch} patches {p.Target}, which LateGamePerformance runs on worker threads only while every patch on it was reviewed; it would fall back to the main thread.");
+            if (savingHelpers.Contains(helper))
+                throw new Exception($"{p.Patch} patches {p.Target}, one of the saving helpers every LateGamePerformance save goes through; it would leave the whole save to the main thread.");
+            if (saveCallees.TryGetValue((p.Method.Module, p.Method.MetadataToken), out string save))
+                throw new Exception($"{p.Patch} patches {p.Target}, which {save} calls; LateGamePerformance would save that type on the main thread.");
         }
-        Console.WriteLine($"PASS: LateGamePerformance's reviewed patches exist under Harmony id {Id} (LimitPatch.Prefix, SavePatch.Postfix), and no other patch is on the methods its workers call.");
+        Console.WriteLine($"PASS: LateGamePerformance's reviewed patches exist under Harmony id {Id} (LimitPatch.Prefix, SavePatch.Postfix); no other patch is on the methods its counting workers call, on the {savingHelpers.Length} saving helpers, or on anything the game's {saves} component Saves call directly.");
     }
 
     // The id ModStarter.StartMod passes to new Harmony(...), read from its IL: ldstr "<id>" directly followed by newobj.
     private static string HarmonyId(Assembly mod)
     {
         var start = mod.GetType("MixedStorage.ModStarter", true)!.GetMethod("StartMod")!;
-        var il = start.GetMethodBody()!.GetILAsByteArray()!;
+        var code = IlReader.Read(start);
         var ids = new List<string>();
-        for (int i = 0; i + 10 <= il.Length; i++)
-        {
-            if (il[i] != 0x72 || il[i + 5] != 0x73 || il[i + 4] != 0x70) continue;
-            MethodBase constructor;
-            try { constructor = start.Module.ResolveMethod(BitConverter.ToInt32(il, i + 6)); }
-            catch (ArgumentException) { continue; }
-            if (constructor?.DeclaringType?.FullName == "HarmonyLib.Harmony") ids.Add(start.Module.ResolveString(BitConverter.ToInt32(il, i + 1)));
-        }
+        for (int i = 0; i + 1 < code.Count; i++)
+            if (code[i].Code == System.Reflection.Emit.OpCodes.Ldstr && code[i + 1].Code == System.Reflection.Emit.OpCodes.Newobj
+                && IlReader.Member(start, code[i + 1])?.DeclaringType?.FullName == "HarmonyLib.Harmony")
+                ids.Add(start.Module.ResolveString(code[i].Token));
         if (ids.Count != 1) throw new Exception($"ModStarter.StartMod creates {ids.Count} Harmony instances with a literal id; expected one. Update this check.");
         return ids[0];
+    }
+
+    private static IEnumerable<Type> LoadableTypes(Assembly assembly)
+    {
+        try { return assembly.GetTypes(); }
+        catch (ReflectionTypeLoadException ex) { return ex.Types.Where(t => t != null)!; }
     }
 
     private static void ReflectedMembers(Type[] types, string managed)

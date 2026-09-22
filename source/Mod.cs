@@ -90,7 +90,10 @@ namespace MixedStorage
     }
     // LateGamePerformance saves on worker threads and trusts this postfix by name (its SaveGuard.ReviewedPatches lists
     // "SingleGoodAllower.Save", "kyler.mixedstorage", "MixedStorage.SavePatch.Postfix"). Keep it writing only this
-    // storage's allocation into its own entity, and change that list with any rename.
+    // storage's allocation into its own entity, and change that list with any rename. Add no other patch on a Save,
+    // on anything a Save calls directly, on the value serializers a Save loads, or on LateGamePerformance's shared
+    // saving helpers (ComponentKey, PropertyKey, ObjectSaver and the others in its SaveGuard.HelperTypeNames), or it
+    // saves those types, or every type, on the main thread again (PatchTargetTests checks all but the serializers).
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.Save))]
     internal static class SavePatch
     {
