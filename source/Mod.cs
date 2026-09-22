@@ -46,6 +46,9 @@ namespace MixedStorage
         private static string ReadAllocationProblem() => StorageState.UnavailableReason;
     }
 
+    // A prefix here that returns false to replace the game's method carries [HarmonyPriority(Priority.Last)], so it
+    // runs after any other mod's prefix on that method (BeaverBuddies prefixes Allow and Disallow), in the same order
+    // for every co-op player. The loading tests check every such prefix in the mod.
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.Initialize))]
     internal static class AttachPatch
     {
@@ -60,6 +63,7 @@ namespace MixedStorage
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.AllowedAmount))]
     internal static class LimitPatch
     {
+        [HarmonyPriority(Priority.Last)]
         static bool Prefix(SingleGoodAllower __instance, string goodId, ref int __result)
         {
             var state = StorageState.Get(__instance);
@@ -73,6 +77,7 @@ namespace MixedStorage
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.Allow))]
     internal static class AllowPatch
     {
+        [HarmonyPriority(Priority.Last)]
         static bool Prefix(SingleGoodAllower __instance)
         {
             var state = StorageState.Get(__instance);
@@ -82,6 +87,7 @@ namespace MixedStorage
     [HarmonyPatch(typeof(SingleGoodAllower), nameof(SingleGoodAllower.Disallow))]
     internal static class DisallowPatch
     {
+        [HarmonyPriority(Priority.Last)]
         static bool Prefix(SingleGoodAllower __instance)
         {
             var state = StorageState.Get(__instance);
@@ -144,6 +150,7 @@ namespace MixedStorage
     [HarmonyPatch(typeof(StockpileVisualizers), "OnDisallowedGoodsChanged")]
     internal static class VisualizerPatch
     {
+        [HarmonyPriority(Priority.Last)]
         static bool Prefix(StockpileVisualizers __instance, ref DisallowedGoodsChangedEventArgs e)
         {
             var state = StorageState.Get(__instance);

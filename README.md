@@ -86,7 +86,7 @@ Applied allocations synchronize through BeaverBuddies. Apply may briefly show a 
 | Problem | Check this |
 | --- | --- |
 | Mod does not appear | Check the folder structure, enable Harmony and MixedStorage, and restart. |
-| Apply is unavailable | Every percentage must be valid and the total must be exactly 100%. Wait if a multiplayer change is queued. |
+| Apply is unavailable | Every percentage must be valid and the total must be exactly 100%. Goods marked "(not accepted here)" or "(unavailable)", which a saved allocation can still hold after a goods mod is removed, must be set to 0%. Wait if a multiplayer change is queued. |
 | Paste is rejected | The destination must accept every good with a nonzero copied percentage. |
 | Lower limit is rejected | Wait for incoming deliveries to finish. |
 | Startup mentions the old addon | Remove or disable MixedStorage-BeaverBuddies, then fully restart. |
