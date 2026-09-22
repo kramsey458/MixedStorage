@@ -21,7 +21,7 @@ foreach ($mode in @('without', 'with', 'legacy', 'incompatible')) {
 }
 dotnet run --project (Join-Path $PSScriptRoot 'tests\AllocationTests.csproj') -c Release
 if ($LASTEXITCODE -ne 0) { throw 'Allocation tests failed.' }
-dotnet run --project (Join-Path $PSScriptRoot 'visual-tests\VisualTests.csproj') -c Release "-p:GameDir=$GameDir" "-p:HarmonyPath=$HarmonyPath" -- $GameDir (Join-Path $PSScriptRoot 'source\bin\Release\netstandard2.1\MixedStorage.dll')
+dotnet run --project (Join-Path $PSScriptRoot 'visual-tests\VisualTests.csproj') -c Release "-p:GameDir=$GameDir" "-p:HarmonyPath=$HarmonyPath" -- $GameDir (Join-Path $PSScriptRoot 'source\bin\Release\netstandard2.1\MixedStorage.dll') $BeaverBuddiesPath
 if ($LASTEXITCODE -ne 0) { throw 'Visual and game API tests failed.' }
 $dist = Join-Path $PSScriptRoot 'dist'
 # Start from an empty staging folder so files from earlier builds are never packed.

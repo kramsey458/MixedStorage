@@ -10,7 +10,7 @@ Use .NET SDK 8 and local Timberborn 1.1.2.4, Harmony, and BeaverBuddies dependen
 
 Replace example paths with your installation paths. BeaverBuddies is required to build the bridge, although optional for players. The script builds the base API, compiles the bridge, then rebuilds the main DLL with the bridge embedded. A bootstrap build alone is not a distributable release. Checks run before the unified ZIP is written to `dist/`. The ZIP is made with Windows' `tar.exe`, because `Compress-Archive` in Windows PowerShell 5.1 writes `\` path separators that some macOS and Linux tools extract as flat file names. The staging folder is emptied first, and the ZIP is written under a temporary name and only renamed once its file list is exactly the README, manifest and DLL under `MixedStorage/`. Game and third-party DLLs are referenced locally, not distributed.
 
-Run allocation checks separately with `dotnet run --project tests/AllocationTests.csproj -c Release`. Use `build.ps1` for the full dependency-aware checks.
+Run allocation checks separately with `dotnet run --project tests/AllocationTests.csproj -c Release`. Use `build.ps1` for the full dependency-aware checks. After a build, the game API and patch target checks can be rerun with `dotnet run --project visual-tests/VisualTests.csproj -c Release "-p:GameDir=<game>" "-p:HarmonyPath=<0Harmony.dll>" -- <game> source/bin/Release/netstandard2.1/MixedStorage.dll <BeaverBuddies.dll>`.
 
 ## Allocation and persistence
 
@@ -45,7 +45,8 @@ The mod reuses the installed game's styles and assets: `NineSliceVisualElement` 
 ## Validation
 
 - 10,061 allocation assertions: 2,000 randomized splits, lists up to 100 goods, capacities 20/30/180/200/1000/1200, validation, rounding, persistence (every malformed saved value fails the one way loading handles), and delivery guards.
-- All 11 supported template names and storage categories checked against the game's Blueprints.zip.
+- All 11 supported template names checked against the game's Blueprints.zip: each has exactly one `<name>.blueprint.json`, with that template name and Box (warehouse) or Pileable (pile) goods.
+- Every Harmony patch in the built DLL checked against installed game assemblies (`visual-tests/PatchTargetTests.cs`), resolved the way Harmony does at startup: 22 targets in 20 patch classes, the 4 injected `___` fields and the 11 other named parameters, with their types. A renamed target would otherwise throw from `PatchAll` and stop the game from starting. The same test checks the 6 reflection handles the mod keeps in static fields, the 8 native visualizer members `MixedContentsRenderer` reads by name, and that the mod reads the installed BeaverBuddies' `EventIO.IsNull` as "no connection".
 - 201 whole-cell partition cases covering boundary ownership, complete topology, compact vertices, per-vertex attributes, and unknown-topology fallback.
 - 400 random piles (plain and rotated/scaled transforms, random section boundaries) whose extracted sections are compared triangle by triangle with the original algorithm that transformed and kept every vertex, plus the whole-mesh fit used for bulk surfaces.
 - Ten native API signatures checked against installed game assemblies: nine for rendering, plus the goods announcement. The old ambiguous Initialize lookup is reproduced as a regression check. A copy of the built mod with the announcement's name changed must report why at startup, refuse Apply and keep a mixed building mixed.
