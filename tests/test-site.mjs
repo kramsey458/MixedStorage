@@ -45,14 +45,16 @@ const zipOf = (r) => r.assets.find((a) => a.name === `MixedStorage-${r.tag_name}
 
 // A fetch that answers like api.github.com for this repository, `list` newest first. /releases?per_page=N returns
 // the first N; /releases/latest returns the newest release that is not a draft or a pre-release, or 404 when there
-// is none. `limited` answers 403 to everything, as GitHub does once an address has used its 60 lookups an hour.
-function fakeGitHub({ list = [], limited = false }) {
+// is none. `limited` answers 403 to everything, as GitHub does once an address has used its 60 lookups an hour, and
+// `latestStatus` makes /releases/latest alone fail with that status, as in an outage.
+function fakeGitHub({ list = [], limited = false, latestStatus = 0 }) {
   return async (url) => {
     const reply = (status, body) => ({ ok: status === 200, status, json: async () => JSON.parse(JSON.stringify(body)) });
     const m = /^https:\/\/api\.github\.com\/repos\/([\w.-]+\/[\w.-]+)\/releases(\/latest)?(?:\?per_page=(\d+))?$/.exec(String(url));
     if (!m || m[1] !== REPO) return reply(404, { message: 'Not Found' });
     if (limited) return reply(403, { message: 'API rate limit exceeded' });
     if (!m[2]) return reply(200, list.slice(0, Number(m[3] || 30)));
+    if (latestStatus) return reply(latestStatus, { message: 'Server Error' });
     const latest = list.find((r) => !r.draft && !r.prerelease);
     return latest ? reply(200, latest) : reply(404, { message: 'Not Found' });
   };
@@ -299,6 +301,10 @@ const releaseLinks = (document) => document.querySelectorAll('a').flatMap((a) =>
   const m = new RegExp(`^${RELEASES.replace(/[.]/g, '\\.')}/(?:tag|download)/([^/]+)`).exec(a.href);
   return m ? [[decodeURIComponent(m[1]), a.href]] : [];
 });
+// The links release.js points at the release it offers (data-release-href), as [page, kind, href].
+const scriptLinks = (docs) => [...docs].flatMap(([page, d]) => d.querySelectorAll('[data-release-href]')
+  .map((a) => [page, a.getAttribute('data-release-href'), a.href]));
+const loadsReleaseScript = (document) => document.querySelectorAll('script').some((s) => /(^|\/)release\.js$/.test(s.getAttribute('src') || ''));
 const mentions = (text, word) => new RegExp(`(^|[^\\w.-])${word.replace(/[.+]/g, '\\$&')}(?![\\w.-]*\\w)`).test(text);
 
 // ---------- checks ----------
@@ -329,10 +335,14 @@ check(shownHidden.length === 0, 'as written, before any script runs, the stylesh
 const relative = written.has('404.html') ? written.get('404.html').querySelectorAll('script, link').map((el) => el.getAttribute('src') || el.getAttribute('href') || '')
   .filter((ref) => ref && !isRemote(ref) && !ref.startsWith('/MixedStorage/')) : ['404.html is missing'];
 check(relative.length === 0, '404.html, which GitHub Pages serves at any address, loads its scripts and styles by absolute path', relative.join(', '));
+const unserved = pages.filter((page) => written.get(page).querySelectorAll('[data-release], [data-release-href], [data-release-show], [data-release-pinned]').length > 0
+  && !loadsReleaseScript(written.get(page)));
+check(unserved.length === 0, 'every page with markup for release.js loads it', unserved.join(', '));
 // release.js caches its answer per repository, not per page, so every page must ask for the same zip.
 const configs = new Set(pages.flatMap((page) => written.get(page).querySelectorAll('script').filter((s) => /(^|\/)release\.js$/.test(s.getAttribute('src') || ''))
   .map((s) => `data-repo="${s.getAttribute('data-repo')}" data-asset="${s.getAttribute('data-asset')}"`)));
 check(configs.size <= 1, 'every page loads release.js with the same data-repo and data-asset', [...configs].join(' vs '));
+const writtenScriptLinks = scriptLinks(written).map(([page, kind, href]) => `${page} ${kind}: ${href}`);
 const slots = new Set([...written.values()].flatMap((d) => d.querySelectorAll('.pill').map((el) => el.parentNode))).size;
 
 const pre = (version, options = {}) => release(version, { ...options, prerelease: true });
@@ -354,6 +364,8 @@ const scenarios = [
   { name: 'only pre-releases', list: [pre('1.1.0'), pre('1.0.0')], offer: 'v1.1.0' },
   { name: 'the Latest has no MixedStorage zip yet', list: [release('1.1.0', { files: [] }), release('1.0.0')], offer: null },
   { name: 'GitHub refuses the lookup', list: [release('1.0.0')], limited: true, offer: null },
+  // Only a 404 (no Latest at all) may fall back to a pre-release; an outage must not offer one over the Latest.
+  { name: '/releases/latest fails but the release list works', list: [pre('1.1.0'), release('1.0.0')], latestStatus: 500, offer: null },
   { name: 'no releases yet', list: [], offer: null },
 ];
 
@@ -386,6 +398,9 @@ for (const scenario of scenarios) {
       otherZips.join(', '));
     const stray = links.filter(([tag]) => tag !== offered.tag_name).map(([, href]) => href);
     check(stray.length === 0, `${scenario.name}: every link to a release goes to ${offered.tag_name}`, [...new Set(stray)].join(', '));
+    const want = { download: zip.browser_download_url, notes: offered.html_url };
+    const unfilled = scriptLinks(docs).filter(([, kind, href]) => href !== want[kind]).map(([page, kind, href]) => `${page} ${kind}: ${href}`);
+    check(unfilled.length === 0, `${scenario.name}: on every page, every link marked for release.js goes to ${offered.tag_name}`, unfilled.join(', '));
   } else {
     const moved = buttons.filter((b, i) => b.href !== fallbacks[i]).map((b) => b.href);
     check(buttons.length === buttonCount && moved.length === 0, `${scenario.name}: the download buttons keep the links the page was written with`,
@@ -398,6 +413,9 @@ for (const scenario of scenarios) {
     const hrefs = links.map(([, href]) => href);
     check(hrefs.join('|') === writtenLinks.join('|'), `${scenario.name}: no page links to a release it was not written with`,
       [...new Set(hrefs.filter((href) => !writtenLinks.includes(href)))].join(', '));
+    const now = scriptLinks(docs).map(([page, kind, href]) => `${page} ${kind}: ${href}`);
+    check(now.join('|') === writtenScriptLinks.join('|'), `${scenario.name}: every link marked for release.js keeps the address it was written with`,
+      now.filter((l) => !writtenScriptLinks.includes(l)).join(', '));
   }
 }
 
