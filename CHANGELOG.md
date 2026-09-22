@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.1
+
+Two fixes from the v1.1.0 reviews. Saves load both ways with v1.1.0; co-op players should update together.
+
+- A saved allocation that still names a good from a removed mod no longer throws an error when the building leaves mixed storage. Only goods the building accepts are announced to the game.
+- In the map editor, an undo that removes a building's allocation now updates the game's hauling caches and the building's visuals right away, instead of leaving the old limits cached and switching off the mixed visuals for that building.
+
 ## v1.1.0
 
 Fixes and checks from a review of v1.0.0. **All co-op players must update together.** Saves load both ways with v1.0.0.

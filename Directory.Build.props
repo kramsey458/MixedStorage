@@ -3,6 +3,6 @@
        with it (and the startup log line reads it from the assembly). build.ps1 refuses to build when
        packaging/MixedStorage/version-1.1/manifest.json says otherwise, and to package a DLL built with another. -->
   <PropertyGroup>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
   </PropertyGroup>
 </Project>
