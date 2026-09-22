@@ -2,7 +2,8 @@ using MixedStorage;
 using UnityEngine;
 int count = 0;
 void Check(bool ok, string name) { count++; if (!ok) throw new Exception(name); }
-GameApiTests.Run(args.Length > 0 ? args[0] : @"C:\Program Files (x86)\Steam\steamapps\common\Timberborn");
+GameApiTests.Run(args.Length > 0 ? args[0] : @"C:\Program Files (x86)\Steam\steamapps\common\Timberborn",
+ args.Length > 1 ? args[1] : Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "source", "bin", "Release", "netstandard2.1", "MixedStorage.dll"));
 
 var cellPoints = new[] { new Vector3(-1,0,0), new Vector3(1,0,0), new Vector3(1,1,0), new Vector3(-1,1,0) };
 var cellPattern = new[] {0,1,2,0,2,3};

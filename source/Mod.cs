@@ -21,6 +21,8 @@ namespace MixedStorage
             OptionalMultiplayer.Initialize();
             if (OptionalMultiplayer.Failure != null)
                 Debug.LogError("[MixedStorage] " + OptionalMultiplayer.UnavailableReason + "\n" + OptionalMultiplayer.Failure);
+            // Throwing here would stop every later mod and the game from starting; allocations are frozen instead.
+            if (StorageState.UnavailableReason != null) Debug.LogError("[MixedStorage] " + StorageState.UnavailableReason);
             new Harmony("kyler.mixedstorage").PatchAll(typeof(ModStarter).Assembly);
             Debug.Log("[MixedStorage] " + typeof(ModStarter).Assembly.GetName().Version.ToString(3) + " loaded; warehouse and pile allocations for Timberborn 1.1.2.4.");
         }
