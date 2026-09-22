@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace MixedStorage
 {
-    internal sealed class StorageState
+    internal sealed class StorageState : IStorageContents
     {
         private static readonly ConditionalWeakTable<SingleGoodAllower, StorageState> States = new ConditionalWeakTable<SingleGoodAllower, StorageState>();
         private static readonly ComponentKey SaveKey = new ComponentKey("MixedStorage.Allocation");
@@ -94,19 +94,14 @@ namespace MixedStorage
         public bool CanApply(IReadOnlyDictionary<string, int> draft, out string error)
         {
             error = UnavailableReason;
-            if (error != null) return false;
-            if (!AllocationPlan.IsValid(draft)) { error = "Percentages must total exactly 100%."; return false; }
-            if (draft.Any(x => x.Value > 0 && !Inventory.Takes(x.Key)))
-            { error = "Set unavailable goods to 0% before applying."; return false; }
-            var limits = AllocationPlan.Capacities(draft, Inventory.Capacity);
-            foreach (var good in Inventory.InputGoods)
-            {
-                limits.TryGetValue(good, out int limit);
-                if (AllocationPlan.ConflictsWithDelivery(Inventory.AmountInStock(good), Inventory.ReservedCapacity(good), limit))
-                { error = "Wait for incoming deliveries to finish before lowering their limits."; return false; }
-            }
-            return true;
+            return error == null && AllocationPlan.CanApply(draft, this, out error);
         }
+
+        int IStorageContents.Capacity => Inventory.Capacity;
+        IEnumerable<string> IStorageContents.Goods { get { foreach (string good in Inventory.InputGoods) yield return good; } }
+        bool IStorageContents.Takes(string good) => Inventory.Takes(good);
+        int IStorageContents.Stock(string good) => Inventory.AmountInStock(good);
+        int IStorageContents.Incoming(string good) => Inventory.ReservedCapacity(good);
 
         public bool TryApply(IReadOnlyDictionary<string, int> draft, out string error)
         {

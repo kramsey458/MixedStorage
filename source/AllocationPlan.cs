@@ -5,6 +5,26 @@ using System.Linq;
 
 namespace MixedStorage
 {
+    // What the allocation guards read from a building. All of it is simulation state that every co-op
+    // player shares, so every player replaying a change decides the same way.
+    public interface IStorageContents
+    {
+        int Capacity { get; }
+        // The goods the building accepts; it only ever holds those.
+        IEnumerable<string> Goods { get; }
+        bool Takes(string good);
+        int Stock(string good);
+        int Incoming(string good);
+    }
+
+    // What the game's Duplicate settings tool does to a building this mod manages.
+    public enum CopyPlan { BaseGame, CopyAllocation, LeaveMixed, Refuse, KeepAllocation }
+
+    // What DuplicatePatch does for a plan, in this order: leave mixed mode, let the base game copy the single
+    // good, apply the copied allocation afterwards, and log a refusal.
+    [Flags]
+    public enum CopySteps { None = 0, LeaveMixed = 1, RunBaseGame = 2, ApplyAllocation = 4, LogRefusal = 8 }
+
     // Integer hundredths of a percent: validation never depends on float tolerances.
     public static class AllocationPlan
     {
@@ -87,6 +107,71 @@ namespace MixedStorage
 
         public static bool ConflictsWithDelivery(int stock, int incoming, int limit) =>
             incoming > 0 && (long)stock + incoming > limit;
+
+        public static bool CanApply(IReadOnlyDictionary<string, int> draft, IStorageContents storage, out string error)
+        {
+            error = null;
+            if (!IsValid(draft)) { error = "Percentages must total exactly 100%."; return false; }
+            if (draft.Any(x => x.Value > 0 && !storage.Takes(x.Key)))
+            { error = "Set unavailable goods to 0% before applying."; return false; }
+            return FitsDeliveries(Capacities(draft, storage.Capacity), storage, out error);
+        }
+
+        // Leaving mixed mode for the base game's single-good rules lowers limits just like Apply, so it gets the
+        // same incoming-delivery guard. The base game (SingleGoodAllower.AllowedAmount) has room only for the
+        // kept good, and none for it either while any other good is in stock.
+        public static bool CanLeave(string kept, IStorageContents storage, out string error)
+        {
+            var limits = new Dictionary<string, int>(StringComparer.Ordinal);
+            if (kept != null && !storage.Goods.Any(x => x != kept && storage.Stock(x) > 0)) limits[kept] = storage.Capacity;
+            return FitsDeliveries(limits, storage, out error);
+        }
+
+        private static bool FitsDeliveries(IReadOnlyDictionary<string, int> limits, IStorageContents storage, out string error)
+        {
+            error = null;
+            foreach (string good in storage.Goods)
+            {
+                limits.TryGetValue(good, out int limit);
+                if (ConflictsWithDelivery(storage.Stock(good), storage.Incoming(good), limit))
+                { error = "Wait for incoming deliveries to finish before lowering their limits."; return false; }
+            }
+            return true;
+        }
+
+        // The game's Duplicate settings tool onto a building this mod manages. sourceShares is the source's
+        // allocation, null unless it is mixed, and sourceGood its single good. A mixed source applies through
+        // the same checks as Apply. A source set to store nothing, such as a building just placed, leaves a mixed
+        // target's allocation alone, so copying its other settings (the storage mode, for example) does not wipe
+        // it. Any other source gives the target that good, as in the base game, so a mixed target leaves mixed
+        // mode first, unless that conflicts with an incoming delivery.
+        public static CopyPlan PlanCopy(IReadOnlyDictionary<string, int> sourceShares, string sourceGood, bool targetMixed,
+            IStorageContents target, out string error)
+        {
+            error = null;
+            if (sourceShares != null) return CanApply(sourceShares, target, out error) ? CopyPlan.CopyAllocation : CopyPlan.Refuse;
+            // The base game leaves the target unchanged when it does not take the source's good.
+            if (!targetMixed || sourceGood != null && !target.Takes(sourceGood)) return CopyPlan.BaseGame;
+            if (sourceGood == null) return CopyPlan.KeepAllocation;
+            return CanLeave(sourceGood, target, out error) ? CopyPlan.LeaveMixed : CopyPlan.Refuse;
+        }
+
+        // What DuplicatePatch does for each plan, kept here so the allocation tests cover it. A copied allocation
+        // lets the base game give the target the source's representative good first (AllowPatch ignores that on
+        // a mixed target), then applies. A leave happens before the base game's copy, which AllowPatch would
+        // otherwise block. A refusal changes nothing on the target and is logged. Keeping the allocation skips the
+        // base game's copy, which would clear the target's good (AllowPatch blocks that on a mixed target anyway).
+        public static CopySteps Steps(CopyPlan plan)
+        {
+            switch (plan)
+            {
+                case CopyPlan.CopyAllocation: return CopySteps.RunBaseGame | CopySteps.ApplyAllocation;
+                case CopyPlan.LeaveMixed: return CopySteps.LeaveMixed | CopySteps.RunBaseGame;
+                case CopyPlan.Refuse: return CopySteps.LogRefusal;
+                case CopyPlan.KeepAllocation: return CopySteps.None;
+                default: return CopySteps.RunBaseGame;
+            }
+        }
 
         public static string Serialize(IReadOnlyDictionary<string, int> shares)
         {

@@ -88,4 +88,5 @@ if (mode == "with")
     init.Invoke(null, null);
     if (!ReferenceEquals(first, field.GetValue(null))) throw new Exception("Initialization is not idempotent.");
 }
+if (mode == "without") ReplayChecks.Run(main);
 Console.WriteLine($"PASS: {mode} BeaverBuddies — enumerated {types.Length} main types; optional load and delegate checks passed.");
