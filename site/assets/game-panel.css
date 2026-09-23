@@ -148,6 +148,8 @@
 .ig-total.is-bad { color: var(--ig-bad); }
 .ig-actions { display: flex; gap: 4px; margin-top: 6px; padding-right: 7px; }
 .ig-actions .ig-apply { flex: 1 1 0; margin-right: 0; }
+/* Unapplied changes: an orange ring around the button's own frame, as in the mod. */
+.ig-apply.is-pending { font-weight: 700; box-shadow: 0 0 0 2px var(--ig-orange), inset 0 0 0 1.5px var(--ig-tan-line); }
 .ig-clip .ig-btn { margin-right: 0; }
 
 @media (max-width: 900px) {

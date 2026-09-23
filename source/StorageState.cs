@@ -111,6 +111,20 @@ namespace MixedStorage
             return true;
         }
 
+        // Apply with every good at 0%: the building stores nothing, as when it was just built. It leaves mixed mode
+        // and gives up its single good. Every limit drops to 0, so it gets the same incoming-delivery guard as any
+        // other lowered limit; stock already here stays as excess.
+        public bool TryClear(out string error)
+        {
+            error = Active ? UnavailableReason : null;
+            if (error != null || !AllocationPlan.CanLeave(null, this, out error)) return false;
+            Deactivate();
+            Allower.Disallow();
+            // An open editor reloads its draft, also when the building was not mixed.
+            Revision++;
+            return true;
+        }
+
         private void SetShares(IReadOnlyDictionary<string, int> shares)
         {
             Shares = shares?.Where(x => x.Value > 0).ToDictionary(x => x.Key, x => x.Value, StringComparer.Ordinal);

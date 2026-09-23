@@ -137,6 +137,47 @@ for (int run = 0; run < 1000; run++)
         "Apply is available exactly for a readable 100% draft of accepted goods");
 }
 
+// Every good at 0% (Clear all, or resetting the last allocated good) applies too: the building stores nothing, as when
+// it was just built. Copy stays off for it (StorageView.Validate), since there is no allocation to copy.
+const string NothingText = "0% allocated — Apply to store nothing";
+Status(new Dictionary<string, int> { ["Log"] = 0, ["Plank"] = 0 }, _ => true, true, true, NothingText, "A draft of all 0% can be applied");
+Status(new Dictionary<string, int> { ["Log"] = 0 }, _ => false, true, true, NothingText, "Goods this building does not accept may stay at 0% when storing nothing");
+Status(new Dictionary<string, int> { ["Log"] = 0 }, _ => true, false, false, "Enter valid percentages (0–100, 2 decimals)", "Unreadable fields still come first");
+Check(AllocationPlan.IsNothing(new Dictionary<string, int> { ["Log"] = 0, ["Plank"] = 0 }), "All 0% stores nothing");
+Check(!AllocationPlan.IsNothing(new Dictionary<string, int> { ["Log"] = 0, ["Plank"] = 1 }), "0.01% of one good is not nothing");
+Check(!AllocationPlan.IsNothing(new Dictionary<string, int>()) && !AllocationPlan.IsNothing(null), "A draft without goods is not an Apply to store nothing");
+// Apply's payload: an allocation reads back as before, and storing nothing as no goods. Saves never read the latter.
+var nothingDraft = new Dictionary<string, int> { ["Log"] = 0, ["Plank"] = 0 };
+Check(AllocationPlan.SerializeCommand(nothingDraft) == AllocationPlan.Nothing && AllocationPlan.DeserializeCommand(AllocationPlan.Nothing).Count == 0,
+    "Storing nothing is sent as no goods");
+var halves = new Dictionary<string, int> { ["Log"] = 5000, ["Plank"] = 5000, ["Gear"] = 0 };
+var sentHalves = AllocationPlan.DeserializeCommand(AllocationPlan.SerializeCommand(halves));
+Check(sentHalves.Count == 2 && sentHalves["Log"] == 5000 && sentHalves["Plank"] == 5000, "An allocation is sent as before");
+Check(AllocationPlan.SerializeCommand(halves) == AllocationPlan.Serialize(halves), "An allocation's payload is unchanged, so saves are too");
+Reject(() => AllocationPlan.Deserialize(AllocationPlan.Nothing), "A save cannot hold an allocation of nothing");
+Reject(() => AllocationPlan.SerializeCommand(new Dictionary<string, int> { ["Log"] = 5000 }), "A 50% draft cannot be sent");
+foreach (string malformed in new[] { null, "", "1", "1|A", "1|A=9999", "2|" })
+{
+    bool format = false;
+    try { AllocationPlan.DeserializeCommand(malformed); } catch (FormatException) { format = true; }
+    Check(format, "A malformed Apply payload fails with FormatException: " + (malformed ?? "null"));
+}
+// Storing nothing lowers every limit to 0, so it waits for every incoming delivery (StorageState.TryClear).
+var clearing = new FakeStorage(180, "Log", "Plank");
+clearing.StockOf["Log"] = 40;
+Check(AllocationPlan.CanLeave(null, clearing, out string clearError) && clearError == null, "Stock alone does not stop storing nothing; it stays as excess");
+clearing.IncomingOf["Plank"] = 5;
+Check(!AllocationPlan.CanLeave(null, clearing, out clearError) && clearError == "Wait for incoming deliveries to finish before lowering their limits.",
+    "Storing nothing waits for an incoming delivery");
+
+// Apply stands out while the draft differs from what the building has applied (StorageView.ShowUnapplied).
+var applied = new Dictionary<string, int> { ["Log"] = 10000, ["Plank"] = 0 };
+Check(!AllocationPlan.Differs(new Dictionary<string, int> { ["Plank"] = 0, ["Log"] = 10000 }, applied), "The applied allocation, in any order, is not a change");
+Check(AllocationPlan.Differs(new Dictionary<string, int> { ["Log"] = 0, ["Plank"] = 10000 }, applied), "Max on another good is a change");
+Check(AllocationPlan.Differs(new Dictionary<string, int> { ["Log"] = 0, ["Plank"] = 0 }, applied), "Clearing every good is a change");
+Check(AllocationPlan.Differs(new Dictionary<string, int> { ["Log"] = 10000 }, applied) &&
+    AllocationPlan.Differs(new Dictionary<string, int> { ["Log"] = 10000, ["Gear"] = 0 }, applied), "A different list of goods is a change");
+
 var maxPlan = AllocationPlan.Max(new[] { "Log", "Plank", "ScrapMetal" }, "Plank");
 Check(maxPlan["Plank"] == 10000 && maxPlan["Log"] == 0 && maxPlan["ScrapMetal"] == 0, "Max clears every other good");
 Reject(() => AllocationPlan.Max(new[] { "Log" }, "Bread"), "Max rejects unavailable good");

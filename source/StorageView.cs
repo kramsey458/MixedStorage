@@ -50,6 +50,8 @@ namespace MixedStorage
         private static readonly Color Divider = new Color(.8f, .75f, .55f, .3f);
         private static readonly Color Error = new Color(1f, .52f, .43f);
         private static readonly Color Green = new Color(.57f, .89f, .66f);
+        // The game's orange, as on its stock bars; the button's own cream frame stays inside the ring.
+        private static readonly Color Highlight = new Color(1f, .65f, .06f);
         private readonly IGoodService _goods;
         private readonly VisualElementLoader _visualElementLoader;
         private readonly VisualTreeAsset _inputTemplate;
@@ -76,6 +78,7 @@ namespace MixedStorage
         private int _revision;
         private int _messageRevision;
         private float _nextRefresh;
+        private bool _applyHighlighted;
         private VisualElement _entityPanel;
         private StyleLength _originalPanelWidth;
         public VisualElement Root { get; }
@@ -352,20 +355,40 @@ namespace MixedStorage
         private void Validate()
         {
             var (valid, status) = AllocationPlan.DraftStatus(_draft, _state.Inventory.Takes, _rows.All(x => x.Valid));
+            bool nothing = valid && AllocationPlan.IsNothing(_draft);
             _apply.SetEnabled(valid && !_state.Pending);
-            _copy.SetEnabled(valid);
+            _apply.text = nothing ? "Apply: store nothing" : "Apply 100%";
+            _copy.SetEnabled(valid && !nothing);
             _paste.SetEnabled(_copiedAllocation != null && !_state.Pending);
             _total.text = status;
             _total.style.color = valid ? Green : Error;
             // Point at the goods that keep Apply off.
             foreach (var row in _rows)
                 row.NameLabel.style.color = !row.Accepted && _draft[row.Id] > 0 ? new StyleColor(Error) : new StyleColor(StyleKeyword.Null);
-            _preview = valid ? AllocationPlan.Capacities(_draft, _state.Inventory.Capacity) : null;
-            foreach (var row in _rows) row.Limit.text = _preview != null ? _preview[row.Id].ToString() : "—";
+            _preview = valid && !nothing ? AllocationPlan.Capacities(_draft, _state.Inventory.Capacity) : null;
+            foreach (var row in _rows) row.Limit.text = _preview != null ? _preview[row.Id].ToString() : nothing ? "0" : "—";
             int zeroSlots = _preview == null ? 0 : _draft.Count(x => x.Value > 0 && _preview[x.Key] == 0);
-            _rounding.text = zeroSlots > 0 ? zeroSlots + " allocated good(s) round to 0 items. Increase their shares or use larger storage." :
+            _rounding.text = nothing ? "Every limit becomes 0. Stock already here is kept and can be hauled out." :
+                zeroSlots > 0 ? zeroSlots + " allocated good(s) round to 0 items. Increase their shares or use larger storage." :
                 "Limits round to whole items; leftover slots go to the largest fractions. All slots are allocated.";
             _rounding.style.color = zeroSlots > 0 ? Error : Muted;
+            ShowUnapplied();
+        }
+
+        // The message line can be scrolled out of view, so Apply itself stands out while pressing it would change
+        // the building. NineSliceButton draws its background inside the border, so the border is a ring around it.
+        private void ShowUnapplied()
+        {
+            bool on = _apply.enabledSelf && AllocationPlan.Differs(_draft, _state.Draft());
+            if (on == _applyHighlighted) return;
+            _applyHighlighted = on;
+            var width = on ? new StyleFloat(2) : new StyleFloat(StyleKeyword.Null);
+            var color = on ? new StyleColor(Highlight) : new StyleColor(StyleKeyword.Null);
+            var radius = on ? new StyleLength(3) : new StyleLength(StyleKeyword.Null);
+            _apply.style.borderTopWidth = _apply.style.borderBottomWidth = _apply.style.borderLeftWidth = _apply.style.borderRightWidth = width;
+            _apply.style.borderTopColor = _apply.style.borderBottomColor = _apply.style.borderLeftColor = _apply.style.borderRightColor = color;
+            _apply.style.borderTopLeftRadius = _apply.style.borderTopRightRadius = _apply.style.borderBottomLeftRadius = _apply.style.borderBottomRightRadius = radius;
+            _apply.style.unityFontStyleAndWeight = on ? new StyleEnum<FontStyle>(FontStyle.Bold) : new StyleEnum<FontStyle>(StyleKeyword.Null);
         }
 
         private void Filter()
@@ -393,7 +416,7 @@ namespace MixedStorage
                 SetInputValidity(row.Percent, true);
             }
             _allocatedOnly.SetValueWithoutNotify(false);
-            _message.text = "Draft cleared. Existing allocations remain active until Apply.";
+            _message.text = "Draft cleared. Apply to store nothing here, or set new percentages. Nothing changes until Apply.";
             _message.style.color = Muted;
             Validate(); Filter();
         }
@@ -439,7 +462,7 @@ namespace MixedStorage
         {
             if (_rows.Any(x => !x.Valid)) return;
             SubmissionResult result;
-            try { result = AllocationCommands.Submit(_state, AllocationPlan.Serialize(_draft)); }
+            try { result = AllocationCommands.Submit(_state, AllocationPlan.SerializeCommand(_draft)); }
             catch (Exception ex)
             {
                 // Otherwise the click would just do nothing; the log keeps the full details.
@@ -454,7 +477,7 @@ namespace MixedStorage
                 _state.Pending = true;
                 _message.text = "Queued for multiplayer. Applies on the next simulation tick.";
                 _message.style.color = Muted;
-                _apply.SetEnabled(false);
+                Validate();
             }
             else ShowResult();
             RefreshStock();
@@ -469,6 +492,8 @@ namespace MixedStorage
             if (_messageRevision != _state.MessageRevision) { ShowResult(); Validate(); }
             if (Time.unscaledTime < _nextRefresh) return;
             _nextRefresh = Time.unscaledTime + .4f;
+            // The building's good can also change without a new revision (the goods dropdown of the game's building list).
+            ShowUnapplied();
             RefreshStock();
         }
 
@@ -546,7 +571,8 @@ namespace MixedStorage
         {
             var inventory = _state.Inventory;
             _summary.text = inventory.TotalAmountInStock + " / " + inventory.Capacity + " items · " +
-                (_state.Active ? _state.Shares.Count + (_state.Shares.Count == 1 ? " good allocated" : " goods allocated") : "Single-good settings active");
+                (_state.Active ? _state.Shares.Count + (_state.Shares.Count == 1 ? " good allocated" : " goods allocated") :
+                 _state.Allower.HasAllowedGood ? "Single-good settings active" : "Stores nothing");
             int visibleContents = 0;
             foreach (var row in _rows)
             {

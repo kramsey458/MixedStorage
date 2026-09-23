@@ -4,9 +4,9 @@
 
 Divide a building's capacity by percentage. For example, a 1,200-capacity warehouse can reserve **50% for carrots (600)** and **50% for gears (600)**. Percentages reserve space; they do not create goods or instantly fill the building.
 
-**[Download MixedStorage v1.1.1](https://github.com/timbermods/MixedStorage/releases/download/v1.1.1/MixedStorage-v1.1.1.zip)** · [Release notes](https://github.com/timbermods/MixedStorage/releases/tag/v1.1.1) · [Report a problem](https://github.com/timbermods/MixedStorage/issues) · [Website](https://timbermods.github.io/MixedStorage/)
+**[Download MixedStorage v1.2.0](https://github.com/timbermods/MixedStorage/releases/download/v1.2.0/MixedStorage-v1.2.0.zip)** · [Release notes](https://github.com/timbermods/MixedStorage/releases/tag/v1.2.0) · [Report a problem](https://github.com/timbermods/MixedStorage/issues) · [Website](https://timbermods.github.io/MixedStorage/)
 
-> **v1.1.1** is the current release, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer.
+> **v1.2.0** is the current release, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer.
 
 <img width="625" height="1112" alt="image" src="https://github.com/user-attachments/assets/862e5c13-33a0-47ed-9515-9e2dffefe3a9" />
 
@@ -22,7 +22,7 @@ Divide a building's capacity by percentage. For example, a 1,200-capacity wareho
 
 ## Install
 
-1. Download **MixedStorage-v1.1.1.zip** above. On the release page, choose that file under **Assets**, not **Source code**.
+1. Download **MixedStorage-v1.2.0.zip** above. On the release page, choose that file under **Assets**, not **Source code**.
 2. Close Timberborn. Extract the ZIP's **MixedStorage** folder into your Timberborn **Mods** folder—normally `Documents\Timberborn\Mods` on Windows.
 3. Check that `Documents\Timberborn\Mods\MixedStorage\version-1.1\manifest.json` exists. Avoid an extra nested MixedStorage folder.
 4. Install **Harmony** 2.4.1 or newer from the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3284904751) if you don't have it. Enable **Harmony** and **MixedStorage** in the game's mod manager, then restart when prompted.
@@ -40,13 +40,15 @@ Divide a building's capacity by percentage. For example, a 1,200-capacity wareho
 
 For the example above, enter `50` for carrots and `50` for gears, with everything else at `0`. A 1,200-capacity warehouse will allow 600 of each.
 
-**Edits are drafts until you click Apply.** The top summary continues to show the applied settings and actual stock while you edit, search, or filter. Normal hauling rules determine when goods arrive.
+To store nothing in a building, set every good to 0% (for example with **Clear all**) and click **Apply: store nothing**. It then stores nothing, like a newly built one. Stock already there is kept and can be hauled out.
+
+**Edits are drafts until you click Apply.** While the draft differs from the building's current settings, the Apply button gets an orange border and bold text. The top summary continues to show the applied settings and actual stock while you edit, search, or filter. Normal hauling rules determine when goods arrive.
 
 | Control | What it does |
 | --- | --- |
 | **Max** | Sets that good to 100% and all others to 0%. Click Apply to confirm. |
 | **× beside a percentage** | Resets that good's draft percentage to 0%. |
-| **Clear all** | Clears draft percentages. Current allocations stay active until you apply a valid replacement. |
+| **Clear all** | Sets every draft percentage to 0%. Apply it to store nothing, or enter new percentages. Current allocations stay active until you click Apply. |
 | **Revert** | Discards edits and restores the current settings. |
 | **Allocated goods only** | Shows goods with a nonzero draft percentage. |
 | **Copy allocations** | Copies a valid draft totaling 100%. |
@@ -89,7 +91,7 @@ Applied allocations synchronize through BeaverBuddies. Apply may briefly show a 
 | Problem | Check this |
 | --- | --- |
 | Mod does not appear | Check the folder structure, enable Harmony and MixedStorage, and restart. |
-| Apply is unavailable | Every percentage must be valid and the total must be exactly 100%. Goods marked "(not accepted here)" or "(unavailable)", which a saved allocation can still hold after a goods mod is removed, must be set to 0%. Wait if a multiplayer change is queued. |
+| Apply is unavailable | Every percentage must be valid and the total must be exactly 100%, or 0% to store nothing. Goods marked "(not accepted here)" or "(unavailable)", which a saved allocation can still hold after a goods mod is removed, must be set to 0%. Wait if a multiplayer change is queued. |
 | Paste is rejected | The destination must accept every good with a nonzero copied percentage. |
 | Lower limit is rejected | Wait for incoming deliveries to finish. |
 | Startup mentions the old addon | Remove or disable MixedStorage-BeaverBuddies, then fully restart. |
@@ -110,7 +112,7 @@ Built against **Timberborn 1.1.2.4**.
 
 The bundled multiplayer integration is built against the **[BeaverBuddies Stability Fork](https://github.com/timbermods/BeaverBuddies-Stability-Fork)** (formerly called Stability Preview), which is the build to use. Every Stability Fork release so far, 1.0.0 through 1.1.12, has everything the integration needs; install the latest. At startup, MixedStorage checks the installed BeaverBuddies for every part it uses. If anything is missing, it turns co-op Apply off rather than risk a desync, and Player.log names what is missing. The original [BeaverBuddies](https://github.com/thomaswp/BeaverBuddies) by thomaswp and contributors, and BeaverBuddies MultiColony (Beta), have not been tested with MixedStorage.
 
-Players have reported successful use of earlier builds, and the **v0.5.8 layout, including the dev-mode panel, and the v0.5.7 storage visuals have been verified in game**; v1.0.0 and v1.1.x leave both unchanged. The v1.0.0 and v1.1.x changes (Copy settings, error messages, loading damaged saves, the Supply mode order, the panel's reason for an unavailable Apply, patch order, and leaving mixed storage with a removed good or through the map editor's undo) have not been played in game yet. Automated allocation, geometry, native API, and optional multiplayer loading checks also pass, but these do not replace live gameplay testing.
+Players have reported successful use of earlier builds, and the **v0.5.8 layout, including the dev-mode panel, and the v0.5.7 storage visuals have been verified in game**; v1.0.0 through v1.2.0 leave both unchanged apart from v1.2.0's orange ring around Apply. The v1.0.0 to v1.2.0 changes (Copy settings, error messages, loading damaged saves, the Supply mode order, the panel's reason for an unavailable Apply, patch order, leaving mixed storage with a removed good or through the map editor's undo, and in v1.2.0 storing nothing and the Apply ring) have not been played in game yet. Automated allocation, geometry, native API, and optional multiplayer loading checks also pass, but these do not replace live gameplay testing.
 
 See the [changelog](CHANGELOG.md) for version history and [developer notes](docs/DEVELOPMENT.md) for build instructions and technical details.
 

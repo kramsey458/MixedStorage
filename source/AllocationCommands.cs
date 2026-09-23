@@ -45,8 +45,14 @@ namespace MixedStorage
             var state = StorageState.Get(allower);
             if (state == null) { message = "Storage no longer exists or is unsupported."; return false; }
             Dictionary<string, int> plan;
-            try { plan = AllocationPlan.Deserialize(payload); }
+            try { plan = AllocationPlan.DeserializeCommand(payload); }
             catch (FormatException) { message = "The allocation could not be read. Nothing was changed."; return false; }
+            if (plan.Count == 0)
+            {
+                if (!state.TryClear(out message)) return false;
+                message = "Applied. This building stores nothing now; stock already here can be hauled out.";
+                return true;
+            }
             if (!state.TryApply(plan, out message)) return false;
             message = "Applied. Excess stock is preserved and can be hauled out.";
             return true;
