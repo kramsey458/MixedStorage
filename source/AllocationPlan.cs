@@ -69,12 +69,24 @@ namespace MixedStorage
             shares.All(x => !string.IsNullOrEmpty(x.Key) && x.Value >= 0 && x.Value <= Total) &&
             shares.Sum(x => (long)x.Value) == Total;
 
-        // The editor's total line, and whether its draft may be applied or copied. A saved allocation can still name a
-        // good this building does not accept, for example after a goods mod was removed. Such a draft can total
-        // 100% and still not apply (StorageState.CanApply), so the line says what to change instead.
+        // A draft with every good at 0%. Applying it makes the building store nothing, as when it was just built
+        // (StorageState.TryClear), instead of being refused for not totaling 100%.
+        public static bool IsNothing(IReadOnlyDictionary<string, int> draft) =>
+            draft != null && draft.Count > 0 && draft.Values.All(x => x == 0);
+
+        // Whether the editor's draft differs from what the building has applied (StorageState.Draft), so the editor
+        // can point at Apply.
+        public static bool Differs(IReadOnlyDictionary<string, int> draft, IReadOnlyDictionary<string, int> applied) =>
+            draft.Count != applied.Count || draft.Any(x => !applied.TryGetValue(x.Key, out int share) || share != x.Value);
+
+        // The editor's total line, and whether its draft may be applied. A saved allocation can still name a good this
+        // building does not accept, for example after a goods mod was removed. Such a draft can total 100% and still
+        // not apply (StorageState.CanApply), so the line says what to change instead. A draft of all 0% applies too,
+        // but only a valid allocation can be copied.
         public static (bool Valid, string Text) DraftStatus(IReadOnlyDictionary<string, int> draft, Func<string, bool> takes, bool fieldsValid)
         {
             if (!fieldsValid) return (false, "Enter valid percentages (0–100, 2 decimals)");
+            if (IsNothing(draft)) return (true, "0% allocated — Apply to store nothing");
             long total = draft.Values.Sum(x => (long)x);
             if (total != Total)
                 return (false, (total / 100m).ToString("0.##") + "% / 100% — " + (Math.Abs(total - Total) / 100m).ToString("0.##") +
@@ -179,6 +191,16 @@ namespace MixedStorage
             return "1|" + string.Join(";", shares.Where(x => x.Value > 0).OrderBy(x => x.Key, StringComparer.Ordinal)
                 .Select(x => Uri.EscapeDataString(x.Key) + "=" + x.Value.ToString(CultureInfo.InvariantCulture)));
         }
+
+        // Apply's payload for a draft of all 0% (IsNothing). Saves never hold it: a building that stores nothing has no
+        // allocation. Earlier versions cannot read it, so co-op players must run the same version.
+        public const string Nothing = "1|";
+
+        public static string SerializeCommand(IReadOnlyDictionary<string, int> draft) => IsNothing(draft) ? Nothing : Serialize(draft);
+
+        // An Apply payload: an allocation, or no goods at all for Nothing.
+        public static Dictionary<string, int> DeserializeCommand(string value) =>
+            value == Nothing ? new Dictionary<string, int>(StringComparer.Ordinal) : Deserialize(value);
 
         public static Dictionary<string, int> Deserialize(string value)
         {

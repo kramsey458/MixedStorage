@@ -40,13 +40,15 @@ Divide a building's capacity by percentage. For example, a 1,200-capacity wareho
 
 For the example above, enter `50` for carrots and `50` for gears, with everything else at `0`. A 1,200-capacity warehouse will allow 600 of each.
 
-**Edits are drafts until you click Apply.** The top summary continues to show the applied settings and actual stock while you edit, search, or filter. Normal hauling rules determine when goods arrive.
+To store nothing in a building, set every good to 0% (for example with **Clear all**) and click **Apply: store nothing**. It then stores nothing, like a newly built one. Stock already there is kept and can be hauled out.
+
+**Edits are drafts until you click Apply.** While the draft differs from the building's current settings, the Apply button gets an orange border and bold text. The top summary continues to show the applied settings and actual stock while you edit, search, or filter. Normal hauling rules determine when goods arrive.
 
 | Control | What it does |
 | --- | --- |
 | **Max** | Sets that good to 100% and all others to 0%. Click Apply to confirm. |
 | **× beside a percentage** | Resets that good's draft percentage to 0%. |
-| **Clear all** | Clears draft percentages. Current allocations stay active until you apply a valid replacement. |
+| **Clear all** | Sets every draft percentage to 0%. Apply it to store nothing, or enter new percentages. Current allocations stay active until you click Apply. |
 | **Revert** | Discards edits and restores the current settings. |
 | **Allocated goods only** | Shows goods with a nonzero draft percentage. |
 | **Copy allocations** | Copies a valid draft totaling 100%. |
@@ -89,7 +91,7 @@ Applied allocations synchronize through BeaverBuddies. Apply may briefly show a 
 | Problem | Check this |
 | --- | --- |
 | Mod does not appear | Check the folder structure, enable Harmony and MixedStorage, and restart. |
-| Apply is unavailable | Every percentage must be valid and the total must be exactly 100%. Goods marked "(not accepted here)" or "(unavailable)", which a saved allocation can still hold after a goods mod is removed, must be set to 0%. Wait if a multiplayer change is queued. |
+| Apply is unavailable | Every percentage must be valid and the total must be exactly 100%, or 0% to store nothing. Goods marked "(not accepted here)" or "(unavailable)", which a saved allocation can still hold after a goods mod is removed, must be set to 0%. Wait if a multiplayer change is queued. |
 | Paste is rejected | The destination must accept every good with a nonzero copied percentage. |
 | Lower limit is rejected | Wait for incoming deliveries to finish. |
 | Startup mentions the old addon | Remove or disable MixedStorage-BeaverBuddies, then fully restart. |
