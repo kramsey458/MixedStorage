@@ -392,7 +392,7 @@
         "role": "tertiary",
         "displayName": "Pale Kraft",
         "canonical": "#d9ccb3",
-        "purpose": "Footer body text on walnut.",
+        "purpose": "Footer body text on walnut. Shipped as a literal #d9ccb3 in style.css (.site-footer p, .footer__fine); there is no --kraft-pale custom property.",
         "tonalRamp": [
           "#292214",
           "#4b3e25",
@@ -590,7 +590,15 @@
         ],
         "note": "Reproduces the mod's panel in the game's colours, frames and Noto Sans; reads only --ink, --muted, --edge and --orange from the site. Not site style: don't reuse it or restyle it."
       }
-    ]
+    ],
+    "browserChrome": {
+      "theme-color": "#16231c",
+      "purpose": "<meta name=\"theme-color\" content=\"#16231c\"> on every page, one value for both modes (a green-black near the night ground); not a palette token."
+    },
+    "carcassFill": {
+      "value": "#3a2416",
+      "purpose": "The fill under the walnut texture on the cabinet carcass (.cab) and the scale folio mini cabinets (.mini-cab); drawers use walnut-2 #5d3c28."
+    }
   },
   "components": [
     {

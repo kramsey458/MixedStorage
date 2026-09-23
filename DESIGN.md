@@ -135,7 +135,7 @@ components:
     padding: "0 12px"
     height: "46px"
   cabinet:
-    backgroundColor: "{colors.walnut}"
+    backgroundColor: "#3a2416"
     textColor: "{colors.kraft}"
     rounded: "{rounded.cabinet}"
     padding: "18px 18px 22px"
@@ -197,10 +197,10 @@ A painted-wall ground with warm cabinet materials on it. Walnut is the structure
 - **Tarnished Brass** (brass-deep): plate borders, the header's bottom rail and the footer's top rail.
 
 ### Secondary
-- **Walnut** (walnut, walnut-2, walnut-3, walnut-edge): the header, the footer, the cabinet and its drawers, walnut plates (secondary buttons), the rules' top rules (walnut-3) and the frame around in-game screenshots. walnut-edge draws every drawer's and cabinet's inset edge and the cabinet feet.
+- **Walnut** (walnut, walnut-2, walnut-3, walnut-edge): the header, the footer, the cabinet and its drawers, walnut plates (secondary buttons), the rules' top rules (walnut-3) and the frame around in-game screenshots. walnut-edge draws every drawer's and cabinet's inset edge and the cabinet feet. The cabinet carcass and the scale folio's mini cabinets sit on a darker `#3a2416` fill under the walnut texture; drawers sit on walnut-2.
 
 ### Tertiary
-- **Kraft Card** (kraft) with **Kraft Ink** (kraft-ink) and **Faded Ink** (kraft-soft): label cards in holders, step numbers, table-of-contents cards, pills, the pressed split button. Text on kraft is always kraft-ink; kraft-soft is only for the percentage under a count. **Pale Kraft** (kraft-pale) is the footer's body text on walnut.
+- **Kraft Card** (kraft) with **Kraft Ink** (kraft-ink) and **Faded Ink** (kraft-soft): label cards in holders, step numbers, table-of-contents cards, pills, the pressed split button. Text on kraft is always kraft-ink; kraft-soft is only for the percentage under a count. **Pale Kraft** (kraft-pale) is the footer's body text on walnut. It ships as a literal `#d9ccb3` in `style.css` (`.site-footer p`, `.footer__fine`); there is no `--kraft-pale` custom property.
 - **Warning Orange** (orange-day / orange-night): the warning note's tab only. The panel replica also reads it for its Apply ring.
 
 ### Neutral
@@ -210,6 +210,7 @@ A painted-wall ground with warm cabinet materials on it. Walnut is the structure
 - **Ink** (ink-day / ink-night), **Muted Ink** (muted-day / muted-night): text and secondary text. Muted also draws the leader line and the dimension bracket.
 - **Rule** (line-day / line-night): 1px row rules and 1.5px panel borders.
 - **Verdigris Link** (link-day / link-night): inline links, underlined with a 3px offset that thickens to 2px on hover.
+- **Browser chrome:** every page sets `<meta name="theme-color" content="#16231c">`, one value for both modes (a green-black near the night ground). It is not a palette token.
 
 ### Named Rules
 **The Fixed Materials Rule.** Only the wall changes between day and lamplight: ground, paper, ink, rule, link and orange. Walnut, brass and kraft keep one value in both modes.
@@ -244,7 +245,7 @@ A painted-wall ground with warm cabinet materials on it. Walnut is the structure
 
 A single centred column, `min(1160px, 100% - 2 × gutter)`, with a fluid gutter (16–40px). Full-width sections pad clamp(56px, 8vw, 104px) top and bottom and alternate between the plain ground and the deeper tint. Headers and footers are full-bleed walnut.
 
-- **Hero:** two columns (1fr : 1.05fr) with name, pitch, mechanism line, a Download + Install guide button row, a dot-separated meta line and a status line on the left, and the cabinet on the right. They stack at 900px. The cabinet body is clamp(320px, 34vw, 400px) tall, and 320px on phones.
+- **Hero:** two columns (1fr : 1.05fr) with name, pitch, mechanism line, a Download + Install guide button row, a dot-separated meta line and a status line on the left, and the cabinet on the right. They stack at 900px. The cabinet body is clamp(320px, 34vw, 400px) tall, 340px under 760px and 320px under 600px.
 - **Rules:** three columns, each item under a 3px walnut rule. The scale folio sits under it as three columns (one under 600px).
 - **Screenshots:** 0.7fr : 1.3fr, stacked at 900px.
 - **Ledger:** two columns of rows (name 11rem, text), one column at 900px, name above text at 600px.
