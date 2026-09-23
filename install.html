@@ -15,20 +15,21 @@
 <meta property="og:image" content="https://timbermods.github.io/MixedStorage/assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/alegreya-sc-latin-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap bar">
-    <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="4" width="28" height="24" rx="4" fill="#436452" stroke="#ffffb5" stroke-width="2"/><rect x="5.5" y="8" width="9" height="16" rx="2" fill="#ffa60f"/><rect x="17.5" y="8" width="9" height="16" rx="2" fill="#7cc4d9"/></svg><span>MixedStorage</span></a>
+    <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="2" width="26" height="27" rx="3" fill="#6e4a32" stroke="#2e1c12" stroke-width="1.5"/><rect x="6" y="5" width="20" height="9" rx="1.5" fill="#5d3c28" stroke="#2e1c12"/><rect x="6" y="16" width="20" height="10" rx="1.5" fill="#5d3c28" stroke="#2e1c12"/><rect x="11" y="7.5" width="10" height="4" rx=".8" fill="#d8c29b" stroke="#c19a4b" stroke-width="1"/><rect x="11" y="19" width="10" height="4" rx=".8" fill="#d8c29b" stroke="#c19a4b" stroke-width="1"/><rect x="7" y="29" width="4" height="2" fill="#2e1c12"/><rect x="21" y="29" width="4" height="2" fill="#2e1c12"/></svg><span>MixedStorage</span></a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
     <nav id="site-nav" class="nav" aria-label="Main">
         <a href="./">Features</a>
         <a href="install.html" aria-current="page">Install</a>
         <a href="troubleshooting.html">Troubleshooting</a>
         <a href="faq.html">FAQ</a>
-        <a class="nav__gh" href="https://github.com/timbermods/MixedStorage" rel="noopener">GitHub &#8599;</a>
+        <a class="nav__gh" href="https://github.com/timbermods/MixedStorage" rel="noopener">GitHub <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
     </nav>
   </div>
 </header>
@@ -36,7 +37,6 @@
 
 <div class="wrap">
   <div class="page-head">
-    <p class="eyebrow">Guide</p>
     <h1>Install MixedStorage</h1>
     <p class="lead">It takes a couple of minutes: extract one folder, enable two mods, and restart the game.</p>
     <ul class="toc" aria-label="On this page">
@@ -46,17 +46,18 @@
       <li><a href="#first">Your first mixed storage</a></li>
       <li><a href="#upgrading">Upgrading</a></li>
       <li><a href="#multiplayer">Multiplayer</a></li>
+      <li><a href="#removing">Removing</a></li>
     </ul>
   </div>
 
   <div class="doc">
     <section id="requirements">
       <h2>Requirements</h2>
-      <div class="grid-3">
-        <div class="panel panel--blue panel--flat mini"><h3>Timberborn 1.1.2.4</h3><p>The version MixedStorage is built and tested against. Other versions aren't guaranteed.</p></div>
-        <div class="panel panel--blue panel--flat mini"><h3>Harmony 2.4.1 or newer</h3><p>A required mod. Get it from the <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3284904751" rel="noopener">Steam Workshop</a> if you don't have it.</p></div>
-        <div class="panel panel--blue panel--flat mini"><h3>BeaverBuddies Stability Fork (optional)</h3><p>Only for multiplayer. Single-player doesn't need it.</p></div>
-      </div>
+      <ul class="ledger">
+        <li><b>Timberborn 1.1.2.4</b><p>The version MixedStorage is built for. Other versions aren't guaranteed.</p></li>
+        <li><b>Harmony 2.4.1 or newer</b><p>A required mod. Get it from the <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3284904751" rel="noopener">Steam Workshop</a> if you don't have it.</p></li>
+        <li><b>BeaverBuddies Stability Fork</b><p>Optional, only for co-op. Single player doesn't need it.</p></li>
+      </ul>
     </section>
 
     <section id="steps">
@@ -64,16 +65,17 @@
       <ol class="steps">
         <li>
           <h3>Download the ZIP</h3>
-          <p>Open the <a href="https://github.com/timbermods/MixedStorage/releases/latest" data-release-href="notes" rel="noopener">latest release</a> and, under <strong>Assets</strong>, choose <strong data-release="asset-name">MixedStorage-vX.Y.Z.zip</strong>. Don't pick <em>Source code</em>.</p>
+          <p>Open the <a href="https://github.com/timbermods/MixedStorage/releases/latest" data-release-href="notes" rel="noopener">latest release</a> and, under <strong>Assets</strong>, choose <strong data-release="asset-name">MixedStorage-vX.Y.Z.zip</strong> (X.Y.Z is the version number). Don't pick <em>Source code</em>.</p>
           <p style="margin-top:10px"><a class="btn btn--primary" data-release-href="download" href="https://github.com/timbermods/MixedStorage/releases/latest"><span>Download <span data-release="tag">the mod</span></span></a></p>
         </li>
         <li>
           <h3>Close Timberborn and extract</h3>
-          <p>With the game closed, extract the ZIP's <code>MixedStorage</code> folder into your Timberborn <strong>Mods</strong> folder. On Windows that's normally <code>Documents\Timberborn\Mods</code>.</p>
+          <p>With the game closed, extract the ZIP's <code>MixedStorage</code> folder into your Timberborn <strong>Mods</strong> folder. On Windows that's normally <code>Documents\Timberborn\Mods</code>; if your Documents folder is kept in OneDrive, it's <code>OneDrive\Documents\Timberborn\Mods</code>.</p>
+          <p>Windows' <strong>Extract All</strong> puts everything in an extra folder named after the ZIP. Open it and move the <code>MixedStorage</code> folder inside into <strong>Mods</strong>.</p>
         </li>
         <li>
           <h3>Check the folder layout</h3>
-          <p>You should end up with exactly this. Avoid an extra nested <code>MixedStorage</code> folder.</p>
+          <p>You should end up with exactly this: no extra folder around <code>MixedStorage</code>, and no second <code>MixedStorage</code> inside it.</p>
 <pre><code>Documents\Timberborn\Mods\
 └─ MixedStorage\
    ├─ README.md
@@ -109,10 +111,11 @@
         <li><h3>Select a building</h3><p>Click a supported warehouse or pile.</p></li>
         <li><h3>Find your goods</h3><p>Look in <strong>Storage Allocation</strong>. Use <strong>Search</strong> if the list is long.</p></li>
         <li><h3>Enter percentages</h3><p>Type a percentage for each good you want, and leave everything else at <strong>0%</strong>.</p></li>
-        <li><h3>Make it 100% and apply</h3><p>The total must be exactly 100%. Then click <strong>Apply 100%</strong>. For a 1,200-capacity warehouse, entering <code>50</code> for carrots and <code>50</code> for gears allows 600 of each.</p></li>
+        <li><h3>Make it 100% and apply</h3><p>The total must be exactly 100%. Then click <strong>Apply 100%</strong>. For a 1,200-capacity warehouse, entering <code>50</code> for carrots and <code>50</code> for gears allows 600 of each. Apply grayed out? <a href="troubleshooting.html#t-apply-disabled">Here's why</a>.</p></li>
       </ol>
+      <p style="margin-top:16px;max-width:72ch">To make a building <strong>store nothing</strong>, set every good to 0% (for example with <strong>Clear all</strong>) and click <strong>Apply: store nothing</strong>. Stock already there is kept and can be hauled out.</p>
       <div class="panel panel--blue note note--info" style="margin-top:20px">
-        <p><strong>Edits are drafts until you click Apply.</strong> The summary at the top keeps showing the applied settings and actual stock while you edit, search, or filter. Normal hauling rules decide when goods arrive.</p>
+        <p><strong>Edits are drafts until you click Apply.</strong> While pressing Apply would change the building, the button has an orange ring. The summary at the top keeps showing the applied settings and actual stock while you edit, search, or filter. Normal hauling rules decide when goods arrive.</p>
       </div>
 
       <h3 style="margin-top:32px">The controls</h3>
@@ -136,10 +139,10 @@
     <section id="upgrading">
       <h2>Upgrading</h2>
       <div class="prose">
-        <p><strong>From an earlier version:</strong> with the game closed, replace the existing MixedStorage files with the new ones. Existing MixedStorage allocations are preserved.</p>
+        <p>With the game closed, replace the existing MixedStorage files with the new ones. Your allocations are kept. In co-op, everyone updates together.</p>
         <div class="panel panel--maroon note note--warn">
-          <h3>Coming from v0.4.x or earlier?</h3>
-          <p>Remove or disable <strong>MixedStorage-BeaverBuddies</strong>, the old separate add-on. Its functionality is now built in, and leaving it enabled causes a startup error. Keep BeaverBuddies itself if you play multiplayer.</p>
+          <h3>Still have MixedStorage-BeaverBuddies?</h3>
+          <p>That old separate add-on is now built into MixedStorage, and leaving it enabled causes a startup error. Remove or disable it; keep BeaverBuddies itself if you play co-op.</p>
         </div>
       </div>
     </section>
@@ -154,7 +157,14 @@
           <li>There is <strong>no separate MixedStorage multiplayer download</strong>.</li>
           <li>After upgrading, restart every computer's game and start a fresh multiplayer session.</li>
         </ul>
-        <p class="muted">The integration is built against the Stability Fork (formerly called Stability Preview), and every Stability Fork release so far, 1.0.0 through 1.1.12, has everything it needs. Install the latest. The original BeaverBuddies and BeaverBuddies MultiColony (Beta) haven't been tested with MixedStorage.</p>
+        <p class="muted">Install the latest Stability Fork on every computer. At startup MixedStorage checks the installed BeaverBuddies for everything it uses; if something is missing it turns co-op Apply off rather than risk players drifting out of step, and Player.log names what's missing. The original BeaverBuddies and BeaverBuddies MultiColony haven't been tested with MixedStorage.</p>
+      </div>
+    </section>
+
+    <section id="removing">
+      <h2>Removing MixedStorage</h2>
+      <div class="prose">
+        <p>Close Timberborn, then disable MixedStorage in the mod manager or delete its folder. In saves that used it, each mixed building goes back to storing only its largest allocated good. As when you switch a warehouse to a different good in the base game, haulers empty out the other goods (and may move some of the kept good too) before the building fills with it again.</p>
       </div>
     </section>
   </div>
@@ -165,7 +175,7 @@
   <div class="wrap">
     <div class="footer__grid">
       <div>
-        <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="4" width="28" height="24" rx="4" fill="#436452" stroke="#ffffb5" stroke-width="2"/><rect x="5.5" y="8" width="9" height="16" rx="2" fill="#ffa60f"/><rect x="17.5" y="8" width="9" height="16" rx="2" fill="#7cc4d9"/></svg><span>MixedStorage</span></a>
+        <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="2" width="26" height="27" rx="3" fill="#6e4a32" stroke="#2e1c12" stroke-width="1.5"/><rect x="6" y="5" width="20" height="9" rx="1.5" fill="#5d3c28" stroke="#2e1c12"/><rect x="6" y="16" width="20" height="10" rx="1.5" fill="#5d3c28" stroke="#2e1c12"/><rect x="11" y="7.5" width="10" height="4" rx=".8" fill="#d8c29b" stroke="#c19a4b" stroke-width="1"/><rect x="11" y="19" width="10" height="4" rx=".8" fill="#d8c29b" stroke="#c19a4b" stroke-width="1"/><rect x="7" y="29" width="4" height="2" fill="#2e1c12"/><rect x="21" y="29" width="4" height="2" fill="#2e1c12"/></svg><span>MixedStorage</span></a>
         <p style="margin-top:12px;max-width:44ch">Mixed-goods storage for Timberborn warehouses and piles. An unofficial community mod for Timberborn. Not affiliated with or endorsed by Mechanistry.</p>
       </div>
       <div>
