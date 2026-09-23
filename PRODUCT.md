@@ -71,7 +71,8 @@ models. One download covers single player and co-op.
   the site's replica does the same.
 - No official Timberborn logos or key art. The game's goods icons are allowed (they're already used, credited as
   Timberborn's).
-- License: MIT for the project's own code, docs and site; goods icons belong to Mechanistry; Noto Sans under OFL.
+- License: MIT for the project's own code, docs and site; goods icons belong to Mechanistry; Alegreya SC (the site's display face) and Noto Sans (the panel replica's)
+  are self-hosted under the SIL OFL.
 - Unofficial community mod, not affiliated with or endorsed by Mechanistry. Maintained by Timbermods.
 
 ## Evidence on Hand
