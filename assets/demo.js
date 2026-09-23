@@ -115,23 +115,31 @@
   function validate() {
     var fieldsOk = GOODS.every(function (g) { return state.valid[g.id]; });
     var total = GOODS.reduce(function (a, g) { return a + state.draft[g.id]; }, 0);
-    var valid = fieldsOk && total === TOTAL;
+    // Every good at 0% applies too: the building then stores nothing, as when it was just built.
+    var nothing = fieldsOk && total === 0;
+    var valid = fieldsOk && (total === TOTAL || nothing);
     els.apply.disabled = !valid;
-    els.copy.disabled = !valid;
+    els.apply.textContent = nothing ? 'Apply: store nothing' : 'Apply 100%';
+    els.copy.disabled = !valid || nothing;
     els.paste.disabled = !state.copied;
 
     if (!fieldsOk) els.total.textContent = 'Enter valid percentages (0–100, 2 decimals)';
+    else if (nothing) els.total.textContent = '0% allocated — Apply to store nothing';
     else if (total === TOTAL) els.total.textContent = '100% / 100% allocated';
     else els.total.textContent = fmt(total) + '% / 100% — ' + fmt(Math.abs(total - TOTAL)) + (total < TOTAL ? '% remaining' : '% over');
     els.total.classList.toggle('is-bad', !valid);
 
-    var preview = valid ? limitsFor(state.draft) : null;
-    GOODS.forEach(function (g) { rowEls[g.id].limit.textContent = preview ? String(preview[g.id]) : '—'; });
+    var preview = valid && !nothing ? limitsFor(state.draft) : null;
+    GOODS.forEach(function (g) { rowEls[g.id].limit.textContent = preview ? String(preview[g.id]) : nothing ? '0' : '—'; });
     var zero = preview ? GOODS.filter(function (g) { return state.draft[g.id] > 0 && preview[g.id] === 0; }).length : 0;
-    els.round.textContent = zero > 0
-      ? zero + ' allocated good(s) round to 0 items. Increase their shares or use larger storage.'
+    els.round.textContent = nothing ? 'Every limit becomes 0. Stock already here is kept and can be hauled out.'
+      : zero > 0 ? zero + ' allocated good(s) round to 0 items. Increase their shares or use larger storage.'
       : 'Limits round to whole items; leftover slots go to the largest fractions. All slots are allocated.';
     els.round.classList.toggle('is-bad', zero > 0);
+
+    // Apply stands out while pressing it would change the building.
+    var changed = GOODS.some(function (g) { return state.draft[g.id] !== (state.applied[g.id] || 0); });
+    els.apply.classList.toggle('is-pending', valid && changed);
   }
 
   function filter() {
@@ -150,8 +158,8 @@
     var allocated = GOODS.filter(function (g) { return state.applied[g.id] > 0; });
     var limits = limitsFor(state.applied);
     var totalStock = GOODS.reduce(function (a, g) { return a + (state.stock[g.id] || 0); }, 0);
-    els.summary.textContent = totalStock + ' / ' + state.capacity + ' items · ' + allocated.length +
-      (allocated.length === 1 ? ' good allocated' : ' goods allocated');
+    els.summary.textContent = totalStock + ' / ' + state.capacity + ' items · ' + (allocated.length === 0 ? 'Stores nothing' :
+      allocated.length + (allocated.length === 1 ? ' good allocated' : ' goods allocated'));
 
     var html = '', shown = 0;
     GOODS.forEach(function (g) {
@@ -178,8 +186,10 @@
     if (!fieldsOk || els.apply.disabled) return;
     state.applied = {};
     GOODS.forEach(function (g) { if (state.draft[g.id] > 0) state.applied[g.id] = state.draft[g.id]; });
+    var nothing = Object.keys(state.applied).length === 0;
     loadDraft();
-    setMsg('Applied. Excess stock is preserved and can be hauled out.', 'good');
+    setMsg(nothing ? 'Applied. This building stores nothing now; stock already here can be hauled out.'
+      : 'Applied. Excess stock is preserved and can be hauled out.', 'good');
   }
   function revealList() {
     var top = els.head.getBoundingClientRect().top - els.scroll.getBoundingClientRect().top + els.scroll.scrollTop - 4;
@@ -220,7 +230,7 @@
   els.revert.addEventListener('click', function () { loadDraft(); setMsg('Draft reverted.', ''); });
   els.clear.addEventListener('click', function () {
     els.only.checked = false;
-    setDraft({}, 'Draft cleared. Existing allocations remain active until Apply.');
+    setDraft({}, 'Draft cleared. Apply to store nothing here, or set new percentages. Nothing changes until Apply.');
   });
   els.copy.addEventListener('click', function () {
     if (els.copy.disabled) return;
