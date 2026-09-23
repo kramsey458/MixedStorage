@@ -15,6 +15,7 @@
 <meta property="og:image" content="https://timbermods.github.io/MixedStorage/assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/alegreya-sc-latin-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/style.css">
 <link rel="stylesheet" href="assets/game-panel.css">
 </head>
@@ -22,14 +23,14 @@
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap bar">
-    <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="4" width="28" height="24" rx="4" fill="#436452" stroke="#ffffb5" stroke-width="2"/><rect x="5.5" y="8" width="9" height="16" rx="2" fill="#ffa60f"/><rect x="17.5" y="8" width="9" height="16" rx="2" fill="#7cc4d9"/></svg><span>MixedStorage</span></a>
+    <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="2" width="26" height="27" rx="3" fill="#6e4a32" stroke="#2e1c12" stroke-width="1.5"/><rect x="6" y="5" width="20" height="9" rx="1.5" fill="#5d3c28" stroke="#2e1c12"/><rect x="6" y="16" width="20" height="10" rx="1.5" fill="#5d3c28" stroke="#2e1c12"/><rect x="11" y="7.5" width="10" height="4" rx=".8" fill="#d8c29b" stroke="#c19a4b" stroke-width="1"/><rect x="11" y="19" width="10" height="4" rx=".8" fill="#d8c29b" stroke="#c19a4b" stroke-width="1"/><rect x="7" y="29" width="4" height="2" fill="#2e1c12"/><rect x="21" y="29" width="4" height="2" fill="#2e1c12"/></svg><span>MixedStorage</span></a>
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
     <nav id="site-nav" class="nav" aria-label="Main">
         <a href="./" aria-current="page">Features</a>
         <a href="install.html">Install</a>
         <a href="troubleshooting.html">Troubleshooting</a>
         <a href="faq.html">FAQ</a>
-        <a class="nav__gh" href="https://github.com/timbermods/MixedStorage" rel="noopener">GitHub &#8599;</a>
+        <a class="nav__gh" href="https://github.com/timbermods/MixedStorage" rel="noopener">GitHub <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
     </nav>
   </div>
 </header>
@@ -54,58 +55,90 @@
   <symbol id="ig-acc3" viewBox="0 0 32 28"><path d="M9 12V3M5.5 6.5 9 3l3.5 3.5M6 17l8 8 13-14"/></symbol>
   <symbol id="ig-acc4" viewBox="0 0 32 28"><path d="M7 12V3M3.5 6.5 7 3l3.5 3.5M13 12l13 13M26 12 13 25"/></symbol>
 </svg>
+
 <section class="hero">
   <div class="wrap hero__grid">
     <div>
-      <p class="eyebrow">A mod for Timberborn</p>
-      <h1>Many goods. <em>One building.</em></h1>
-      <p class="lead">MixedStorage lets a single warehouse or pile hold several kinds of goods, and you choose how much space each one gets, by percentage.</p>
+      <h1>MixedStorage</h1>
+      <p class="pitch">One warehouse or pile, several kinds of goods: you give each one a share of the space, by percentage.</p>
+      <p class="rule">Percentages reserve space. They don't create goods or fill the building; your haulers bring stock by the game's usual rules.</p>
       <div class="btn-row">
         <a class="btn btn--primary" data-release-href="download" href="https://github.com/timbermods/MixedStorage/releases/latest"><span>Download <span data-release="tag">the mod</span></span></a>
         <a class="btn" href="install.html">Install guide</a>
       </div>
-      <p class="hero__meta"><span class="pill" data-release-show="stable" hidden>Latest release</span><span class="pill" data-release-show="prerelease" hidden>Pre-release</span><span>Built for Timberborn 1.1.2.4</span><span class="dot">Requires Harmony</span><span class="dot">Multiplayer via BeaverBuddies (optional)</span></p>
+      <ul class="hero__meta">
+        <li>Timberborn 1.1.2.4</li>
+        <li>Needs Harmony 2.4.1+</li>
+        <li>Co-op optional</li>
+      </ul>
+      <p class="hero__status"><span class="pill" data-release-show="stable" hidden>Latest release</span> <span class="pill" data-release-show="prerelease" hidden>Pre-release</span> If the button opens GitHub, pick the <strong>MixedStorage zip</strong> under <strong>Assets</strong>, not Source code.</p>
     </div>
-    <figure class="frame">
-      <img src="assets/panel.webp" width="622" height="1114" fetchpriority="high"
-           alt="The Storage Allocation panel on a large warehouse: summary cards for Bread and Wheat flour at 50 percent each, a search box right beside its label, per-good percentage boxes with Max buttons, and Copy, Paste, Clear, Revert and Apply controls.">
-      <figcaption>The Storage Allocation panel, right inside the building's own window.</figcaption>
+    <figure class="cabinet">
+      <div class="cab" data-cabinet>
+        <div class="cab__crest"><b>Large Warehouse</b><span>1,200</span></div>
+        <div class="cab__body">
+          <div class="drawer" style="--share:5000"><span class="holder"><img src="assets/goods/carrot-60.png" alt="" width="30" height="30"><span class="name">Carrots</span><span class="count"><b>600</b><small>50%</small></span></span><i class="pull" aria-hidden="true"></i></div>
+          <div class="drawer" style="--share:5000"><span class="holder"><img src="assets/goods/gear-60.png" alt="" width="30" height="30"><span class="name">Gears</span><span class="count"><b>600</b><small>50%</small></span></span><i class="pull" aria-hidden="true"></i></div>
+        </div>
+      </div>
+      <div class="cab__feet" aria-hidden="true"><i></i><i></i></div>
+      <div class="splits" role="group" aria-label="Try another split">
+        <button class="btn btn--small" type="button" data-split="even" aria-pressed="true" hidden>50 / 50</button>
+        <button class="btn btn--small" type="button" data-split="bakery" aria-pressed="false" hidden>25 / 75</button>
+        <button class="btn btn--small" type="button" data-split="thirds" aria-pressed="false" hidden>Thirds</button>
+      </div>
+      <figcaption><span data-cabinet-said aria-live="polite">50% carrots: 600, 50% gears: 600, of 1,200.</span> An illustration of the idea; the real panel is further down the page.</figcaption>
     </figure>
   </div>
 </section>
 
-<section class="wrap" aria-label="At a glance">
-  <div class="stats">
-    <div class="panel panel--blue panel--flat stat"><b>11</b><span>warehouse and pile types supported</span></div>
-    <div class="panel panel--blue panel--flat stat"><b>0.01%</b><span>allocation precision</span></div>
-    <div class="panel panel--blue panel--flat stat"><b>One download</b><span>for single-player and multiplayer</span></div>
+<section class="section section--tint" id="features">
+  <div class="wrap">
+    <h2>How the percentages work</h2>
+    <p class="lead">Give any good the building normally accepts a share of its capacity. Three rules decide what that share means.</p>
+    <ol class="rules">
+      <li><h3>Shares total exactly 100%</h3><p>Every slot has a purpose. Apply stays unavailable until the total is exactly 100%, down to 0.01%. Set everything to 0% and Apply to store nothing.</p></li>
+      <li><h3>Limits round to whole items</h3><p>Each share is rounded down, and the leftover slots go to the largest fractions, so the full capacity stays allocated. A tiny share in a small building can round to 0; the panel warns you.</p></li>
+      <li><h3>Lowering a limit never deletes stock</h3><p>Extra goods are marked as excess and leave the normal way. Deliveries already on their way count too: a change that would clash with them waits until they arrive.</p></li>
+    </ol>
+    <div class="scale">
+      <figure><p class="leader"><img src="assets/goods/carrot-40.png" alt="" width="26" height="26">Carrots 0</p><div class="scale-row"><div class="mini-cab" aria-hidden="true"><span class="sliver" style="flex:1"></span><span style="flex:99"><img src="assets/goods/gear-40.png" alt="" width="22" height="22">Gears 30</span></div><span class="dim"><b>= 30</b></span></div><figcaption><b>Small Warehouse</b> 1% carrots rounds to 0 of 30</figcaption></figure>
+      <figure><p class="leader"><img src="assets/goods/carrot-40.png" alt="" width="26" height="26">Carrots 2</p><div class="scale-row"><div class="mini-cab" aria-hidden="true"><span class="sliver" style="flex:1"></span><span style="flex:99"><img src="assets/goods/gear-40.png" alt="" width="22" height="22">Gears 198</span></div><span class="dim"><b>= 200</b></span></div><figcaption><b>Medium Warehouse</b> 1% carrots is 2 of 200</figcaption></figure>
+      <figure><p class="leader"><img src="assets/goods/carrot-40.png" alt="" width="26" height="26">Carrots 12</p><div class="scale-row"><div class="mini-cab" aria-hidden="true"><span class="sliver" style="flex:1"></span><span style="flex:99"><img src="assets/goods/gear-40.png" alt="" width="22" height="22">Gears 1,188</span></div><span class="dim"><b>= 1,200</b></span></div><figcaption><b>Large Warehouse</b> 1% carrots is 12 of 1,200</figcaption></figure>
+    </div>
+    <p class="muted" style="margin-top:14px;max-width:72ch">The same shares, 1% carrots and 99% gears, in three sizes. Whole items only: in the small warehouse the 1% rounds to 0, and the panel warns you before you Apply.</p>
   </div>
 </section>
 
-<section class="section" id="features">
+<section class="section" id="in-the-game">
   <div class="wrap">
-    <p class="eyebrow">What it does</p>
-    <h2>Divide a building's capacity, good by good</h2>
-    <p class="lead">A 1,200-capacity warehouse can reserve <strong>50% for carrots (600)</strong> and <strong>50% for gears (600)</strong>. Percentages reserve space. They don't create goods or instantly fill the building, so your beavers keep hauling by the normal rules.</p>
-    <div class="grid-3" style="margin-top:32px">
-      <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-split"/></svg></div><h3>Mix goods by percentage</h3><p>Give any good the building normally accepts a share of its capacity, down to 0.01%. Shares must total exactly 100%, so every slot has a purpose. Set everything to 0% to store nothing.</p></article>
-      <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-stack"/></svg></div><h3>Stock at a glance</h3><p>Summary cards show each good's icon, stored / limit count, allocated percentage, and a fill bar, including incoming deliveries and excess stock.</p></article>
-      <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-bolt"/></svg></div><h3>Quick setup</h3><p>Search the goods list, show only allocated goods, click Max to give one good everything, or copy an allocation and paste it into another compatible building. The game's own Copy settings tool copies allocations too. Edits stay drafts until you Apply.</p></article>
-      <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-shield"/></svg></div><h3>Safe with your stock</h3><p>Lowering a limit never deletes goods. Extras are flagged as excess and leave the normal way, and deliveries already on their way are counted before a change is accepted.</p></article>
-      <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-cube"/></svg></div><h3>Visible in the world</h3><p>Warehouses and piles show the mix using the game's own goods models, divided by allocation. The panel always has the exact numbers.</p></article>
-      <article class="panel card"><div class="icon"><svg aria-hidden="true"><use href="#i-people"/></svg></div><h3>Multiplayer-ready</h3><p>Co-op support for the BeaverBuddies Stability Fork is built in and switches on automatically when it is installed. Applied allocations synchronize between players.</p></article>
-    </div>
-    <div class="grid-3" style="margin-top:20px">
-      <div class="panel panel--blue panel--flat mini"><h3>Looks native</h3><p>Uses the game's own panel frames, buttons, input fields, checkbox, and scrollbar.</p></div>
-      <div class="panel panel--blue panel--flat mini"><h3>Controls stay in reach</h3><p>The goods list scrolls while Copy, Paste, the total, and Apply / Revert stay in a fixed footer.</p></div>
-      <div class="panel panel--blue panel--flat mini"><h3>Fits your screen</h3><p>The editor is sized to your window and leaves room for the game's Construction site panel.</p></div>
+    <h2>Right inside the building's window</h2>
+    <p class="lead">Storage Allocation sits in the warehouse's own panel, drawn with the game's frames, buttons and fields. In the world, the building shows the mix with the game's own goods models.</p>
+    <div class="shots" style="margin-top:32px">
+      <figure class="frame">
+        <img src="assets/panel.webp" width="622" height="1114" loading="lazy"
+             alt="The Storage Allocation panel on a large warehouse: summary cards for Bread and Wheat flour at 50 percent each, a search box right beside its label, per-good percentage boxes with Max buttons, and Copy, Paste, Clear, Revert and Apply controls.">
+        <figcaption>The panel in game: summary cards on top, one row per good, and Copy, Paste, Clear all, Revert and Apply in a footer that stays put while the list scrolls.</figcaption>
+      </figure>
+      <div>
+        <figure class="frame">
+          <img src="assets/world.webp" width="752" height="364" loading="lazy"
+               alt="A warehouse whose bays show stacked crates of several different goods side by side.">
+          <figcaption>The mix in the world. The visual split is approximate, since whole visible cells can't always match a percentage; banners still show one representative good, and a model that can't be divided keeps the original look. The panel always has the exact counts.</figcaption>
+        </figure>
+        <ul class="ledger" style="margin-top:28px;grid-template-columns:minmax(0,1fr)">
+          <li><b>Stock at a glance</b><p>Summary cards show each good's icon, stored / limit count, share and a fill bar, including incoming deliveries and excess.</p></li>
+          <li><b>Quick setup</b><p>Search, show only allocated goods, Max one good, or copy an allocation into another compatible building. The game's own Copy settings tool copies allocations too.</p></li>
+          <li><b>Drafts until you Apply</b><p>Edits change nothing until you press Apply; the Apply button gets an orange ring while pressing it would change the building.</p></li>
+          <li><b>Fits your screen</b><p>The editor is sized to your window and leaves room for the game's Construction site panel.</p></li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
 
 <section class="section section--tint" id="try-it">
   <div class="wrap">
-    <p class="eyebrow">Try it</p>
     <h2>Play with the real panel</h2>
     <p class="lead">This is a working copy of the Storage Allocation panel, styled like the game. Edit percentages, then Apply, as you would in Timberborn. It uses the mod's own rounding and messages.</p>
     <noscript><p class="muted">The interactive panel needs JavaScript. The screenshot at the top of this page shows what it looks like.</p></noscript>
@@ -201,24 +234,9 @@
   </div>
 </section>
 
-<section class="section" id="in-the-world">
-  <div class="wrap grid-2" style="align-items:center;gap:clamp(24px,5vw,56px)">
-    <figure class="frame">
-      <img src="assets/world.webp" width="752" height="364" loading="lazy"
-           alt="A warehouse whose bays show stacked crates of several different goods side by side.">
-    </figure>
-    <div>
-      <p class="eyebrow">In the world</p>
-      <h2>Watch the mix take shape</h2>
-      <p>Warehouses and piles show what's inside using the game's own goods models and materials, divided by allocation. The visual split is approximate, since whole visible cells can't always match a percentage exactly. The panel always shows the exact counts.</p>
-      <p class="muted">Banners still show a single representative good, and if a model can't be divided, MixedStorage falls back to the original visuals.</p>
-    </div>
-  </div>
-</section>
 
-<section class="section section--tint" id="buildings">
+<section class="section" id="buildings">
   <div class="wrap">
-    <p class="eyebrow">Supported buildings</p>
     <h2>Warehouses and piles, both factions</h2>
     <div class="table-wrap" style="margin-top:24px">
       <table class="data">
@@ -229,33 +247,33 @@
         </tbody>
       </table>
     </div>
-    <p class="muted" style="margin-top:16px">Buildings keep their normal accepted goods. Warehouses don't gain pile-only goods, or vice versa. Tanks and map-editor reserve storage are not included.</p>
-    <div class="grid-3" style="margin-top:28px">
-      <div class="panel panel--blue panel--flat mini"><h3>Game</h3><p>Built against <strong>Timberborn 1.1.2.4</strong>.</p></div>
-      <div class="panel panel--blue panel--flat mini"><h3>Requires</h3><p><strong>Harmony 2.4.1</strong> or newer, enabled alongside MixedStorage.</p></div>
-      <div class="panel panel--blue panel--flat mini"><h3>Optional</h3><p>The <a href="https://timbermods.github.io/BeaverBuddies-Stability-Fork/" rel="noopener">BeaverBuddies Stability Fork</a> for multiplayer. Support is bundled; there's no separate add-on.</p></div>
-    </div>
+    <p class="muted" style="margin-top:16px;max-width:72ch">Buildings keep their normal accepted goods: warehouses don't gain pile-only goods, or the other way round. Tanks and map-editor reserve storage aren't included.</p>
+    <ul class="ledger" style="margin-top:28px">
+      <li><b>Game</b><p>Built for <strong>Timberborn 1.1.2.4</strong>.</p></li>
+      <li><b>Requires</b><p><strong>Harmony 2.4.1</strong> or newer, enabled alongside MixedStorage.</p></li>
+      <li><b>Co-op, optional</b><p>The <a href="https://timbermods.github.io/BeaverBuddies-Stability-Fork/" rel="noopener">BeaverBuddies Stability Fork</a>. Support is built in and switches on by itself; every player needs the same MixedStorage and game version.</p></li>
+      <li><b>One download</b><p>The same zip covers single player and co-op. There's no separate add-on.</p></li>
+    </ul>
   </div>
 </section>
 
-<section class="section" id="get-started">
+<section class="section section--tint" id="get-started">
   <div class="wrap">
-    <p class="eyebrow">Get started</p>
     <h2>Up and running in three steps</h2>
     <ol class="steps" style="margin-top:24px">
-      <li><h3>Download and extract</h3><p>Grab the ZIP from the release's <em>Assets</em> and extract its <code>MixedStorage</code> folder into <code>Documents\Timberborn\Mods</code>.</p></li>
-      <li><h3>Enable it</h3><p>Turn on <strong>Harmony</strong> and <strong>MixedStorage</strong> in the game's mod manager and restart when prompted.</p></li>
-      <li><h3>Mix your storage</h3><p>Select a supported warehouse or pile, enter percentages that total 100% in <strong>Storage Allocation</strong>, and click <strong>Apply 100%</strong>.</p></li>
+      <li><h3>Download and extract</h3><p>Get the MixedStorage zip from the release's <em>Assets</em> and put its <code>MixedStorage</code> folder straight into <code>Documents\Timberborn\Mods</code>. Windows' Extract All adds an outer folder: move the <code>MixedStorage</code> folder inside it.</p></li>
+      <li><h3>Enable it</h3><p>Get <strong>Harmony</strong> from the <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3284904751" rel="noopener">Steam Workshop</a> if you haven't, turn on Harmony and MixedStorage in the game's mod manager, and restart when prompted.</p></li>
+      <li><h3>Mix your storage</h3><p>Select a supported warehouse or pile, enter percentages that total 100% in <strong>Storage Allocation</strong>, and click <strong>Apply 100%</strong>. Apply grayed out? <a href="troubleshooting.html#t-apply-disabled">Here's why</a>.</p></li>
     </ol>
-    <p style="margin-top:20px"><a href="install.html">Read the full install guide &rarr;</a></p>
+    <p style="margin-top:20px"><a href="install.html">The full install guide, with upgrading and co-op</a></p>
   </div>
 </section>
 
-<section class="section" style="padding-top:0">
+<section class="section" id="status">
   <div class="wrap">
-    <div class="panel panel--blue note note--info">
-      <h3>Project status</h3>
-      <p>MixedStorage 1.2.0 is the current release. Its panel layout and storage visuals are unchanged from v0.5.8, which was checked in game, apart from 1.2.0's orange ring around Apply. The changes since then (the game's Copy settings tool, clearer error messages, loading damaged saves, the Supply mode order, the reason shown when Apply is unavailable, patch order, leaving mixed storage safely, and in 1.2.0 storing nothing and the Apply ring) haven't been played in game yet. Players have reported successful use of earlier builds, and automated checks cover the allocation math, mesh geometry, native game API calls, and optional multiplayer loading. Those checks don't replace live gameplay testing, particularly for multiplayer.</p>
+    <div class="panel note note--info measure">
+      <h3>What's been played</h3>
+      <p>The panel's layout and the storage visuals have been checked in game, and players have reported using it. The newest behavior (the game's Copy settings tool, storing nothing, the Supply order and clearer messages) is covered by automated checks but hasn't been played in game yet, particularly in co-op.</p>
       <p>Found something odd? <a href="troubleshooting.html">Check the troubleshooting guide</a> or <a href="https://github.com/timbermods/MixedStorage/issues" rel="noopener">open an issue</a>.</p>
     </div>
   </div>
@@ -264,12 +282,12 @@
 <section class="section section--tint cta">
   <div class="wrap">
     <h2>Ready to mix things up?</h2>
-    <p class="lead">One download covers single-player and BeaverBuddies multiplayer.</p>
+    <p class="lead">One download covers single player and co-op.</p>
     <div class="btn-row">
       <a class="btn btn--primary" data-release-href="download" href="https://github.com/timbermods/MixedStorage/releases/latest"><span>Download <span data-release="tag">the mod</span></span></a>
       <a class="btn" href="faq.html">Read the FAQ</a>
     </div>
-    <p class="muted"><span class="pill" data-release-show="stable" hidden>Latest release</span><span class="pill" data-release-show="prerelease" hidden>Pre-release</span></p>
+    <p class="muted" style="margin-top:16px"><span class="pill" data-release-show="stable" hidden>Latest release</span><span class="pill" data-release-show="prerelease" hidden>Pre-release</span></p>
   </div>
 </section>
 
@@ -278,7 +296,7 @@
   <div class="wrap">
     <div class="footer__grid">
       <div>
-        <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="4" width="28" height="24" rx="4" fill="#436452" stroke="#ffffb5" stroke-width="2"/><rect x="5.5" y="8" width="9" height="16" rx="2" fill="#ffa60f"/><rect x="17.5" y="8" width="9" height="16" rx="2" fill="#7cc4d9"/></svg><span>MixedStorage</span></a>
+        <a class="brand" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="2" width="26" height="27" rx="3" fill="#6e4a32" stroke="#2e1c12" stroke-width="1.5"/><rect x="6" y="5" width="20" height="9" rx="1.5" fill="#5d3c28" stroke="#2e1c12"/><rect x="6" y="16" width="20" height="10" rx="1.5" fill="#5d3c28" stroke="#2e1c12"/><rect x="11" y="7.5" width="10" height="4" rx=".8" fill="#d8c29b" stroke="#c19a4b" stroke-width="1"/><rect x="11" y="19" width="10" height="4" rx=".8" fill="#d8c29b" stroke="#c19a4b" stroke-width="1"/><rect x="7" y="29" width="4" height="2" fill="#2e1c12"/><rect x="21" y="29" width="4" height="2" fill="#2e1c12"/></svg><span>MixedStorage</span></a>
         <p style="margin-top:12px;max-width:44ch">Mixed-goods storage for Timberborn warehouses and piles. An unofficial community mod for Timberborn. Not affiliated with or endorsed by Mechanistry.</p>
       </div>
       <div>
@@ -309,5 +327,6 @@
 <script src="assets/split.js" defer></script>
 <script src="assets/goods.js" defer></script>
 <script src="assets/demo.js" defer></script>
+<script src="assets/cabinet.js" defer></script>
 </body>
 </html>

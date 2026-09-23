@@ -42,7 +42,7 @@ For the example above, enter `50` for carrots and `50` for gears, with everythin
 
 To store nothing in a building, set every good to 0% (for example with **Clear all**) and click **Apply: store nothing**. It then stores nothing, like a newly built one. Stock already there is kept and can be hauled out.
 
-**Edits are drafts until you click Apply.** While the draft differs from the building's current settings, the Apply button gets an orange border and bold text. The top summary continues to show the applied settings and actual stock while you edit, search, or filter. Normal hauling rules determine when goods arrive.
+**Edits are drafts until you click Apply.** While pressing Apply would change the building (the draft is valid and differs from the building's current settings), the Apply button gets an orange border and bold text. The top summary continues to show the applied settings and actual stock while you edit, search, or filter. Normal hauling rules determine when goods arrive.
 
 | Control | What it does |
 | --- | --- |
@@ -110,7 +110,7 @@ Close Timberborn, then disable MixedStorage in the mod manager or delete its fol
 
 Built against **Timberborn 1.1.2.4**.
 
-The bundled multiplayer integration is built against the **[BeaverBuddies Stability Fork](https://github.com/timbermods/BeaverBuddies-Stability-Fork)** (formerly called Stability Preview), which is the build to use. Every Stability Fork release so far, 1.0.0 through 1.1.12, has everything the integration needs; install the latest. At startup, MixedStorage checks the installed BeaverBuddies for every part it uses. If anything is missing, it turns co-op Apply off rather than risk a desync, and Player.log names what is missing. The original [BeaverBuddies](https://github.com/thomaswp/BeaverBuddies) by thomaswp and contributors, and BeaverBuddies MultiColony (Beta), have not been tested with MixedStorage.
+The bundled multiplayer integration is built against the **[BeaverBuddies Stability Fork](https://github.com/timbermods/BeaverBuddies-Stability-Fork)** (formerly called Stability Preview), which is the build to use. Stability Fork releases 1.0.0 through 1.1.12 were checked to have everything the integration needs; install the latest. At startup, MixedStorage checks the installed BeaverBuddies for every part it uses. If anything is missing, it turns co-op Apply off rather than risk a desync, and Player.log names what is missing. The original [BeaverBuddies](https://github.com/thomaswp/BeaverBuddies) by thomaswp and contributors, and BeaverBuddies MultiColony (Beta), have not been tested with MixedStorage.
 
 Players have reported successful use of earlier builds, and the **v0.5.8 layout, including the dev-mode panel, and the v0.5.7 storage visuals have been verified in game**; v1.0.0 through v1.2.0 leave both unchanged apart from v1.2.0's orange ring around Apply. The v1.0.0 to v1.2.0 changes (Copy settings, error messages, loading damaged saves, the Supply mode order, the panel's reason for an unavailable Apply, patch order, leaving mixed storage with a removed good or through the map editor's undo, and in v1.2.0 storing nothing and the Apply ring) have not been played in game yet. Automated allocation, geometry, native API, and optional multiplayer loading checks also pass, but these do not replace live gameplay testing.
 
