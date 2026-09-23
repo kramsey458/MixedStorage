@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.2.0
+
+Two panel improvements. **All co-op players must update together**: earlier versions refuse an Apply that stores nothing. Saves load both ways with v1.1.x.
+
+- Set every good to 0% (for example with Clear all) and click **Apply: store nothing** to make a warehouse or pile store nothing, like a newly built one. Before, Apply stayed unavailable unless the total was 100%. Stock already there is kept and can be hauled out. Like any lowered limit, it waits for deliveries already on their way.
+- While your draft differs from the building's current settings, the Apply button has an orange ring and bold text, so a waiting change is visible even when the message under the goods list is scrolled out of view.
+
 ## v1.1.1
 
 Two fixes from the v1.1.0 reviews. Saves load both ways with v1.1.0; co-op players should update together.
