@@ -40,7 +40,7 @@ text and the player docs follows these rules.
 
 ## Website
 
-- **Where:** `docs/`: `index.html` (features, cabinet, demo), `install.html`, `troubleshooting.html`, `faq.html`,
+- **Where:** `docs/`: `index.html` (features, hero panel, demo), `install.html`, `troubleshooting.html`, `faq.html`,
   `404.html`, plus `robots.txt`, `sitemap.xml`, `.nojekyll`. Live at https://timbermods.github.io/MixedStorage/.
 - **Published:** GitHub Pages serves `main:/docs`, like every other timbermods site, so merging to main publishes;
   a build takes about a minute. (The old `gh-pages` branch and `deploy-site.ps1` are retired.)
@@ -49,9 +49,10 @@ text and the player docs follows these rules.
   `data-release="version|tag|asset-name"` fallback text and the README lines ending in `<!-- latest -->` to the new
   version, runs the site checks and commits to main. Pre-releases change nothing. Descriptions, status lists and FAQs
   stay manual (the checklist below). Dry run: Actions → Latest release → Run workflow.
-- **Look:** "The Apothecary Drawer Cabinet". The site is one walnut cabinet on a painted wall: every drawer is a good,
-  and its height is that good's share, with brass label holders, kraft cards and brass cup pulls. The look is fixed:
-  updates extend it and never restyle it.
+- **Look:** "The Apothecary Drawer Cabinet". The site is a walnut cabinet on a painted wall, with brass plates, kraft
+  cards and brass cup pulls. The look is fixed: updates extend it and never restyle it.
+- **The mod is never drawn in wood.** Any picture of the mod itself (the hero, the demo) is the in-game panel replica,
+  so readers see how the mod really looks (Kyler, 2026-09-24).
 - **Design records (read these before any site change):**
   - `PRODUCT.md`: the facts, voice, and every site contract.
   - `DESIGN.md`: the visual system and its named rules, the source of truth for the look.
@@ -70,7 +71,7 @@ text and the player docs follows these rules.
 - **Names-Not-Sentences**: Alegreya SC is for names, headings, labels, buttons and figures. Questions, captions, notes
   and prose use the system face.
 - **Counter**: every count, capacity and percentage uses tabular figures; proportions are drawn at true share.
-- **Mounted-or-Set-In**: paper panels are set in (1.5px rule border, no shadow); the cabinet, frames, plates and
+- **Mounted-or-Set-In**: paper panels are set in (1.5px rule border, no shadow); frames, plates and
   hardware are mounted (one soft shadow downward). Nothing floats or glows.
 - **Rail**: header and footer meet the page with a 3px tarnished-brass (`#8a6a2c`) rail.
 - Tokens live in `docs/assets/style.css` `:root`; night values in `@media (prefers-color-scheme: dark)`. Day / night:
@@ -91,13 +92,14 @@ text and the player docs follows these rules.
 - Themes: light and dark follow the OS (`prefers-color-scheme`) only. There is no toggle and no storage key. Check both.
 - Phones: no horizontal scroll at 390px, and tap targets ≥ 44px (buttons 48, small 44, toc 46, accordions 52).
   Breakpoints 900 / 760 (brass Menu button) / 600px.
-- Motion: the cabinet's drawers ease `flex-grow` and `padding-bottom` over 0.6s cubic-bezier(.2,.8,.2,1) when a split
-  button redraws them (`cabinet.js` with `split.js`, the mod's rounding); plates lift 1px; an accordion's pull drops
-  3px. Everything is off under `prefers-reduced-motion`.
-- The in-game panel replica (`game-panel.css`, `demo.js`, `goods.js`, `split.js`) must keep matching the mod's real
-  Storage Allocation panel (the 0.5.7-era native look; `docs/assets/panel.webp` is the in-game screenshot). It reads only
-  `--ink`, `--muted`, `--edge`, `--orange`. Don't restyle it toward the cabinet or reuse its parts elsewhere. Update
-  `split.js` / `demo.js` when the mod's rounding (`AllocationPlan.Capacities`) or messages (`StorageView`) change.
+- Motion: plates lift 1px; an accordion's pull drops 3px. The hero panel's split buttons redraw its cards at once, as
+  the game does (`hero-panel.js` with `split.js`, the mod's rounding). Everything is off under
+  `prefers-reduced-motion`.
+- The in-game panel replica (`game-panel.css`, `demo.js`, `hero-panel.js`, `goods.js`, `split.js`) must keep matching
+  the mod's real Storage Allocation panel (the 0.5.7-era native look; `docs/assets/panel.webp` is the in-game
+  screenshot). It reads only `--ink`, `--muted`, `--edge`, `--orange`. Don't restyle it toward the cabinet or use its
+  parts outside the replica and the hero panel. Update `split.js`, `demo.js` and `hero-panel.js` when the mod's
+  rounding (`AllocationPlan.Capacities`) or messages (`StorageView`) change.
 - Don't: imitate wood, brass or paper with CSS gradients or bevels; put kickers or small labels above headings; build
   stat rows or icon-tile grids; use hard zero-blur offset shadows; set sentences in Alegreya SC; add a second accent
   fill; use official Timberborn logos or key art (the goods icons in `docs/assets/goods/` are allowed and credited).
@@ -160,8 +162,7 @@ When asked to "update the website for the latest release, consistent with the de
    `"$(ls -d ~/.claude/plugins/cache/impeccable/impeccable/*/skills/impeccable | tail -1)/scripts/impeccable" detect --json docs`
    (parse from the first `[`). Known false positives: cramped-padding on the four main pages and flat-type-hierarchy on
    404 (ignored in config); `side-tab` on the 3px walnut rules (`.page-head`, `.rules li`) and the scale folio's leader
-   line; `layout-transition` on the drawers' `padding-bottom` (the signature motion) and the replica's fill bar;
-   two `nested-cards` on index (the cabinet's drawers and the replica's sections nest by design); Noto Sans,
+   line; `layout-transition` on the replica's fill bar; Noto Sans,
    off-ramp sizes and colours in the replica; `flat-type-hierarchy` from footer headings;
    `gpt-thin-border-wide-shadow` on mounted frames and plates; the "could not read /MixedStorage/assets/style.css" note.
 7. If the look changed (a new component or layout), update DESIGN.md and `.impeccable/design.json`.

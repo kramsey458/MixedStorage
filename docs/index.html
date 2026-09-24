@@ -73,21 +73,23 @@
       </ul>
       <p class="hero__status"><span class="pill" data-release-show="stable" hidden>Latest release</span> <span class="pill" data-release-show="prerelease" hidden>Pre-release</span> If the button opens GitHub, pick the <strong>MixedStorage zip</strong> under <strong>Assets</strong>, not Source code.</p>
     </div>
-    <figure class="cabinet">
-      <div class="cab" data-cabinet>
-        <div class="cab__crest"><b>Large Warehouse</b><span>1,200</span></div>
-        <div class="cab__body">
-          <div class="drawer" style="--share:5000"><span class="holder"><img src="assets/goods/carrot-60.png" alt="" width="30" height="30"><span class="name">Carrots</span><span class="count"><b>600</b><small>50%</small></span></span><i class="pull" aria-hidden="true"></i></div>
-          <div class="drawer" style="--share:5000"><span class="holder"><img src="assets/goods/gear-60.png" alt="" width="30" height="30"><span class="name">Gears</span><span class="count"><b>600</b><small>50%</small></span></span><i class="pull" aria-hidden="true"></i></div>
+    <figure class="hero-panel">
+      <div class="ig" data-hero-panel>
+        <div class="ig-alloc">
+          <p class="ig-title">Storage Allocation</p>
+          <p class="ig-summary" data-hero-summary>1200 / 1200 items · 2 goods allocated</p>
+          <div class="ig-cards" data-hero-cards>
+            <div class="ig-card"><div class="ig-card__line"><span class="ig-card__icon"><img src="assets/goods/carrot-60.png" alt="" width="30" height="30"></span><span class="ig-card__main"><b>Carrots</b><span>50% allocated</span></span><span class="ig-card__count"><b>600 / 600</b><span>stored / limit</span></span></div><div class="ig-bar-track"><i style="width:100%"></i></div></div>
+            <div class="ig-card"><div class="ig-card__line"><span class="ig-card__icon"><img src="assets/goods/gear-60.png" alt="" width="30" height="30"></span><span class="ig-card__main"><b>Gears</b><span>50% allocated</span></span><span class="ig-card__count"><b>600 / 600</b><span>stored / limit</span></span></div><div class="ig-bar-track"><i style="width:100%"></i></div></div>
+          </div>
         </div>
       </div>
-      <div class="cab__feet" aria-hidden="true"><i></i><i></i></div>
       <div class="splits" role="group" aria-label="Try another split">
         <button class="btn btn--small" type="button" data-split="even" aria-pressed="true" hidden>50 / 50</button>
         <button class="btn btn--small" type="button" data-split="bakery" aria-pressed="false" hidden>25 / 75</button>
         <button class="btn btn--small" type="button" data-split="thirds" aria-pressed="false" hidden>Thirds</button>
       </div>
-      <figcaption><span data-cabinet-said aria-live="polite">50% carrots: 600, 50% gears: 600, of 1,200.</span> An illustration; the real panel is further down.</figcaption>
+      <figcaption><span class="sr-only" data-hero-said aria-live="polite"></span>A Large Warehouse full, as the mod shows it in game. <a href="#try-it">Try the whole panel</a> further down.</figcaption>
     </figure>
   </div>
 </section>
@@ -327,6 +329,6 @@
 <script src="assets/split.js" defer></script>
 <script src="assets/goods.js" defer></script>
 <script src="assets/demo.js" defer></script>
-<script src="assets/cabinet.js" defer></script>
+<script src="assets/hero-panel.js" defer></script>
 </body>
 </html>
