@@ -26,6 +26,11 @@ through a PR → merge.
   `404.html`, plus `robots.txt`, `sitemap.xml`, `.nojekyll`. Live at https://timbermods.github.io/MixedStorage/.
 - **Published:** GitHub Pages serves `main:/docs`, like every other timbermods site, so merging to main publishes;
   a build takes about a minute. (The old `gh-pages` branch and `deploy-site.ps1` are retired.)
+- **Latest releases update themselves:** when a release becomes GitHub's Latest, `.github/workflows/latest-release.yml`
+  (the shared timbermods workflow) appends the standard footer to its notes, sets the site's
+  `data-release="version|tag|asset-name"` fallback text and the README lines ending in `<!-- latest -->` to the new
+  version, runs the site checks and commits to main. Pre-releases change nothing. Descriptions, status lists and FAQs
+  stay manual (the checklist below). Dry run: Actions → Latest release → Run workflow.
 - **Look:** "The Apothecary Drawer Cabinet". The site is one walnut cabinet on a painted wall: every drawer is a good,
   and its height is that good's share, with brass label holders, kraft cards and brass cup pulls. The look is fixed:
   updates extend it and never restyle it.

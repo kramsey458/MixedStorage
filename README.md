@@ -4,9 +4,9 @@
 
 Divide a building's capacity by percentage. For example, a 1,200-capacity warehouse can reserve **50% for carrots (600)** and **50% for gears (600)**. Percentages reserve space; they do not create goods or instantly fill the building.
 
-**[Download MixedStorage v1.2.0](https://github.com/timbermods/MixedStorage/releases/download/v1.2.0/MixedStorage-v1.2.0.zip)** · [Release notes](https://github.com/timbermods/MixedStorage/releases/tag/v1.2.0) · [Report a problem](https://github.com/timbermods/MixedStorage/issues) · [Website](https://timbermods.github.io/MixedStorage/)
+**[Download MixedStorage v1.2.0](https://github.com/timbermods/MixedStorage/releases/download/v1.2.0/MixedStorage-v1.2.0.zip)** · [Release notes](https://github.com/timbermods/MixedStorage/releases/tag/v1.2.0) · [Report a problem](https://github.com/timbermods/MixedStorage/issues) · [Website](https://timbermods.github.io/MixedStorage/) <!-- latest -->
 
-> **v1.2.0** is the current release, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer.
+> **v1.2.0** is the current release, built for Timberborn **1.1.2.4**. One download covers single-player and BeaverBuddies multiplayer. <!-- latest -->
 
 <img width="625" height="1112" alt="image" src="https://github.com/user-attachments/assets/862e5c13-33a0-47ed-9515-9e2dffefe3a9" />
 
@@ -22,7 +22,7 @@ Divide a building's capacity by percentage. For example, a 1,200-capacity wareho
 
 ## Install
 
-1. Download **MixedStorage-v1.2.0.zip** above. On the release page, choose that file under **Assets**, not **Source code**.
+1. Download **MixedStorage-v1.2.0.zip** above. On the release page, choose that file under **Assets**, not **Source code**. <!-- latest -->
 2. Close Timberborn. Extract the ZIP's **MixedStorage** folder into your Timberborn **Mods** folder—normally `Documents\Timberborn\Mods` on Windows.
 3. Check that `Documents\Timberborn\Mods\MixedStorage\version-1.1\manifest.json` exists. Avoid an extra nested MixedStorage folder.
 4. Install **Harmony** 2.4.1 or newer from the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3284904751) if you don't have it. Enable **Harmony** and **MixedStorage** in the game's mod manager, then restart when prompted.
