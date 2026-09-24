@@ -476,7 +476,7 @@
         "name": "walnut",
         "file": "docs/assets/textures/walnut.webp",
         "size": "720x180",
-        "use": "background-size 720px auto; tiles both ways; per-drawer background-position offsets so neighbours don't repeat grain; fallback #3a2416 (carcass) / #5d3c28 (drawer)."
+        "use": "background-size 720px auto; tiles both ways; offset on the mini cabinets' drawers so they don't repeat the carcass grain; fallback #3a2416 (carcass) / #5d3c28 (drawer)."
       },
       {
         "name": "kraft",
@@ -494,13 +494,13 @@
         "name": "holder",
         "file": "docs/assets/textures/holder.png",
         "size": "112x56",
-        "use": "nine-slice: border-image-slice 16, stretch; border-width 11px 14px (holder), 8px 9px (steps), 7px 9px (toc); background-clip padding-box over kraft."
+        "use": "nine-slice: border-image-slice 16, stretch; border-width 8px 9px (steps), 7px 9px (toc); background-clip padding-box over kraft."
       },
       {
         "name": "pull",
         "file": "docs/assets/textures/pull.png",
         "size": "96x40",
-        "use": "single image, contain; 60x25 on drawers, 38x16 on accordions."
+        "use": "single image, contain; 38x16 on accordions."
       },
       {
         "name": "generator",
@@ -515,14 +515,9 @@
         "purpose": "Screenshots in their walnut and brass frame. Night: 0 1px 0 rgba(0,0,0,.55), 0 14px 24px -14px rgba(0,0,0,.9)."
       },
       {
-        "name": "cabinet-cast",
-        "value": "inset 0 0 0 2px #2e1c12, inset 0 0 0 999px rgba(28,16,8,.38), 0 26px 44px -26px rgba(0,0,0,.85)",
-        "purpose": "The cabinet carcass: edge, darkening wash, cast shadow."
-      },
-      {
-        "name": "drawer-recess",
-        "value": "inset 0 0 0 2px #2e1c12, inset 0 -14px 18px -14px rgba(0,0,0,.55)",
-        "purpose": "Each drawer front."
+        "name": "carcass-wash",
+        "value": "inset 0 0 0 2px #2e1c12, inset 0 0 0 999px rgba(28,16,8,.38)",
+        "purpose": "The scale folio's mini cabinets: edge and darkening wash."
       },
       {
         "name": "plate-lift",
@@ -531,8 +526,8 @@
       },
       {
         "name": "hardware-drop",
-        "value": "drop-shadow(0 3px 3px rgba(0,0,0,.4))",
-        "purpose": "Label holders (pulls: drop-shadow(0 2px 2px rgba(0,0,0,.45))); follows image alpha."
+        "value": "drop-shadow(0 2px 2px rgba(0,0,0,.45))",
+        "purpose": "Brass pulls; follows image alpha."
       },
       {
         "name": "frame-rings",
@@ -547,11 +542,6 @@
     ],
     "motion": [
       {
-        "name": "drawer-ease",
-        "value": "flex-grow .6s cubic-bezier(.2,.8,.2,1), padding-bottom .6s cubic-bezier(.2,.8,.2,1), opacity .45s",
-        "purpose": "Drawers re-proportion, open from nothing and close to nothing."
-      },
-      {
         "name": "plate-press",
         "value": "transform .15s cubic-bezier(.2,.7,.2,1), background .15s",
         "purpose": "Buttons lift 1px on hover."
@@ -564,7 +554,7 @@
       {
         "name": "reduced-motion",
         "value": "transition: none !important; scroll-behavior: auto",
-        "purpose": "Everything off under prefers-reduced-motion; leaving drawers removed at once."
+        "purpose": "Everything off under prefers-reduced-motion."
       }
     ],
     "breakpoints": [
@@ -586,9 +576,10 @@
         "name": "In-game panel replica",
         "files": [
           "docs/assets/game-panel.css",
-          "docs/assets/demo.js"
+          "docs/assets/demo.js",
+          "docs/assets/hero-panel.js"
         ],
-        "note": "Reproduces the mod's panel in the game's colours, frames and Noto Sans; reads only --ink, --muted, --edge and --orange from the site. Not site style: don't reuse it or restyle it."
+        "note": "Reproduces the mod's panel in the game's colours, frames and Noto Sans; reads only --ink, --muted, --edge and --orange from the site. The hero shows its top (title, summary, cards) with the same classes. Not site style: don't reuse it elsewhere or restyle it."
       }
     ],
     "browserChrome": {
@@ -597,7 +588,7 @@
     },
     "carcassFill": {
       "value": "#3a2416",
-      "purpose": "The fill under the walnut texture on the cabinet carcass (.cab) and the scale folio mini cabinets (.mini-cab); drawers use walnut-2 #5d3c28."
+      "purpose": "The fill under the walnut texture on the scale folio mini cabinets (.mini-cab); their drawers use walnut-2 #5d3c28."
     }
   },
   "components": [
@@ -658,12 +649,12 @@
       "css": ".ds-qa{background:var(--paper,#eef1ea);border:1.5px solid var(--line,#aab5ab);border-radius:4px;max-width:860px;font:17px/1.62 system-ui,sans-serif;color:var(--ink,#1d2320)}.ds-qa[open]{border-color:#6e4a32}.ds-qa>summary{position:relative;list-style:none;cursor:pointer;min-height:52px;padding:14px 64px 14px 18px;font-weight:650;font-size:1.05rem;line-height:1.4}.ds-qa>summary::-webkit-details-marker{display:none}.ds-qa>summary::after{content:\"\";position:absolute;right:14px;top:50%;width:38px;height:16px;margin-top:-8px;background:url(https://timbermods.github.io/MixedStorage/assets/textures/pull.png) center/contain no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4));transition:transform .2s}.ds-qa[open]>summary::after{transform:translateY(3px)}.ds-qa>summary:hover{color:var(--link,#1f5a50)}.ds-qa>summary:focus-visible{outline:3px solid #c19a4b;outline-offset:3px}.ds-qa>div{padding:0 18px 16px;max-width:72ch}@media (prefers-reduced-motion:reduce){.ds-qa>summary::after{transition:none}}"
     },
     {
-      "name": "Cabinet Drawer with Label Holder",
+      "name": "Hero Panel (the mod's panel, top)",
       "kind": "custom",
-      "refersTo": "drawer",
-      "description": "Signature: a walnut drawer whose height is its share, carrying a kraft card in a brass holder and a brass cup pull.",
-      "html": "<div class=\"ds-cab\"><div class=\"ds-crest\"><b>Large Warehouse</b><span>1,200</span></div><div class=\"ds-body\"><div class=\"ds-drawer\" style=\"flex-grow:5000\"><span class=\"ds-holder\"><span class=\"ds-name\">Carrots</span><span class=\"ds-count\">600<small>50%</small></span></span><i class=\"ds-pull\"></i></div><div class=\"ds-drawer\" style=\"flex-grow:5000;background-position:-210px -60px\"><span class=\"ds-holder\"><span class=\"ds-name\">Gears</span><span class=\"ds-count\">600<small>50%</small></span></span><i class=\"ds-pull\"></i></div></div></div>",
-      "css": ".ds-cab{padding:18px 18px 22px;border-radius:6px;background:#3a2416 url(https://timbermods.github.io/MixedStorage/assets/textures/walnut.webp) 0 0/720px auto;box-shadow:inset 0 0 0 2px #2e1c12,inset 0 0 0 999px rgba(28,16,8,.38),0 26px 44px -26px rgba(0,0,0,.85)}.ds-crest{display:flex;justify-content:space-between;margin:2px 6px 14px;color:#d8c29b;font:700 1.35rem/1.1 \"Alegreya SC\",\"Palatino Linotype\",Georgia,serif}.ds-crest span{color:#e0c27e;font-size:1.05rem;font-variant-numeric:tabular-nums}.ds-body{display:flex;flex-direction:column;gap:8px;height:320px}.ds-drawer{position:relative;flex:1 1 0;min-height:0;display:grid;place-items:center;padding-bottom:26px;overflow:hidden;border-radius:4px;background:#5d3c28 url(https://timbermods.github.io/MixedStorage/assets/textures/walnut.webp) 0 0/720px auto;box-shadow:inset 0 0 0 2px #2e1c12,inset 0 -14px 18px -14px rgba(0,0,0,.55);transition:flex-grow .6s cubic-bezier(.2,.8,.2,1),padding-bottom .6s cubic-bezier(.2,.8,.2,1)}.ds-holder{display:flex;align-items:center;gap:10px;min-width:min(78%,300px);padding:3px 10px;color:#231a12;border-style:solid;border-width:11px 14px;border-image:url(https://timbermods.github.io/MixedStorage/assets/textures/holder.png) 16/11px 14px/0 stretch;background:#d8c29b url(https://timbermods.github.io/MixedStorage/assets/textures/kraft.webp) 0 0/200px;background-clip:padding-box;filter:drop-shadow(0 3px 3px rgba(0,0,0,.4));font:700 1.1rem/1.1 \"Alegreya SC\",\"Palatino Linotype\",Georgia,serif}.ds-name{flex:1}.ds-count{text-align:right;font-variant-numeric:tabular-nums}.ds-count small{display:block;font:600 .78rem/1.2 system-ui,sans-serif;color:#5a4632}.ds-pull{position:absolute;bottom:6px;left:50%;width:60px;height:25px;margin-left:-30px;background:url(https://timbermods.github.io/MixedStorage/assets/textures/pull.png) center/contain no-repeat;filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}@media (prefers-reduced-motion:reduce){.ds-drawer{transition:none}}"
+      "refersTo": "hero-panel",
+      "description": "The top of the mod's Storage Allocation panel in the game's look: title, summary, one card per good with its stock bar. Part of the replica exception.",
+      "html": "<div class=\"ds-ig\"><p class=\"ds-ig-t\">Storage Allocation</p><p class=\"ds-ig-s\">1200 / 1200 items · 2 goods allocated</p><div class=\"ds-ig-c\"><div class=\"ds-ig-l\"><span><b>Carrots</b>50% allocated</span><span class=\"ds-ig-n\"><b>600 / 600</b>stored / limit</span></div><i></i></div><div class=\"ds-ig-c\"><div class=\"ds-ig-l\"><span><b>Gears</b>50% allocated</span><span class=\"ds-ig-n\"><b>600 / 600</b>stored / limit</span></div><i></i></div></div>",
+      "css": ".ds-ig{max-width:440px;background:#436452;color:#fbfffc;border:2px solid #ffffb5;box-shadow:inset 0 0 0 1px #5c574c;border-radius:4px;padding:10px 11px 9px;font:400 13px/1.362 \"Noto Sans\",\"Segoe UI\",system-ui,sans-serif}.ds-ig p{margin:0}.ds-ig-t{font-size:16px;font-weight:700;text-transform:uppercase;color:#fff}.ds-ig-s{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px}.ds-ig-c{background:#3b5468;border:1px solid #2a3d4d;border-radius:3px;padding:5px 7px;margin-bottom:4px}.ds-ig-l{display:flex;justify-content:space-between;font-size:14px}.ds-ig-l b{display:block;font-size:16px;color:#fff}.ds-ig-n{text-align:right;font-size:12px}.ds-ig-n b{font-size:19px}.ds-ig-c i{display:block;height:4px;margin-top:4px;background:#ffa60f}"
     },
     {
       "name": "Numbered Step",
@@ -676,9 +667,9 @@
   ],
   "narrative": {
     "northStar": "The Apothecary Drawer Cabinet",
-    "overview": "The site is one walnut cabinet standing against a painted wall. Every drawer is a good, and each drawer's height is that good's share of the building. Brass label holders carry kraft cards, brass cup pulls sit under them, and the goods keep the game's own icons. The idea is literal: the hero cabinet redraws its drawers with the mod's own rounding, and the rules section draws the same share at three capacities at true scale, with a leader line and a dimension bracket, like a measured folio drawing.\n\nMaterials are real and made, not faked. Walnut, brass and kraft are procedural textures (`docs/assets/textures/make_textures.py`, fixed seed, no source images, no generative model). Walnut tiles so a drawer of any height keeps its grain, the brass label holder is a nine-slice border image, and the pull is one image used on every drawer face and every accordion. CSS supplies only edge lines, recesses and cast shadows over those textures. The wall behind the cabinet is plain paint: sage limewash by day, deep verdigris by lamplight. Walnut, brass and kraft keep their values in both modes, because they are materials, not themes.\n\nDensity is calm and reading-first. Type is split by job. Alegreya SC, engraved brass-label small caps, names things: the wordmark, headings, labels, buttons, counts. The system face carries every sentence. The in-game panel replica (`game-panel.css`, `demo.js`) is a contained exception. It reproduces the mod's panel in the game's own look and is not part of this system.",
+    "overview": "The site is a walnut cabinet standing against a painted wall: walnut header and footer, brass plates, kraft cards, brass cup pulls on every accordion, and the goods keep the game's own icons. The rules section draws the same share at three capacities at true scale, as mini cabinets whose drawers are shares, with a leader line and a dimension bracket, like a measured folio drawing. The mod itself is never drawn in wood: the hero shows the top of the mod's real Storage Allocation panel, in the game's look, redrawn with the mod's own rounding.\n\nMaterials are real and made, not faked. Walnut, brass and kraft are procedural textures (`docs/assets/textures/make_textures.py`, fixed seed, no source images, no generative model). Walnut tiles so a drawer of any height keeps its grain, the brass label holder is a nine-slice border image, and the pull is one image used on every accordion. CSS supplies only edge lines, recesses and cast shadows over those textures. The wall behind the cabinet is plain paint: sage limewash by day, deep verdigris by lamplight. Walnut, brass and kraft keep their values in both modes, because they are materials, not themes.\n\nDensity is calm and reading-first. Type is split by job. Alegreya SC, engraved brass-label small caps, names things: the wordmark, headings, labels, buttons, counts. The system face carries every sentence. The in-game panel replica (`game-panel.css`, `demo.js`) is a contained exception. It reproduces the mod's panel in the game's own look and is not part of this system.",
     "keyCharacteristics": [
-      "One metaphor, used to the letter: capacity is a cabinet, a share is a drawer's height.",
+      "One metaphor for the site: capacity is a cabinet, a share is a drawer's height. The mod's own UI is always shown as it looks in game.",
       "Produced material textures (walnut, brass, kraft), tiled or nine-sliced, never imitated with gradients.",
       "Small-caps display face for names and figures; system sans for prose.",
       "Exact numbers in tabular figures.",
@@ -707,7 +698,7 @@
       },
       {
         "name": "The Counter Rule",
-        "body": "Every count, capacity and percentage uses tabular figures, so numbers hold still when the drawers redraw.",
+        "body": "Every count, capacity and percentage uses tabular figures, so numbers hold still when the split buttons redraw them.",
         "section": "typography"
       },
       {
@@ -724,12 +715,13 @@
     "dos": [
       "Do take walnut, brass and kraft from the produced textures in `docs/assets/textures/` (regenerate with `make_textures.py`). Tile walnut at 720px, kraft at 200px, and fit brass to the element's height.",
       "Do frame kraft cards with the brass holder nine-slice (`border-image: url(textures/holder.png) 16`) and `background-clip: padding-box`. Scale the border width to the element (7–11px vertical).",
-      "Do use the brass cup pull as the one \"this opens\" sign, on drawers and accordions alike.",
+      "Do use the brass cup pull as the one \"this opens\" sign, on accordions.",
       "Do set every count, capacity and percentage in tabular figures, and draw proportions at true share.",
       "Do keep controls at least 44px tall, show focus as a 3px brass outline 3px out, and turn off every transition and smooth scrolling under prefers-reduced-motion.",
       "Do keep materials identical in both modes. Only the wall, paper, ink, rules, link and orange change for lamplight."
     ],
     "donts": [
+      "Don't draw the mod in wood. Any picture of the mod itself (the hero, the demo) is the in-game panel replica. Walnut, brass and kraft never stand in for the mod's UI: readers must not think the mod looks like wood (Kyler, 2026-09-24).",
       "Don't imitate wood, brass or paper with CSS gradients or bevels. If a material needs a new form, produce it in `make_textures.py`.",
       "Don't put small labels or kickers above headings. The heading is the label.",
       "Don't build stat rows of big numbers, or grids of icon tiles. Use ledger rows, measured drawings and the goods' own icons.",
