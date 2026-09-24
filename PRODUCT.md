@@ -47,8 +47,8 @@ models. One download covers single player and co-op.
 
 ## Capabilities and Constraints
 
-- **Stack and hosting:** plain static HTML/CSS/JS in `site/` on `main`, no build step. GitHub Pages serves the
-  `gh-pages` branch; publish with `.\deploy-site.ps1` after the change is merged to `main`.
+- **Stack and hosting:** plain static HTML/CSS/JS in `docs/` on `main`, no build step. GitHub Pages serves `main:/docs`,
+  so merging to `main` publishes.
 - **Contracts the site test enforces** (`node tests/test-site.mjs`, run in CI): the home and install pages keep a
   download button (`a.btn` whose text says Download) with `data-release-href="download"` and a fallback link to
   `/releases/latest`; elements marked `hidden` stay hidden under the stylesheets; `404.html` loads assets by absolute
@@ -77,8 +77,8 @@ models. One download covers single player and co-op.
 
 ## Evidence on Hand
 
-- Real in-game screenshots: `site/assets/panel.webp` (the Storage Allocation panel on a large warehouse),
-  `site/assets/world.webp` (a warehouse showing several goods), `site/assets/og.png`.
+- Real in-game screenshots: `docs/assets/panel.webp` (the Storage Allocation panel on a large warehouse),
+  `docs/assets/world.webp` (a warehouse showing several goods), `docs/assets/og.png`.
 - The interactive replica of the panel (`demo.js`, `game-panel.css`) with all 27 goods a Folktails warehouse accepts.
 - Player reports of successful use of earlier builds (no quotes on hand; don't invent any).
 

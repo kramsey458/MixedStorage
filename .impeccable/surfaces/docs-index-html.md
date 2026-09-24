@@ -1,13 +1,13 @@
 ---
 version: 1
 slug: "site-index-html"
-primary_target: "site/index.html"
-related_targets: ["site/install.html","site/troubleshooting.html","site/faq.html","site/404.html"]
+primary_target: "docs/index.html"
+related_targets: ["docs/install.html","docs/troubleshooting.html","docs/faq.html","docs/404.html"]
 ---
 
-# Surface brief: MixedStorage site (site/index.html with install, troubleshooting, faq, 404)
+# Surface brief: MixedStorage site (docs/index.html with install, troubleshooting, faq, 404)
 
-Scope: site/. Home: Persuade. Guides: Read. Audience: Timberborn players short on storage; mostly single player, some Stability Fork co-op. Action: understand the percentage mechanism, download the right zip, install right, set up a first mixed building. Proof: the working panel replica, real in-game screenshots (panel.webp, world.webp), exact rounding. Constraints: tests/test-site.mjs contracts (download buttons, /releases/latest fallbacks, hidden stays hidden, 404 absolute paths, same release.js config); release.js byte-identical; describe the mod as it is now; decided by the agent under the maintainer's delegation (no question rounds).
+Scope: docs/. Home: Persuade. Guides: Read. Audience: Timberborn players short on storage; mostly single player, some Stability Fork co-op. Action: understand the percentage mechanism, download the right zip, install right, set up a first mixed building. Proof: the working panel replica, real in-game screenshots (panel.webp, world.webp), exact rounding. Constraints: tests/test-site.mjs contracts (download buttons, /releases/latest fallbacks, hidden stays hidden, 404 absolute paths, same release.js config); release.js byte-identical; describe the mod as it is now; decided by the agent under the maintainer's delegation (no question rounds).
 
 ## Direction contract
 

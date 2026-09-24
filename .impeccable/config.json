@@ -7,7 +7,7 @@
         "rule": "cramped-padding",
         "value": "*",
         "files": [
-          "site/index.html"
+          "docs/index.html"
         ],
         "createdAt": "2026-09-23T18:40:39.129Z",
         "reason": "agent: sections, table cells and plates pad with clamp()/nested padding the static scan can't resolve; checked in screenshots"
@@ -16,7 +16,7 @@
         "rule": "cramped-padding",
         "value": "*",
         "files": [
-          "site/install.html"
+          "docs/install.html"
         ],
         "createdAt": "2026-09-23T18:40:39.262Z",
         "reason": "agent: sections, table cells and plates pad with clamp()/nested padding the static scan can't resolve; checked in screenshots"
@@ -25,7 +25,7 @@
         "rule": "cramped-padding",
         "value": "*",
         "files": [
-          "site/faq.html"
+          "docs/faq.html"
         ],
         "createdAt": "2026-09-23T18:40:39.393Z",
         "reason": "agent: sections, table cells and plates pad with clamp()/nested padding the static scan can't resolve; checked in screenshots"
@@ -34,7 +34,7 @@
         "rule": "cramped-padding",
         "value": "*",
         "files": [
-          "site/troubleshooting.html"
+          "docs/troubleshooting.html"
         ],
         "createdAt": "2026-09-23T18:40:39.530Z",
         "reason": "agent: sections, table cells and plates pad with clamp()/nested padding the static scan can't resolve; checked in screenshots"
@@ -43,7 +43,7 @@
         "rule": "flat-type-hierarchy",
         "value": "*",
         "files": [
-          "site/404.html"
+          "docs/404.html"
         ],
         "createdAt": "2026-09-23T18:40:39.661Z",
         "reason": "agent: 404 loads /MixedStorage/assets/style.css by absolute path (a site-test contract), which the static scan can't read"

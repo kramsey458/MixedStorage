@@ -176,7 +176,7 @@ components:
 
 The site is one walnut cabinet standing against a painted wall. Every drawer is a good, and each drawer's height is that good's share of the building. Brass label holders carry kraft cards, brass cup pulls sit under them, and the goods keep the game's own icons. The idea is literal: the hero cabinet redraws its drawers with the mod's own rounding, and the rules section draws the same share at three capacities at true scale, with a leader line and a dimension bracket, like a measured folio drawing.
 
-Materials are real and made, not faked. Walnut, brass and kraft are procedural textures (`site/assets/textures/make_textures.py`, fixed seed, no source images, no generative model). Walnut tiles so a drawer of any height keeps its grain, the brass label holder is a nine-slice border image, and the pull is one image used on every drawer face and every accordion. CSS supplies only edge lines, recesses and cast shadows over those textures. The wall behind the cabinet is plain paint: sage limewash by day, deep verdigris by lamplight. Walnut, brass and kraft keep their values in both modes, because they are materials, not themes.
+Materials are real and made, not faked. Walnut, brass and kraft are procedural textures (`docs/assets/textures/make_textures.py`, fixed seed, no source images, no generative model). Walnut tiles so a drawer of any height keeps its grain, the brass label holder is a nine-slice border image, and the pull is one image used on every drawer face and every accordion. CSS supplies only edge lines, recesses and cast shadows over those textures. The wall behind the cabinet is plain paint: sage limewash by day, deep verdigris by lamplight. Walnut, brass and kraft keep their values in both modes, because they are materials, not themes.
 
 Density is calm and reading-first. Type is split by job. Alegreya SC, engraved brass-label small caps, names things: the wordmark, headings, labels, buttons, counts. The system face carries every sentence. The in-game panel replica (`game-panel.css`, `demo.js`) is a contained exception. It reproduces the mod's panel in the game's own look and is not part of this system.
 
@@ -319,7 +319,7 @@ The same small share drawn at three capacities, at true share. Each is a mini ca
 ## Do's and Don'ts
 
 ### Do:
-- **Do** take walnut, brass and kraft from the produced textures in `site/assets/textures/` (regenerate with `make_textures.py`). Tile walnut at 720px, kraft at 200px, and fit brass to the element's height.
+- **Do** take walnut, brass and kraft from the produced textures in `docs/assets/textures/` (regenerate with `make_textures.py`). Tile walnut at 720px, kraft at 200px, and fit brass to the element's height.
 - **Do** frame kraft cards with the brass holder nine-slice (`border-image: url(textures/holder.png) 16`) and `background-clip: padding-box`. Scale the border width to the element (7–11px vertical).
 - **Do** use the brass cup pull as the one "this opens" sign, on drawers and accordions alike.
 - **Do** set every count, capacity and percentage in tabular figures, and draw proportions at true share.
