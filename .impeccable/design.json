@@ -72,7 +72,7 @@
         "role": "neutral",
         "displayName": "Muted Ink",
         "canonical": "#4c5751",
-        "purpose": "Secondary text, leader line, dimension bracket by day (--muted, --edge).",
+        "purpose": "Secondary text by day (--muted, --edge).",
         "tonalRamp": [
           "#1d211e",
           "#343c38",
@@ -264,7 +264,7 @@
         "role": "secondary",
         "displayName": "Walnut",
         "canonical": "#4a2f1f",
-        "purpose": "Header, footer, cabinet carcass, screenshot ring.",
+        "purpose": "Header, footer, screenshot ring.",
         "tonalRamp": [
           "#2b1b12",
           "#4f3221",
@@ -280,7 +280,7 @@
         "role": "secondary",
         "displayName": "Walnut Front",
         "canonical": "#5d3c28",
-        "purpose": "Drawer fronts, walnut plates, goods medallions, nav hover.",
+        "purpose": "Walnut plates, nav hover.",
         "tonalRamp": [
           "#2b1c12",
           "#4e3322",
@@ -312,7 +312,7 @@
         "role": "secondary",
         "displayName": "Walnut Edge",
         "canonical": "#2e1c12",
-        "purpose": "Inset edges of cabinet and drawers; cabinet feet.",
+        "purpose": "Kept as a token; nothing on the site draws with it now.",
         "tonalRamp": [
           "#2c1b11",
           "#513120",
@@ -452,7 +452,7 @@
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Buttons, nav, holder names and counts, crest, leader and dimension figures, pills, toc cards. Tabular figures."
+        "purpose": "Buttons, nav, pills, toc cards. Tabular figures."
       },
       "lead": {
         "displayName": "Lead",
@@ -472,12 +472,6 @@
       }
     },
     "materials": [
-      {
-        "name": "walnut",
-        "file": "docs/assets/textures/walnut.webp",
-        "size": "720x180",
-        "use": "background-size 720px auto; tiles both ways; offset on the mini cabinets' drawers so they don't repeat the carcass grain; fallback #3a2416 (carcass) / #5d3c28 (drawer)."
-      },
       {
         "name": "kraft",
         "file": "docs/assets/textures/kraft.webp",
@@ -505,7 +499,7 @@
       {
         "name": "generator",
         "file": "docs/assets/textures/make_textures.py",
-        "use": "numpy + Pillow, fixed seed 1200, no source images, no generative model."
+        "use": "numpy + Pillow, fixed seed 1200, no source images, no generative model. It still draws the old walnut grain, unsaved, so the other textures' random numbers stay the same."
       }
     ],
     "shadows": [
@@ -513,11 +507,6 @@
         "name": "mount",
         "value": "0 1px 0 rgba(20,14,8,.35), 0 12px 22px -14px rgba(20,14,8,.7)",
         "purpose": "Screenshots in their walnut and brass frame. Night: 0 1px 0 rgba(0,0,0,.55), 0 14px 24px -14px rgba(0,0,0,.9)."
-      },
-      {
-        "name": "carcass-wash",
-        "value": "inset 0 0 0 2px #2e1c12, inset 0 0 0 999px rgba(28,16,8,.38)",
-        "purpose": "The scale folio's mini cabinets: edge and darkening wash."
       },
       {
         "name": "plate-lift",
@@ -579,16 +568,12 @@
           "docs/assets/demo.js",
           "docs/assets/hero-panel.js"
         ],
-        "note": "Reproduces the mod's panel in the game's colours, frames and Noto Sans; reads only --ink, --muted, --edge and --orange from the site. The hero shows its top (title, summary, cards) with the same classes. Not site style: don't reuse it elsewhere or restyle it."
+        "note": "Reproduces the mod's panel in the game's colours, frames and Noto Sans; reads only --ink, --muted, --edge and --orange from the site. The hero and the three sizes show its top (title, summary, cards) with the same classes. Not site style: don't reuse it elsewhere or restyle it."
       }
     ],
     "browserChrome": {
       "theme-color": "#16231c",
       "purpose": "<meta name=\"theme-color\" content=\"#16231c\"> on every page, one value for both modes (a green-black near the night ground); not a palette token."
-    },
-    "carcassFill": {
-      "value": "#3a2416",
-      "purpose": "The fill under the walnut texture on the scale folio mini cabinets (.mini-cab); their drawers use walnut-2 #5d3c28."
     }
   },
   "components": [
@@ -667,9 +652,9 @@
   ],
   "narrative": {
     "northStar": "The Apothecary Drawer Cabinet",
-    "overview": "The site is a walnut cabinet standing against a painted wall: walnut header and footer, brass plates, kraft cards, brass cup pulls on every accordion, and the goods keep the game's own icons. The rules section draws the same share at three capacities at true scale, as mini cabinets whose drawers are shares, with a leader line and a dimension bracket, like a measured folio drawing. The mod itself is never drawn in wood: the hero shows the top of the mod's real Storage Allocation panel, in the game's look, redrawn with the mod's own rounding.\n\nMaterials are real and made, not faked. Walnut, brass and kraft are procedural textures (`docs/assets/textures/make_textures.py`, fixed seed, no source images, no generative model). Walnut tiles so a drawer of any height keeps its grain, the brass label holder is a nine-slice border image, and the pull is one image used on every accordion. CSS supplies only edge lines, recesses and cast shadows over those textures. The wall behind the cabinet is plain paint: sage limewash by day, deep verdigris by lamplight. Walnut, brass and kraft keep their values in both modes, because they are materials, not themes.\n\nDensity is calm and reading-first. Type is split by job. Alegreya SC, engraved brass-label small caps, names things: the wordmark, headings, labels, buttons, counts. The system face carries every sentence. The in-game panel replica (`game-panel.css`, `demo.js`) is a contained exception. It reproduces the mod's panel in the game's own look and is not part of this system.",
+    "overview": "The site is a walnut cabinet standing against a painted wall: walnut header and footer, brass plates, kraft cards, brass cup pulls on every accordion, and the goods keep the game's own icons. The rules section shows the same share in three sizes of warehouse, as three small copies of the mod's own panel. The mod itself is never drawn in wood: the hero shows the top of the mod's real Storage Allocation panel, in the game's look, redrawn with the mod's own rounding.\n\nMaterials are real and made, not faked. Walnut, brass and kraft are procedural textures (`docs/assets/textures/make_textures.py`, fixed seed, no source images, no generative model). Kraft tiles, the brass label holder is a nine-slice border image, and the pull is one image used on every accordion. CSS supplies only edge lines, recesses and cast shadows over those textures. The wall behind the cabinet is plain paint: sage limewash by day, deep verdigris by lamplight. Walnut, brass and kraft keep their values in both modes, because they are materials, not themes.\n\nDensity is calm and reading-first. Type is split by job. Alegreya SC, engraved brass-label small caps, names things: the wordmark, headings, labels, buttons, counts. The system face carries every sentence. The in-game panel replica (`game-panel.css`, `demo.js`) is a contained exception. It reproduces the mod's panel in the game's own look and is not part of this system.",
     "keyCharacteristics": [
-      "One metaphor for the site: capacity is a cabinet, a share is a drawer's height. The mod's own UI is always shown as it looks in game.",
+      "One setting for the site: an apothecary cabinet's materials (walnut, brass, kraft). The mod's own UI is always shown as it looks in game.",
       "Produced material textures (walnut, brass, kraft), tiled or nine-sliced, never imitated with gradients.",
       "Small-caps display face for names and figures; system sans for prose.",
       "Exact numbers in tabular figures.",
@@ -713,7 +698,7 @@
       }
     ],
     "dos": [
-      "Do take walnut, brass and kraft from the produced textures in `docs/assets/textures/` (regenerate with `make_textures.py`). Tile walnut at 720px, kraft at 200px, and fit brass to the element's height.",
+      "Do take walnut, brass and kraft from the produced textures in `docs/assets/textures/` (regenerate with `make_textures.py`). Tile kraft at 200px, and fit brass to the element's height.",
       "Do frame kraft cards with the brass holder nine-slice (`border-image: url(textures/holder.png) 16`) and `background-clip: padding-box`. Scale the border width to the element (7–11px vertical).",
       "Do use the brass cup pull as the one \"this opens\" sign, on accordions.",
       "Do set every count, capacity and percentage in tabular figures, and draw proportions at true share.",
