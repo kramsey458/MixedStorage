@@ -20,6 +20,24 @@ through a PR → merge.
 - Upgrade facts players need stay (replace files with the game closed; allocations are kept; remove the old
   MixedStorage-BeaverBuddies add-on). Other version history goes only in CHANGELOG.md and release notes.
 
+## Writing README and website text
+
+Kyler, 2026-09-24: "simplicity and elegance is effective and desirable." Every change to the README, the website
+text and the player docs follows these rules.
+
+- **Write for a Timberborn player** who wants to download, install and use the mod. Developer detail goes in
+  `DEVELOPMENT.md` or CHANGELOG.md; link to it rather than repeating it.
+- **Short.** One idea per sentence, most under about 20 words. A paragraph or FAQ answer is one to three sentences,
+  a troubleshooting answer a few numbered steps.
+- **Lead with the action.** Menu paths as arrow chains; on-screen labels in bold, exactly as in game.
+- **Say each thing once**, where a player would look for it; link to it elsewhere.
+- **Plain words.** No internals (class names, ids, formats) unless the player needs them to act.
+- **Cut** filler, repeated caveats, edge cases a player won't meet, and history ("since …", "no longer", older
+  builds). Describe the mod as it is now.
+- **Check every fact against the code** before writing it; changelogs lag.
+- **Keep, briefly:** credits, the unofficial line, the status, and safety facts.
+- **Reread as a new player before publishing.** Every step works as written, and nothing is said twice.
+
 ## Website
 
 - **Where:** `docs/`: `index.html` (features, cabinet, demo), `install.html`, `troubleshooting.html`, `faq.html`,
@@ -88,6 +106,7 @@ through a PR → merge.
 
 ### Content rules
 
+- Every word follows *Writing README and website text* above.
 - Describe the mod as it is now. Don't write "New in <version>", "added in …" or version history on player pages;
   that belongs in CHANGELOG.md and the GitHub release notes.
 - The played and not-played status matches the README's "Compatibility and testing" exactly. Never invent numbers,
@@ -123,22 +142,22 @@ When asked to "update the website for the latest release, consistent with the de
      list; the FAQ groups; troubleshooting `#problems`. Supported buildings: index `#buildings` table and `#faq-buildings`.
    - Panel changes: the replica (`demo.js`, `game-panel.css`) and its tips list; ask Kyler for a new in-game
      screenshot rather than faking one.
-3. Put new content into the existing components: a new question goes in the right FAQ group as a `details.qa` with a
-   stable id; a new problem is a `details.qa` in troubleshooting with "Why it happens" / "What to do" h4s; a new
-   control is a row in install's controls table; a feature is a `.ledger` row; a caution is a `.panel.note.note--warn`.
-   Don't restyle anything.
+3. Write it as *Writing README and website text* says, and put new content into the existing components: a new
+   question goes in the right FAQ group as a `details.qa` with a stable id; a new problem is a `details.qa` in
+   troubleshooting with "Why it happens" / "What to do" h4s; a new control is a row in install's controls table; a
+   feature is a `.ledger` row; a caution is a `.panel.note.note--warn`. Don't restyle anything.
 4. Test: `node tests/test-site.mjs` (must pass 76/76). It enforces: download buttons (`a.btn` "Download") with
    `data-release-href="download"` and a `/releases/latest` fallback on index and install; elements marked `hidden` stay
    hidden under the stylesheets; `404.html` loads assets by absolute `/MixedStorage/` paths; every page loads
    `assets/release.js` with the same `data-repo` and `data-asset`; the offered-release scenarios. CI also runs the
    allocation tests and `tests/check-version.ps1`.
-5. Preview: `python -m http.server 8788 -d site` (in the background), then open http://localhost:8788/. Capture light,
+5. Preview: `python -m http.server 8788 -d docs` (in the background), then open http://localhost:8788/. Capture light,
    dark and a 390px phone. If the personal `impeccable-site-flow` skill is available, use
    `python <skill>/scripts/capsite.py http://localhost:8788/ <out> "" install.html troubleshooting.html faq.html 404.html`;
    otherwise use the Browser pane in both colour schemes at desktop and mobile sizes. Check the changed sections and
    that there's no horizontal scroll. Stop the server afterwards.
 6. Optional but recommended: run the detector,
-   `"$(ls -d ~/.claude/plugins/cache/impeccable/impeccable/*/skills/impeccable | tail -1)/scripts/impeccable" detect --json site`
+   `"$(ls -d ~/.claude/plugins/cache/impeccable/impeccable/*/skills/impeccable | tail -1)/scripts/impeccable" detect --json docs`
    (parse from the first `[`). Known false positives: cramped-padding on the four main pages and flat-type-hierarchy on
    404 (ignored in config); `side-tab` on the 3px walnut rules (`.page-head`, `.rules li`) and the scale folio's leader
    line; `layout-transition` on the drawers' `padding-bottom` (the signature motion) and the replica's fill bar;

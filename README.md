@@ -1,8 +1,8 @@
 # MixedStorage
 
-**Store several kinds of goods in one warehouse or pile—and choose how much space each gets.**
+**Store several kinds of goods in one warehouse or pile, and choose how much space each gets.**
 
-Divide a building's capacity by percentage. For example, a 1,200-capacity warehouse can reserve **50% for carrots (600)** and **50% for gears (600)**. Percentages reserve space; they do not create goods or instantly fill the building.
+Give each good a percentage of the building's capacity. At **50% carrots** and **50% gears**, a 1,200-capacity warehouse holds 600 of each. Percentages reserve space; they don't create goods or fill the building.
 
 **[Download MixedStorage v1.2.0](https://github.com/timbermods/MixedStorage/releases/download/v1.2.0/MixedStorage-v1.2.0.zip)** · [Release notes](https://github.com/timbermods/MixedStorage/releases/tag/v1.2.0) · [Report a problem](https://github.com/timbermods/MixedStorage/issues) · [Website](https://timbermods.github.io/MixedStorage/) <!-- latest -->
 
@@ -14,47 +14,45 @@ Divide a building's capacity by percentage. For example, a 1,200-capacity wareho
 
 ## What you can do
 
-- **Mix goods:** assign percentages to any goods the building normally accepts.
-- **See your stock at a glance:** icons, large counts, percentages, and fill bars summarize the contents.
-- **Set up storage quickly:** use **Max** for one good or copy allocations between compatible buildings.
-- **Keep controls within reach:** contents scroll while **Copy allocations**, **Paste allocations**, **Apply**, **Revert**, and the allocation total stay in a fixed footer.
-- **See mixed contents in the world:** native goods models represent the stored items. The visual split is approximate; the panel shows exact counts.
+- **Mix goods:** give a percentage to any good the building normally accepts.
+- **See your stock at a glance:** summary cards show each good's stock, limit, share and fill bar.
+- **Set up quickly:** search the list, give one good everything with **Max**, or copy a split to another building.
+- **See the mix in the world:** the building shows its goods with the game's own models.
 
 ## Install
 
 1. Download **MixedStorage-v1.2.0.zip** above. On the release page, choose that file under **Assets**, not **Source code**. <!-- latest -->
-2. Close Timberborn. Extract the ZIP's **MixedStorage** folder into your Timberborn **Mods** folder—normally `Documents\Timberborn\Mods` on Windows.
-3. Check that `Documents\Timberborn\Mods\MixedStorage\version-1.1\manifest.json` exists. Avoid an extra nested MixedStorage folder.
-4. Install **Harmony** 2.4.1 or newer from the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3284904751) if you don't have it. Enable **Harmony** and **MixedStorage** in the game's mod manager, then restart when prompted.
+2. Close Timberborn. Extract the ZIP's **MixedStorage** folder into `Documents\Timberborn\Mods`.
+3. Check that `Documents\Timberborn\Mods\MixedStorage\version-1.1\manifest.json` exists, with no extra folder in between.
+4. Install **Harmony** 2.4.1 or newer from the [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3284904751) if you don't have it.
+5. Start the game, enable **Harmony** and **MixedStorage** in the mod manager, and restart when prompted.
 
-**Upgrading?** Replace the existing MixedStorage files while the game is closed. Existing MixedStorage allocations are preserved.
+The [install guide](https://timbermods.github.io/MixedStorage/install.html) shows the folder layout and how to check that the mod loaded.
 
-**Coming from v0.4.x or earlier?** Remove or disable **MixedStorage-BeaverBuddies**, the old separate addon. Its functionality is now included; leaving it enabled causes a startup error. Keep BeaverBuddies itself if you play multiplayer.
+**Upgrading:** with the game closed, replace the MixedStorage files. Your allocations are kept. If you still have the old **MixedStorage-BeaverBuddies** add-on, remove or disable it: it causes a startup error.
 
-## Set up your first mixed storage building
+## Set up a mixed building
 
 1. Select a supported warehouse or pile.
-2. Find the goods you want in **Storage Allocation**. Use **Search** if needed.
-3. Enter a percentage for each good. Leave unwanted goods at **0%**.
-4. Make the total **exactly 100%**, then click **Apply 100%**.
+2. In **Storage Allocation**, type a percentage for each good you want. Leave the rest at **0%**.
+3. When the total is exactly 100%, click **Apply 100%**.
 
-For the example above, enter `50` for carrots and `50` for gears, with everything else at `0`. A 1,200-capacity warehouse will allow 600 of each.
+Edits are drafts until you click Apply. While Apply would change the building, it has an orange ring.
 
-To store nothing in a building, set every good to 0% (for example with **Clear all**) and click **Apply: store nothing**. It then stores nothing, like a newly built one. Stock already there is kept and can be hauled out.
-
-**Edits are drafts until you click Apply.** While pressing Apply would change the building (the draft is valid and differs from the building's current settings), the Apply button gets an orange border and bold text. The top summary continues to show the applied settings and actual stock while you edit, search, or filter. Normal hauling rules determine when goods arrive.
+To make a building store nothing, set every good to 0% and click **Apply: store nothing**. Stock already there stays and can be hauled out.
 
 | Control | What it does |
 | --- | --- |
-| **Max** | Sets that good to 100% and all others to 0%. Click Apply to confirm. |
-| **× beside a percentage** | Resets that good's draft percentage to 0%. |
-| **Clear all** | Sets every draft percentage to 0%. Apply it to store nothing, or enter new percentages. Current allocations stay active until you click Apply. |
-| **Revert** | Discards edits and restores the current settings. |
-| **Allocated goods only** | Shows goods with a nonzero draft percentage. |
-| **Copy allocations** | Copies a valid draft totaling 100%. |
-| **Paste allocations** | Pastes copied percentages into another building's draft. Click Apply there to confirm. |
+| **Search** | Finds a good in the list. |
+| **Max** | Sets that good to 100% and every other good to 0%. |
+| **×** beside a percentage | Sets that good to 0%. |
+| **Clear all** | Sets every good to 0%. |
+| **Revert** | Discards your edits. |
+| **Allocated goods only** | Shows only goods above 0%. |
+| **Copy allocations** | Copies a valid 100% split. |
+| **Paste allocations** | Pastes it into another building. Limits follow that building's capacity. |
 
-Percentages allow **two decimal places**. Copy/paste adjusts item limits to the destination's capacity. The destination must accept every copied good with a nonzero percentage; an incompatible paste leaves the draft unchanged. Stock, hauling mode, and hauler priority are not copied. Copied settings are kept until you close the game.
+Percentages allow two decimal places. Paste works only if the building accepts every copied good. Stock, hauling mode and hauler priority aren't copied, and the copy is kept until you close the game.
 
 ## Supported buildings
 
@@ -63,61 +61,62 @@ Percentages allow **two decimal places**. Copy/paste adjusts item limits to the 
 | **Folktails** | Small, medium, large | Small, large, underground |
 | **Iron Teeth** | Small, medium, large | Small industrial, large industrial |
 
-Buildings keep their normal accepted goods. Warehouses do not gain pile-only goods, or vice versa. **Tanks and map-editor reserve storage are not included.**
+Buildings keep their normal accepted goods. Tanks and map-editor reserve storage aren't included.
 
-## Multiplayer with BeaverBuddies
+## Good to know
 
-Co-op needs the [BeaverBuddies Stability Fork](https://timbermods.github.io/BeaverBuddies-Stability-Fork/). Every player installs the **same version of MixedStorage** (and the same Stability Fork build) and runs the **same game version**. Enable the Stability Fork as usual; MixedStorage turns on its bundled integration automatically. See [Compatibility and testing](#compatibility-and-testing) for which BeaverBuddies builds work.
-
-There is **no separate MixedStorage multiplayer download**. Single-player users do not need BeaverBuddies.
-
-Applied allocations synchronize through BeaverBuddies. Apply may briefly show a queued message until the next simulation tick. After upgrading, restart every computer's game and start a fresh multiplayer session. Old replay recordings may reference the former addon and may need the original mod versions.
-
-## Useful things to know
-
-- **Items use whole slots.** Percentages are rounded into whole-item limits while keeping the full capacity allocated. Tiny shares can round to zero, especially in small storage buildings. Check the displayed limit.
-- **Lowering a limit does not delete stock.** Extra goods remain stored and can be hauled out. The summary marks them as excess.
-- **Incoming deliveries count toward limits.** If a reduction conflicts with goods already on their way, wait for delivery and try again.
-- **Storage modes still matter.** Accept, Obtain, Supply, Empty, and hauler priority continue to use the game's hauling system.
-- **World visuals are approximate.** Whole visible cells cannot always match a percentage exactly. Tiny shares may have no visible cell, some models may look narrower, and banners still show one representative good. Excess goods may not be fully represented. Use the summary for exact amounts; unsupported meshes fall back to the original visuals.
-- **The game's Copy settings tool works with mixed storage.**
-  - Copying from a mixed building gives the target the same percentages. If the target does not accept all of those goods, or an incoming delivery conflicts, the target keeps its current goods and percentages and Player.log says why. The tool's other settings, such as the storage mode, are still copied.
-  - Copying from a building set to store nothing, such as one just built, leaves a mixed building's allocation as it is. So copying its storage mode (Accept, Obtain, Supply or Empty) does not wipe the allocation.
-  - Copying from a normal building that stores a good this one accepts turns a mixed building back into a normal one. If a delivery already on its way would no longer fit, the building stays mixed and Player.log says why. To make such a normal building, pick a good for a building without an allocation in the goods dropdown of the game's building list.
+- **Limits are whole items.** They always add up to the full capacity. A tiny share in a small building can round to 0; the panel warns you.
+- **Lowering a limit never deletes stock.** Extra goods show as excess and can be hauled out.
+- **Deliveries on their way count.** If a lower limit clashes with them, wait for them to arrive and apply again.
+- **Hauling works as usual.** Accept, Obtain, Supply, Empty and hauler priority follow the game's rules.
+- **The mix in the world is approximate.** Banners show one good. The panel has the exact counts.
+- **The game's Copy settings tool copies allocations.**
+  - From a mixed building, it copies the percentages.
+  - From a normal building, it turns a mixed building back into a normal one.
+  - From a building that stores nothing, it leaves the allocation alone.
+  - If the target can't take the change, for example while a delivery is on its way, it stays as it was and Player.log says why.
 - **The mod's own text is in English.** Good names follow your game language.
+
+## Multiplayer
+
+Co-op needs the latest [BeaverBuddies Stability Fork](https://timbermods.github.io/BeaverBuddies-Stability-Fork/) on every computer. Single player doesn't need BeaverBuddies.
+
+- Co-op support is built in and turns on by itself.
+- Every player needs the same MixedStorage version, Stability Fork build and game version.
+- After upgrading, everyone restarts the game and starts a fresh session.
+- Apply may briefly say **Queued for multiplayer** until the next simulation tick.
+
+If the installed BeaverBuddies lacks something MixedStorage needs, co-op Apply is turned off and Player.log says what's missing. The original [BeaverBuddies](https://github.com/thomaswp/BeaverBuddies) by thomaswp and contributors, and Timber Together, haven't been tested with MixedStorage.
 
 ## Having trouble?
 
-| Problem | Check this |
+| Problem | What to do |
 | --- | --- |
-| Mod does not appear | Check the folder structure, enable Harmony and MixedStorage, and restart. |
-| Apply is unavailable | Every percentage must be valid and the total must be exactly 100%, or 0% to store nothing. Goods marked "(not accepted here)" or "(unavailable)", which a saved allocation can still hold after a goods mod is removed, must be set to 0%. Wait if a multiplayer change is queued. |
-| Paste is rejected | The destination must accept every good with a nonzero copied percentage. |
-| Lower limit is rejected | Wait for incoming deliveries to finish. |
-| Startup mentions the old addon | Remove or disable MixedStorage-BeaverBuddies, then fully restart. |
-| Apply says multiplayer support could not start with the installed BeaverBuddies | Install the BeaverBuddies build named under [Compatibility and testing](#compatibility-and-testing) on every computer. Player.log names what is missing. Single-player usually still works; if even that is refused, disable BeaverBuddies for single-player games. |
-| Apply says MixedStorage cannot change allocations with this game version | A game update changed something MixedStorage relies on. Existing allocations still apply, but none can change (by Apply or Copy settings) until you install the MixedStorage version made for your game version. In co-op, every player needs the same game version. |
-| Apply shows "Apply failed" | Report it with your Player.log; the message and log say what went wrong. |
-| Panel or visuals look wrong | Include a screenshot, resolution/UI scale, building type, and allocations in a report. |
+| The mod doesn't appear | Check the folder layout, enable Harmony and MixedStorage, and restart. |
+| Apply is grayed out | Make every box valid and the total exactly 100%, or 0% to store nothing. Set goods marked "(not accepted here)" or "(unavailable)" to 0%. |
+| Paste is rejected | The building must accept every copied good. |
+| A lower limit is rejected | Wait for incoming deliveries to finish. |
+| A startup error names the old add-on | Remove or disable MixedStorage-BeaverBuddies, then restart. |
+| Apply says multiplayer support could not start | Install the latest Stability Fork on every computer. For single player, you can disable BeaverBuddies. |
+| Apply says MixedStorage cannot change allocations with this game version | Install the MixedStorage version made for your game version. Existing allocations still work. |
+| Apply says "Apply failed" | Report it with your Player.log. |
 
-[Open an issue](https://github.com/timbermods/MixedStorage/issues) with your game/mod versions, other enabled mods, whether you were playing multiplayer, and steps to reproduce. For crashes, include the relevant error and stack trace; review logs for personal information before sharing them. Windows logs are normally in `%USERPROFILE%\AppData\LocalLow\Mechanistry\Timberborn`. After restarting, the previous session is usually in `Player-prev.log`.
+The [troubleshooting guide](https://timbermods.github.io/MixedStorage/troubleshooting.html) has more. To report a bug, [open an issue](https://github.com/timbermods/MixedStorage/issues) with your game and mod versions, other mods, whether you played co-op, and steps to reproduce.
+
+Player.log is in `%USERPROFILE%\AppData\LocalLow\Mechanistry\Timberborn`; after a restart, the previous session is in `Player-prev.log`. Check logs for personal details before sharing them.
 
 ## Removing MixedStorage
 
-Close Timberborn, then disable MixedStorage in the mod manager or delete its folder. In saves that used it, each mixed building goes back to storing only its largest allocated good. As when you switch a warehouse to a different good in the base game, haulers empty out the other goods, and may move some of the kept good too, before the building fills with it again.
+Close Timberborn, then disable MixedStorage or delete its folder. In saves that used it, each mixed building goes back to one good: the one with the largest share. Haulers move the other goods out, as when you change a warehouse's good in the base game.
 
 ## Compatibility and testing
 
-Built against **Timberborn 1.1.2.4**.
+The panel's layout and the storage visuals have been checked in game, and players have reported using the mod. The newer behavior passes automated checks but hasn't been played yet, alone or in co-op. That includes the game's Copy settings tool, storing nothing, the orange ring on Apply, Supply mode, loading damaged saves and the panel's messages.
 
-The bundled multiplayer integration is built against the **[BeaverBuddies Stability Fork](https://github.com/timbermods/BeaverBuddies-Stability-Fork)** (formerly called Stability Preview), which is the build to use. Stability Fork releases 1.0.0 through 1.1.12 were checked to have everything the integration needs; install the latest. At startup, MixedStorage checks the installed BeaverBuddies for every part it uses. If anything is missing, it turns co-op Apply off rather than risk a desync, and Player.log names what is missing. The original [BeaverBuddies](https://github.com/thomaswp/BeaverBuddies) by thomaswp and contributors, and Timber Together (Beta), have not been tested with MixedStorage.
-
-Players have reported successful use of earlier builds, and the **v0.5.8 layout, including the dev-mode panel, and the v0.5.7 storage visuals have been verified in game**; v1.0.0 through v1.2.0 leave both unchanged apart from v1.2.0's orange ring around Apply. The v1.0.0 to v1.2.0 changes (Copy settings, error messages, loading damaged saves, the Supply mode order, the panel's reason for an unavailable Apply, patch order, leaving mixed storage with a removed good or through the map editor's undo, and in v1.2.0 storing nothing and the Apply ring) have not been played in game yet. Automated allocation, geometry, native API, and optional multiplayer loading checks also pass, but these do not replace live gameplay testing.
-
-See the [changelog](CHANGELOG.md) for version history and [developer notes](DEVELOPMENT.md) for build instructions and technical details.
+See the [changelog](CHANGELOG.md) for version history and the [developer notes](DEVELOPMENT.md) for building and how the mod works.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE). MixedStorage is an unofficial community mod, not affiliated with or endorsed by Mechanistry.
 
-The license covers this project's own source code, documentation and website. It does not cover Timberborn, its name or its artwork, which belong to Mechanistry, including the goods icons in `docs/assets/goods/` (the game's own textures). The Noto Sans fonts in `docs/assets/fonts/` keep their own SIL Open Font License (see `OFL.txt` there).
+The license covers this project's own code, documentation and website. It doesn't cover Timberborn, its name or its artwork, which belong to Mechanistry, including the goods icons in `docs/assets/goods/`. The fonts in `docs/assets/fonts/` (Noto Sans and Alegreya SC) keep their SIL Open Font License (`OFL.txt` and `OFL-Alegreya.txt` there).

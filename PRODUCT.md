@@ -66,7 +66,8 @@ models. One download covers single player and co-op.
 
 ## Brand Commitments
 
-- Voice: a fellow player explaining a handy tool. Clear, exact, friendly, never hype.
+- Voice: a fellow player explaining a handy tool. Clear, exact, friendly, never hype. Short and plain: one idea per
+  sentence, each thing said once, no internals and no history (see CLAUDE.md, *Writing README and website text*).
 - Native feel is the product's identity: the mod's own panel is drawn with the game's frames, buttons and fields, and
   the site's replica does the same.
 - No official Timberborn logos or key art. The game's goods icons are allowed (they're already used, credited as
