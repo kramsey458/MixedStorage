@@ -1,6 +1,6 @@
-"""Makes the cabinet's material textures for the MixedStorage site. Procedural: no source images, no generative model.
+"""Makes the site's material textures for the MixedStorage site. Procedural: no source images, no generative model.
 Run from this folder with Python 3, numpy and Pillow:  python make_textures.py
-Every texture tiles (walnut and brushed brass horizontally and vertically, kraft both ways); the holder frame is a
+Every texture tiles (brushed brass horizontally and vertically, kraft both ways); the holder frame is a
 nine-slice for CSS border-image and the pull is a single image."""
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
@@ -35,7 +35,8 @@ tone = periodic_noise(h, w, [(2, 1, 1.0)], rng) * .5 + .5
 light, dark = np.array([112, 76, 51]), np.array([66, 41, 26])
 t = (.55 * rings ** 3 + .25 * fine + .2 * tone)[..., None]
 walnut = dark + (light - dark) * (1 - t) - pores[..., None] * 38
-save(walnut, "walnut.webp")
+# The site no longer uses walnut.webp (the mod is shown as it looks in game, Kyler 2026-09-24). The grain is still
+# drawn, unsaved, so the random numbers, and so the textures below, stay exactly the same.
 
 # kraft: pale brown card with paper tooth and a few long fibres
 h = w = 200
@@ -116,4 +117,4 @@ for cx in (9, W - 10):
     d.ellipse([cx - 3, 1, cx + 3, 7], fill=(120, 88, 32, 255))
     d.line([cx - 2, 4, cx + 2, 4], fill=(240, 214, 150, 255))
 im.save("pull.png", optimize=True)
-print("made walnut.webp kraft.webp brass.webp holder.png pull.png")
+print("made kraft.webp brass.webp holder.png pull.png")

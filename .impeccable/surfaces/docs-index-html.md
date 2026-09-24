@@ -21,4 +21,6 @@ FIRST VIEWPORT: Left, the name in brass-label lettering, the one-line pitch, the
 
 FORM: Apothecary Drawer Cabinet, candidate 7 of 7 (seed 4fa92011). Raises: exact counts in fixed-width figures (nixie counter); the same split drawn at the same scale for 30, 200 and 1,200 capacity (botanical folio); rules annotated as measured callouts, "exactly 100%" (uniform-code annotations). Signature interaction: the split buttons redraw the hero panel with counts that follow the mod's rounding (split.js).
 
+AMENDMENT (2026-09-24, Kyler): no picture of the mod is drawn in wood. The hero and the three sizes (30, 200, 1200) are copies of the top of the mod's in-game panel; the cabinet lives on only as the site's materials (walnut header and footer, brass plates, kraft cards, brass pulls on accordions).
+
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance

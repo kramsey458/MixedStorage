@@ -77,14 +77,14 @@ text and the player docs follows these rules.
 - Tokens live in `docs/assets/style.css` `:root`; night values in `@media (prefers-color-scheme: dark)`. Day / night:
   ground `--bg` #dfe4da / #18221f, tint `--bg-deep` #d0d8cc / #111916, `--paper` #eef1ea / #1f2b27, `--ink` #1d2320 /
   #ece6d8, `--muted` #4c5751 / #b8b09d, `--line` #aab5ab / #34423c, `--link` #1f5a50 / #8fd0c2, `--orange` #b35c10 /
-  #ffa60f. Fixed: walnut #4a2f1f, #5d3c28, #6e4a32, edge #2e1c12, carcass fill #3a2416; brass #c19a4b, hi #e0c27e,
+  #ffa60f. Fixed: walnut #4a2f1f, #5d3c28, #6e4a32, edge #2e1c12; brass #c19a4b, hi #e0c27e,
   deep #8a6a2c; kraft #d8c29b. Two literals with no custom property: pale kraft `#d9ccb3` (footer text) and every
   page's `<meta name="theme-color" content="#16231c">` (one value for both modes). The legacy classes
   `panel--blue` / `panel--maroon` in install and troubleshooting just map to paper; leave them.
 - Fonts: Alegreya SC 500 and 700, self-hosted in `docs/assets/fonts/` (`OFL-Alegreya.txt`); body is the system-ui
   stack; mono is ui-monospace. Noto Sans 400/700 (`OFL.txt`) belongs to the panel replica only. No other webfonts,
   nothing from a CDN at runtime.
-- Textures: `walnut.webp` (tile 720px), `kraft.webp` (tile 200px), `brass.webp` (fit to height), `holder.png`
+- Textures: `kraft.webp` (tile 200px), `brass.webp` (fit to height), `holder.png`
   (nine-slice, `border-image: url(textures/holder.png) 16`), `pull.png` (the one "this opens" sign, on drawers and
   accordions), made by `docs/assets/textures/make_textures.py` (numpy + Pillow, seed 1200; run it from that folder).
   Change the script and re-run it rather than editing images. Every shipping raster carries provenance (a
@@ -161,8 +161,7 @@ When asked to "update the website for the latest release, consistent with the de
 6. Optional but recommended: run the detector,
    `"$(ls -d ~/.claude/plugins/cache/impeccable/impeccable/*/skills/impeccable | tail -1)/scripts/impeccable" detect --json docs`
    (parse from the first `[`). Known false positives: cramped-padding on the four main pages and flat-type-hierarchy on
-   404 (ignored in config); `side-tab` on the 3px walnut rules (`.page-head`, `.rules li`) and the scale folio's leader
-   line; `layout-transition` on the replica's fill bar; Noto Sans,
+   404 (ignored in config); `side-tab` on the 3px walnut rules (`.page-head`, `.rules li`); `layout-transition` on the replica's fill bar; Noto Sans,
    off-ramp sizes and colours in the replica; `flat-type-hierarchy` from footer headings;
    `gpt-thin-border-wide-shadow` on mounted frames and plates; the "could not read /MixedStorage/assets/style.css" note.
 7. If the look changed (a new component or layout), update DESIGN.md and `.impeccable/design.json`.

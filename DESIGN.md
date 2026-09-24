@@ -78,7 +78,6 @@ rounded:
   hairline: "2px"
   sm: "3px"
   md: "4px"
-  medallion: "50%"
 spacing:
   gutter: "clamp(16px, 4vw, 40px)"
   wrap: "1160px"
@@ -170,14 +169,14 @@ components:
 
 **Creative North Star: "The Apothecary Drawer Cabinet"**
 
-The site is a walnut cabinet standing against a painted wall: walnut header and footer, brass plates, kraft cards, brass cup pulls on every accordion, and the goods keep the game's own icons. The rules section draws the same share at three capacities at true scale, as mini cabinets whose drawers are shares, with a leader line and a dimension bracket, like a measured folio drawing. The mod itself is never drawn in wood: the hero shows the top of the mod's real Storage Allocation panel, in the game's look, redrawn with the mod's own rounding.
+The site is a walnut cabinet standing against a painted wall: walnut header and footer, brass plates, kraft cards, brass cup pulls on every accordion, and the goods keep the game's own icons. The rules section shows the same share in three sizes of warehouse, as three small copies of the mod's own panel. The mod itself is never drawn in wood: the hero shows the top of the mod's real Storage Allocation panel, in the game's look, redrawn with the mod's own rounding.
 
-Materials are real and made, not faked. Walnut, brass and kraft are procedural textures (`docs/assets/textures/make_textures.py`, fixed seed, no source images, no generative model). Walnut tiles so a drawer of any height keeps its grain, the brass label holder is a nine-slice border image, and the pull is one image used on every accordion. CSS supplies only edge lines, recesses and cast shadows over those textures. The wall behind the cabinet is plain paint: sage limewash by day, deep verdigris by lamplight. Walnut, brass and kraft keep their values in both modes, because they are materials, not themes.
+Materials are real and made, not faked. Walnut, brass and kraft are procedural textures (`docs/assets/textures/make_textures.py`, fixed seed, no source images, no generative model). Kraft tiles, the brass label holder is a nine-slice border image, and the pull is one image used on every accordion. CSS supplies only edge lines, recesses and cast shadows over those textures. The wall behind the cabinet is plain paint: sage limewash by day, deep verdigris by lamplight. Walnut, brass and kraft keep their values in both modes, because they are materials, not themes.
 
 Density is calm and reading-first. Type is split by job. Alegreya SC, engraved brass-label small caps, names things: the wordmark, headings, labels, buttons, counts. The system face carries every sentence. The in-game panel replica (`game-panel.css`, `demo.js`, and its top in the hero, `hero-panel.js`) is a contained exception. It reproduces the mod's panel in the game's own look and is not part of this system.
 
 **Key Characteristics:**
-- One metaphor for the site: capacity is a cabinet, a share is a drawer's height. The mod's own UI is always shown as it looks in game.
+- One setting for the site: an apothecary cabinet's materials (walnut, brass, kraft). The mod's own UI is always shown as it looks in game.
 - Produced material textures (walnut, brass, kraft), tiled or nine-sliced, never imitated with gradients.
 - Small-caps display face for names and figures; system sans for prose.
 - Exact numbers in tabular figures.
@@ -189,11 +188,11 @@ A painted-wall ground with warm cabinet materials on it. Walnut is the structure
 
 ### Primary
 - **Label Brass** (brass): the Download plate (over the brass texture), label-holder frames, pulls, the focus ring, text selection, and the note tab. It is the only metal in the world and the only fill that says "act here".
-- **Polished Brass** (brass-hi): hover on the brass plate, and the brass-coloured figures on walnut (the cabinet's capacity, footer headings).
+- **Polished Brass** (brass-hi): hover on the brass plate, and the brass-coloured figures on walnut (footer headings).
 - **Tarnished Brass** (brass-deep): plate borders, the header's bottom rail and the footer's top rail.
 
 ### Secondary
-- **Walnut** (walnut, walnut-2, walnut-3, walnut-edge): the header, the footer, the cabinet and its drawers, walnut plates (secondary buttons), the rules' top rules (walnut-3) and the frame around in-game screenshots. walnut-edge draws every drawer's and cabinet's inset edge and the cabinet feet. The cabinet carcass and the scale folio's mini cabinets sit on a darker `#3a2416` fill under the walnut texture; drawers sit on walnut-2.
+- **Walnut** (walnut, walnut-2, walnut-3, walnut-edge): the header, the footer, walnut plates (secondary buttons), the rules' top rules (walnut-3) and the frame around in-game screenshots.
 
 ### Tertiary
 - **Kraft Card** (kraft) with **Kraft Ink** (kraft-ink) and **Faded Ink** (kraft-soft): label cards in holders, step numbers, table-of-contents cards, pills, the pressed split button. Text on kraft is always kraft-ink; kraft-soft is only for the percentage under a count. **Pale Kraft** (kraft-pale) is the footer's body text on walnut. It ships as a literal `#d9ccb3` in `style.css` (`.site-footer p`, `.footer__fine`); there is no `--kraft-pale` custom property.
@@ -203,7 +202,7 @@ A painted-wall ground with warm cabinet materials on it. Walnut is the structure
 - **Sage Limewash** (sage-limewash) / **Deep Verdigris** (verdigris): the page ground, day and night.
 - **Sage Shadow** (sage-deep) / **Verdigris Shadow** (verdigris-deep): alternating tinted sections.
 - **Wall Paper** (paper-day / paper-night): panels, notes, tables, code, accordions.
-- **Ink** (ink-day / ink-night), **Muted Ink** (muted-day / muted-night): text and secondary text. Muted also draws the leader line and the dimension bracket.
+- **Ink** (ink-day / ink-night), **Muted Ink** (muted-day / muted-night): text and secondary text.
 - **Rule** (line-day / line-night): 1px row rules and 1.5px panel borders.
 - **Verdigris Link** (link-day / link-night): inline links, underlined with a 3px offset that thickens to 2px on hover.
 - **Browser chrome:** every page sets `<meta name="theme-color" content="#16231c">`, one value for both modes (a green-black near the night ground). It is not a palette token.
@@ -227,7 +226,7 @@ A painted-wall ground with warm cabinet materials on it. Walnut is the structure
 - **Display** (700, clamp(2.6rem, 6vw, 4.4rem), 1.08): the wordmark h1 on the home page. Guide page heads use clamp(2.3rem, 5vw, 3.5rem).
 - **Headline** (700, clamp(1.9rem, 3.8vw, 2.7rem), 1.08, balanced wrap): section h2. Group titles on the guide pages use clamp(1.6rem, 3vw, 2.1rem).
 - **Title** (700, 1.4rem, 1.15): h3. Rules and steps use 1.3rem, notes 1.2rem.
-- **Label** (700, 1.0–1.12rem, 0.02em tracking, tabular figures): buttons, nav, holder names and counts, cabinet crest, leader and dimension figures, pills, toc cards, footer headings.
+- **Label** (700, 1.0–1.12rem, 0.02em tracking, tabular figures): buttons, nav, pills, toc cards, footer headings.
 - **Lead** (400, clamp(1.1rem, 1.8vw, 1.28rem), muted, 60ch max): the sentence under a section heading. The hero pitch is clamp(1.25rem, 2.3vw, 1.55rem) at 1.4, 30ch.
 - **Body** (400, 17px, 1.62; 16.5px under 600px): all running text. Measures: 68–72ch for prose, accordion bodies and step text.
 - **Body strong** (650): accordion questions, ledger names, table heads and first cells. These are sentences or phrases, so they stay in the body face.
@@ -242,7 +241,7 @@ A painted-wall ground with warm cabinet materials on it. Walnut is the structure
 A single centred column, `min(1160px, 100% - 2 × gutter)`, with a fluid gutter (16–40px). Full-width sections pad clamp(56px, 8vw, 104px) top and bottom and alternate between the plain ground and the deeper tint. Headers and footers are full-bleed walnut.
 
 - **Hero:** two columns (1fr : 1.05fr) with name, pitch, mechanism line, a Download + Install guide button row, a dot-separated meta line and a status line on the left, and the hero panel on the right. They stack at 900px. The panel is at most 460px wide, scaled 1.2x (CSS `zoom`, like the game's UI scale) at 1200px and wider.
-- **Rules:** three columns, each item under a 3px walnut rule. The scale folio sits under it as three columns (one under 600px).
+- **Rules:** three columns, each item under a 3px walnut rule. The three sizes sit under it as three columns (one under 600px).
 - **Screenshots:** 0.7fr : 1.3fr, stacked at 900px.
 - **Ledger:** two columns of rows (name 11rem, text), one column at 900px, name above text at 600px.
 - **Guide pages:** a page head with a 3px walnut rule under it, a row of kraft toc cards, then sections 56px apart. Accordions are capped at 860px.
@@ -255,7 +254,6 @@ Depth is physical. Surfaces are either set into the wall (paper panels: flat, bo
 
 ### Shadow Vocabulary
 - **Mount** (`0 1px 0 rgba(20,14,8,.35), 0 12px 22px -14px rgba(20,14,8,.7)`, deeper at night): screenshots in their walnut and brass frame.
-- **Carcass wash** (`inset 0 0 0 2px walnut-edge, inset 0 0 0 999px rgba(28,16,8,.38)`): the scale folio's mini cabinets, darkened below their drawers.
 - **Plate lift** (`0 8px 16px -10px rgba(20,14,8,.75)`): buttons.
 - **Hardware drop** (`drop-shadow(0 2px 2px rgba(0,0,0,.45))` for pulls): follows the alpha of the brass images.
 
@@ -266,7 +264,7 @@ Depth is physical. Surfaces are either set into the wall (paper panels: flat, bo
 
 ## Shapes
 
-Crisp, lightly eased cabinetry. Corners are 4px on plates, mini cabinets, panels, frames and accordions, 3px on nav links, pills and the focus ring, and 2px on the thin mini-drawers and note tabs. The one round shape is the walnut medallion behind each goods icon (50%). Borders are 1.5px on paper surfaces and plates, and 1px for row rules. Structural rules (under page heads and over rules items) are 3px walnut. The holder's rivets and rounded corners come from its image, not from CSS radius.
+Crisp, lightly eased cabinetry. Corners are 4px on plates, panels, frames and accordions, 3px on nav links, pills and the focus ring, and 2px on note tabs. Borders are 1.5px on paper surfaces and plates, and 1px for row rules. Structural rules (under page heads and over rules items) are 3px walnut. The holder's rivets and rounded corners come from its image, not from CSS radius.
 
 ## Components
 
@@ -304,8 +302,8 @@ Drawers that pull open. Each is a paper panel with a 52px body-strong question a
 ### The Hero Panel
 The top of the mod's Storage Allocation panel for a full Large Warehouse: the "Storage Allocation" title, the summary line ("1200 / 1200 items · 2 goods allocated") and one card per good (icon, name, "50% allocated", "600 / 600" over "stored / limit", and the orange stock bar). It is drawn with the replica's own classes from `game-panel.css`, so it looks as the mod does in game. Split buttons under it (walnut plates; the pressed one is a kraft card) redraw it using the mod's rounding (`hero-panel.js` with `split.js`), and a visually hidden aria-live line states the new split in words. The caption says it is the mod as it shows in game and links to the full panel in Try it. No motion: the game redraws its cards at once.
 
-### The Scale Folio (signature)
-The same small share drawn at three capacities, at true share. Each is a mini cabinet 160px tall whose 1% drawer is a bare brass sliver (at least 3px). The sliver's count hangs above on a leader line (2px muted rule down to a label with the goods icon), and a dimension bracket (2px muted, open on the left) on the right measures the whole building ("= 1,200"). The caption names the building in Alegreya SC.
+### The Three Sizes
+The same shares, 1% carrots and 99% gears, in a Small (30), Medium (200) and Large (1200) Warehouse, each drawn as the top of the mod's panel with the replica's classes (`.ig.ig-mini`): the title, a full building's summary, and the two cards with their counts and bars. The small warehouse's panel also shows the mod's own rounding warning in its error colour ("1 allocated good(s) round to 0 items. …"). A caption above each names the building in Alegreya SC and says what 1% comes to. Three columns, one under 600px.
 
 ### Exception: the in-game panel replica
 `game-panel.css` and `demo.js` reproduce the mod's Storage Allocation panel in the game's own colours, frames and Noto Sans (OFL). The replica is proof of fit, not site style. It reads only `--ink`, `--muted`, `--edge` and `--orange` from this system. Its parts are used only for the replica and the hero panel. Don't restyle either toward the cabinet.
@@ -313,7 +311,7 @@ The same small share drawn at three capacities, at true share. Each is a mini ca
 ## Do's and Don'ts
 
 ### Do:
-- **Do** take walnut, brass and kraft from the produced textures in `docs/assets/textures/` (regenerate with `make_textures.py`). Tile walnut at 720px, kraft at 200px, and fit brass to the element's height.
+- **Do** take walnut, brass and kraft from the produced textures in `docs/assets/textures/` (regenerate with `make_textures.py`). Tile kraft at 200px, and fit brass to the element's height.
 - **Do** frame kraft cards with the brass holder nine-slice (`border-image: url(textures/holder.png) 16`) and `background-clip: padding-box`. Scale the border width to the element (7–11px vertical).
 - **Do** use the brass cup pull as the one "this opens" sign on accordions.
 - **Do** set every count, capacity and percentage in tabular figures, and draw proportions at true share.
