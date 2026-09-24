@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /*
- * Offline checks for the website's download buttons (site/). No network and no packages: each page in site/ is
+ * Offline checks for the website's download buttons (docs/). No network and no packages: each page in docs/ is
  * parsed into a small stub DOM, the page's release scripts (assets/site.js and assets/release.js; the interactive
  * demo's scripts are not run) run in a vm against it, and fetch answers like GitHub's API from a fixed list of releases.
  *
  * The rule every timbermods site follows: offer GitHub's Latest release (the newest one that is not a draft or a
  * pre-release), and only when there is none, the newest pre-release, and download that release's
- * MixedStorage-vX.Y.Z.zip, never another .zip attached to it. With no usable answer a page keeps the links and text it
+ * MixedStorage-v<version>.zip, never another .zip attached to it. With no usable answer a page keeps the links and text it
  * was written with, and its download buttons lead to the Latest release page. What is on screen follows the page's
  * own stylesheets where they set `display` with a simple selector, because a class rule that sets `display` also
  * shows an element marked `hidden`.
@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const root = path.resolve(process.argv[2] || path.join(path.dirname(fileURLToPath(import.meta.url)), '..'));
-const site = path.join(root, 'site');
+const site = path.join(root, 'docs');
 const REPO = 'timbermods/MixedStorage';
 const RELEASES = `https://github.com/${REPO}/releases`;
 const RELEASE_SCRIPTS = ['assets/site.js', 'assets/release.js'];
@@ -318,6 +318,8 @@ function check(ok, what, detail) {
 const written = new Map(pages.map((page) => [page, new Document(page)]));
 const buttonsOf = (docs) => [...docs.values()].flatMap((d) => downloadButtons(d).map((a) => ({ href: a.href, text: buttonText(d, a) })));
 const writtenButtons = buttonsOf(written);
+// The zip name the install guide was written with (its release.js fallback; the Latest-release workflow keeps it current).
+const writtenZip = (readFileSync(path.join(site, 'install.html'), 'utf8').match(/data-release="asset-name"[^>]*>([^<]+)</) || [])[1] || '';
 const writtenLinks = [...written.values()].flatMap(releaseLinks).map(([, href]) => href);
 const buttonCount = writtenButtons.length;
 check(['index.html', 'install.html'].every((page) => written.has(page) && downloadButtons(written.get(page)).length > 0),
@@ -408,7 +410,7 @@ for (const scenario of scenarios) {
     const changed = buttons.filter((b, i) => b.text !== writtenButtons[i].text).map((b) => `"${b.text}"`);
     check(changed.length === 0, `${scenario.name}: the download buttons keep the text they were written with`, [...new Set(changed)].join(', '));
     check(labels.length === 0, `${scenario.name}: no release label is shown`, `got ${JSON.stringify(labels)}`);
-    check(install.includes('MixedStorage-vX.Y.Z.zip') && otherZips.length === 0, `${scenario.name}: the install guide keeps its placeholder file name`,
+    check(install.includes(writtenZip) && otherZips.filter((name) => name !== writtenZip).length === 0, `${scenario.name}: the install guide keeps the file name it was written with (${writtenZip})`,
       otherZips.join(', '));
     const hrefs = links.map(([, href]) => href);
     check(hrefs.join('|') === writtenLinks.join('|'), `${scenario.name}: no page links to a release it was not written with`,

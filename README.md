@@ -114,10 +114,10 @@ The bundled multiplayer integration is built against the **[BeaverBuddies Stabil
 
 Players have reported successful use of earlier builds, and the **v0.5.8 layout, including the dev-mode panel, and the v0.5.7 storage visuals have been verified in game**; v1.0.0 through v1.2.0 leave both unchanged apart from v1.2.0's orange ring around Apply. The v1.0.0 to v1.2.0 changes (Copy settings, error messages, loading damaged saves, the Supply mode order, the panel's reason for an unavailable Apply, patch order, leaving mixed storage with a removed good or through the map editor's undo, and in v1.2.0 storing nothing and the Apply ring) have not been played in game yet. Automated allocation, geometry, native API, and optional multiplayer loading checks also pass, but these do not replace live gameplay testing.
 
-See the [changelog](CHANGELOG.md) for version history and [developer notes](docs/DEVELOPMENT.md) for build instructions and technical details.
+See the [changelog](CHANGELOG.md) for version history and [developer notes](DEVELOPMENT.md) for build instructions and technical details.
 
 ## License
 
 MIT. See [LICENSE](LICENSE).
 
-The license covers this project's own source code, documentation and website. It does not cover Timberborn, its name or its artwork, which belong to Mechanistry, including the goods icons in `site/assets/goods/` (the game's own textures). The Noto Sans fonts in `site/assets/fonts/` keep their own SIL Open Font License (see `OFL.txt` there).
+The license covers this project's own source code, documentation and website. It does not cover Timberborn, its name or its artwork, which belong to Mechanistry, including the goods icons in `docs/assets/goods/` (the game's own textures). The Noto Sans fonts in `docs/assets/fonts/` keep their own SIL Open Font License (see `OFL.txt` there).

@@ -2,31 +2,30 @@
 
 MixedStorage (timbermods/MixedStorage) is a Timberborn mod: one warehouse or pile holds several goods, each with a share
 of capacity set by percentage. C# in `source/` (mod), `multiplayer/` (bundled BeaverBuddies Stability Fork bridge),
-`tests/` (allocation tests, site test, version check), `loading-tests/`; the website is `site/`. Changes land on `main`
+`tests/` (allocation tests, site test, version check), `loading-tests/`; the website is `docs/`. Changes land on `main`
 through a PR → merge.
 
 - CI (`.github/workflows/tests.yml`, every PR) runs, and you can run locally without the game:
   `dotnet run --project tests/AllocationTests.csproj -c Release` (prints `PASS: 19,138 assertions…`),
   `node tests/test-site.mjs` (76/76), and `powershell -NoProfile -Command ".\tests\check-version.ps1"` (prints `1.2.0`).
 - The full mod build needs the game and DLLs: `.\build.ps1 -HarmonyPath <0Harmony.dll> -BeaverBuddiesPath <BeaverBuddies.dll>`
-  (see `docs/DEVELOPMENT.md`). The version lives only in `Directory.Build.props` plus
+  (see `DEVELOPMENT.md`). The version lives only in `Directory.Build.props` plus
   `packaging/MixedStorage/version-1.1/manifest.json`; a release bump also touches README, CHANGELOG.md and the site's
-  status note (`site/index.html#status`).
+  status note (`docs/index.html#status`).
 
 ## Standing rules
 
 - Never launch or drive Timberborn, and never touch installed mods or saves. The maintainer (Kyler) playtests himself.
-- Commit on a branch and open a PR. Merge only when Kyler says so in the chat.
+- Commit on a branch and open a PR. Kyler has said to merge PRs automatically: merge, then check the page live.
 - Upgrade facts players need stay (replace files with the game closed; allocations are kept; remove the old
   MixedStorage-BeaverBuddies add-on). Other version history goes only in CHANGELOG.md and release notes.
 
 ## Website
 
-- **Where:** `site/`: `index.html` (features, cabinet, demo), `install.html`, `troubleshooting.html`, `faq.html`,
+- **Where:** `docs/`: `index.html` (features, cabinet, demo), `install.html`, `troubleshooting.html`, `faq.html`,
   `404.html`, plus `robots.txt`, `sitemap.xml`, `.nojekyll`. Live at https://timbermods.github.io/MixedStorage/.
-- **Published:** GitHub Pages serves the **`gh-pages`** branch, not main. After the PR is merged, run
-  `.\deploy-site.ps1` from a clean checkout of `origin/main` (it publishes that working tree's `site/`; `-DryRun`
-  lists the changes without pushing). Pages updates in about a minute.
+- **Published:** GitHub Pages serves `main:/docs`, like every other timbermods site, so merging to main publishes;
+  a build takes about a minute. (The old `gh-pages` branch and `deploy-site.ps1` are retired.)
 - **Look:** "The Apothecary Drawer Cabinet". The site is one walnut cabinet on a painted wall: every drawer is a good,
   and its height is that good's share, with brass label holders, kraft cards and brass cup pulls. The look is fixed:
   updates extend it and never restyle it.
@@ -51,19 +50,19 @@ through a PR → merge.
 - **Mounted-or-Set-In**: paper panels are set in (1.5px rule border, no shadow); the cabinet, frames, plates and
   hardware are mounted (one soft shadow downward). Nothing floats or glows.
 - **Rail**: header and footer meet the page with a 3px tarnished-brass (`#8a6a2c`) rail.
-- Tokens live in `site/assets/style.css` `:root`; night values in `@media (prefers-color-scheme: dark)`. Day / night:
+- Tokens live in `docs/assets/style.css` `:root`; night values in `@media (prefers-color-scheme: dark)`. Day / night:
   ground `--bg` #dfe4da / #18221f, tint `--bg-deep` #d0d8cc / #111916, `--paper` #eef1ea / #1f2b27, `--ink` #1d2320 /
   #ece6d8, `--muted` #4c5751 / #b8b09d, `--line` #aab5ab / #34423c, `--link` #1f5a50 / #8fd0c2, `--orange` #b35c10 /
   #ffa60f. Fixed: walnut #4a2f1f, #5d3c28, #6e4a32, edge #2e1c12, carcass fill #3a2416; brass #c19a4b, hi #e0c27e,
   deep #8a6a2c; kraft #d8c29b. Two literals with no custom property: pale kraft `#d9ccb3` (footer text) and every
   page's `<meta name="theme-color" content="#16231c">` (one value for both modes). The legacy classes
   `panel--blue` / `panel--maroon` in install and troubleshooting just map to paper; leave them.
-- Fonts: Alegreya SC 500 and 700, self-hosted in `site/assets/fonts/` (`OFL-Alegreya.txt`); body is the system-ui
+- Fonts: Alegreya SC 500 and 700, self-hosted in `docs/assets/fonts/` (`OFL-Alegreya.txt`); body is the system-ui
   stack; mono is ui-monospace. Noto Sans 400/700 (`OFL.txt`) belongs to the panel replica only. No other webfonts,
   nothing from a CDN at runtime.
 - Textures: `walnut.webp` (tile 720px), `kraft.webp` (tile 200px), `brass.webp` (fit to height), `holder.png`
   (nine-slice, `border-image: url(textures/holder.png) 16`), `pull.png` (the one "this opens" sign, on drawers and
-  accordions), made by `site/assets/textures/make_textures.py` (numpy + Pillow, seed 1200; run it from that folder).
+  accordions), made by `docs/assets/textures/make_textures.py` (numpy + Pillow, seed 1200; run it from that folder).
   Change the script and re-run it rather than editing images. Every shipping raster carries provenance (a
   `<file>.json` sidecar): run the Impeccable `embed-prompt` command on each new or changed image.
 - Themes: light and dark follow the OS (`prefers-color-scheme`) only. There is no toggle and no storage key. Check both.
@@ -73,12 +72,12 @@ through a PR → merge.
   button redraws them (`cabinet.js` with `split.js`, the mod's rounding); plates lift 1px; an accordion's pull drops
   3px. Everything is off under `prefers-reduced-motion`.
 - The in-game panel replica (`game-panel.css`, `demo.js`, `goods.js`, `split.js`) must keep matching the mod's real
-  Storage Allocation panel (the 0.5.7-era native look; `site/assets/panel.webp` is the in-game screenshot). It reads only
+  Storage Allocation panel (the 0.5.7-era native look; `docs/assets/panel.webp` is the in-game screenshot). It reads only
   `--ink`, `--muted`, `--edge`, `--orange`. Don't restyle it toward the cabinet or reuse its parts elsewhere. Update
   `split.js` / `demo.js` when the mod's rounding (`AllocationPlan.Capacities`) or messages (`StorageView`) change.
 - Don't: imitate wood, brass or paper with CSS gradients or bevels; put kickers or small labels above headings; build
   stat rows or icon-tile grids; use hard zero-blur offset shadows; set sentences in Alegreya SC; add a second accent
-  fill; use official Timberborn logos or key art (the goods icons in `site/assets/goods/` are allowed and credited).
+  fill; use official Timberborn logos or key art (the goods icons in `docs/assets/goods/` are allowed and credited).
 - New components: build them from the tokens and components above, match the neighbouring sections, and add them to
   DESIGN.md.
 
@@ -93,23 +92,24 @@ through a PR → merge.
 - Terminology as in game and README: Storage Allocation, Apply 100%, Apply: store nothing, Copy allocations, Paste
   allocations, Clear all, Revert, Max, Allocated goods only, excess, Accept / Obtain / Supply / Empty, Copy settings
   (the game's tool), BeaverBuddies Stability Fork.
-- `site/assets/release.js` is shared across timbermods sites and byte-identical: replace it, never edit it.
+- `docs/assets/release.js` is shared across timbermods sites and byte-identical: replace it, never edit it.
 
 ### Update the website for a new release
 
 When asked to "update the website for the latest release, consistent with the design":
 1. Read the release and the docs: `gh release list -R timbermods/MixedStorage -L 5`,
-   `gh release view <tag> -R timbermods/MixedStorage`, README, CHANGELOG.md, `docs/DEVELOPMENT.md`. List every
+   `gh release view <tag> -R timbermods/MixedStorage`, README, CHANGELOG.md, `DEVELOPMENT.md`. List every
    player-facing change.
 2. Update every place the site states a changed fact:
-   - The release version is **never** written statically: `release.js` fills `data-release="tag"` (fallback text
-     "the mod"), `data-release="asset-name"` (fallback `MixedStorage-vX.Y.Z.zip`, which the test requires),
-     `data-release-href="download"|"notes"` (fallback `…/releases/latest` or `…/releases`) and the
-     `data-release-show` pills. Leave those fallbacks alone. `grep -rn "<old version>" site` should find nothing.
-   - Game version (`grep -rn "1\.1\.2\.4" site`): install meta/og description, hero meta row and `#buildings` ledger
+   - `release.js` fills `data-release="tag"` (fallback text `v1.2.0`), `data-release="asset-name"` (fallback
+     `MixedStorage-v1.2.0.zip`), `data-release-href="download"|"notes"` (fallback `…/releases/latest` or
+     `…/releases`) and the `data-release-show` pills. The tag and zip-name fallbacks are updated automatically when a
+     release is marked Latest (`.github/workflows/latest-release.yml`); the site test checks that the install guide
+     keeps the zip name it was written with. Pre-releases change nothing.
+   - Game version (`grep -rn "1\.1\.2\.4" docs`): install meta/og description, hero meta row and `#buildings` ledger
      (index), `#requirements` ledger and the `#verify` log line (install), `#faq-version`, and `footer__fine` on all
      five pages including 404. The `version-1.1` folder appears in install `#steps` and troubleshooting `#t-not-listed`.
-   - Harmony version (`grep -rn "2\.4\.1" site`): hero meta, `#buildings` ledger, install requirements and step 4,
+   - Harmony version (`grep -rn "2\.4\.1" docs`): hero meta, `#buildings` ledger, install requirements and step 4,
      troubleshooting `#t-harmony`.
    - Status: the `#status` note ("What's been played") in index.html, plus PRODUCT.md's Operating Context and
      Honest status.
@@ -142,8 +142,8 @@ When asked to "update the website for the latest release, consistent with the de
    `gpt-thin-border-wide-shadow` on mounted frames and plates; the "could not read /MixedStorage/assets/style.css" note.
 7. If the look changed (a new component or layout), update DESIGN.md and `.impeccable/design.json`.
 8. Update the README if it repeats the facts.
-9. Ship: branch → commit → push → `gh pr create`. After Kyler says merge: `gh pr merge <n> --merge`, then from a
-   checkout of `origin/main` run `.\deploy-site.ps1` (try `-DryRun` first), then verify:
+9. Ship: branch → commit → push → `gh pr create`. Kyler has said to merge PRs automatically: `gh pr merge <n> --merge`
+   (that publishes), then verify:
    - `gh api repos/timbermods/MixedStorage/pages/builds/latest -q .status` is `built`;
    - `curl -s https://timbermods.github.io/MixedStorage/ | grep -c "<a changed string>"` finds the change.
 
