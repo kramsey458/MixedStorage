@@ -55,8 +55,8 @@
       <h2>Requirements</h2>
       <ul class="ledger">
         <li><b>Timberborn 1.1.2.4</b><p>The version MixedStorage is built for. Other versions aren't guaranteed.</p></li>
-        <li><b>Harmony 2.4.1 or newer</b><p>A required mod. Get it from the <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3284904751" rel="noopener">Steam Workshop</a> if you don't have it.</p></li>
-        <li><b>BeaverBuddies Stability Fork</b><p>Optional, only for co-op. Single player doesn't need it.</p></li>
+        <li><b>Harmony 2.4.1 or newer</b><p>A required mod, from the <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3284904751" rel="noopener">Steam Workshop</a>.</p></li>
+        <li><b>BeaverBuddies Stability Fork</b><p>Optional, only for co-op.</p></li>
       </ul>
     </section>
 
@@ -70,23 +70,23 @@
         </li>
         <li>
           <h3>Close Timberborn and extract</h3>
-          <p>With the game closed, extract the ZIP's <code>MixedStorage</code> folder into your Timberborn <strong>Mods</strong> folder. On Windows that's normally <code>Documents\Timberborn\Mods</code>; if your Documents folder is kept in OneDrive, it's <code>OneDrive\Documents\Timberborn\Mods</code>.</p>
-          <p>Windows' <strong>Extract All</strong> puts everything in an extra folder named after the ZIP. Open it and move the <code>MixedStorage</code> folder inside into <strong>Mods</strong>.</p>
+          <p>With the game closed, extract the ZIP's <code>MixedStorage</code> folder into <code>Documents\Timberborn\Mods</code>. If your Documents folder is in OneDrive, use <code>OneDrive\Documents\Timberborn\Mods</code>.</p>
+          <p>Windows' <strong>Extract All</strong> adds an extra folder named after the ZIP. Move the <code>MixedStorage</code> folder inside it into <strong>Mods</strong>.</p>
         </li>
         <li>
           <h3>Check the folder layout</h3>
-          <p>You should end up with exactly this: no extra folder around <code>MixedStorage</code>, and no second <code>MixedStorage</code> inside it.</p>
+          <p>You should end up with exactly this:</p>
 <pre><code>Documents\Timberborn\Mods\
 └─ MixedStorage\
    ├─ README.md
    └─ version-1.1\
       ├─ manifest.json
       └─ MixedStorage.dll</code></pre>
-          <p>Confirm that <code>Documents\Timberborn\Mods\MixedStorage\version-1.1\manifest.json</code> exists.</p>
+          <p>Check that there's no extra folder around <code>MixedStorage</code> and no second <code>MixedStorage</code> inside it.</p>
         </li>
         <li>
           <h3>Install Harmony if needed</h3>
-          <p>MixedStorage requires <strong>Harmony 2.4.1 or newer</strong>. If it isn't installed yet, subscribe to it on the <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3284904751" rel="noopener">Steam Workshop</a>.</p>
+          <p>If you don't have <strong>Harmony 2.4.1 or newer</strong>, subscribe to it on the <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3284904751" rel="noopener">Steam Workshop</a>.</p>
         </li>
         <li>
           <h3>Enable and restart</h3>
@@ -98,10 +98,10 @@
     <section id="verify">
       <h2>Check it works</h2>
       <div class="prose">
-        <p>Load a save and select a supported warehouse or pile (see the <a href="./#buildings">supported buildings</a>). You should see a <strong>Storage Allocation</strong> panel in the building's window.</p>
-        <p>Not there? MixedStorage logs a line at startup. Search <code>Player.log</code> for <code>[MixedStorage]</code> and look for:</p>
+        <p>Load a save and select a <a href="./#buildings">supported warehouse or pile</a>. Its window should show a <strong>Storage Allocation</strong> panel.</p>
+        <p>Not there? Search <code>Player.log</code> for <code>[MixedStorage]</code>. A working install logs this line at startup:</p>
 <pre class="pre-wrap"><code>[MixedStorage] &lt;version&gt; loaded; warehouse and pile allocations for Timberborn 1.1.2.4.</code></pre>
-        <p>The log is normally in <code>%USERPROFILE%\AppData\LocalLow\Mechanistry\Timberborn</code>. If the panel is still missing, the <a href="troubleshooting.html#t-no-panel">troubleshooting guide</a> covers it.</p>
+        <p>On Windows, the log is in <code>%USERPROFILE%\AppData\LocalLow\Mechanistry\Timberborn</code>. Still missing? See the <a href="troubleshooting.html#t-no-panel">troubleshooting guide</a>.</p>
       </div>
     </section>
 
@@ -109,13 +109,13 @@
       <h2>Your first mixed storage building</h2>
       <ol class="steps">
         <li><h3>Select a building</h3><p>Click a supported warehouse or pile.</p></li>
-        <li><h3>Find your goods</h3><p>Look in <strong>Storage Allocation</strong>. Use <strong>Search</strong> if the list is long.</p></li>
-        <li><h3>Enter percentages</h3><p>Type a percentage for each good you want, and leave everything else at <strong>0%</strong>.</p></li>
-        <li><h3>Make it 100% and apply</h3><p>The total must be exactly 100%. Then click <strong>Apply 100%</strong>. For a 1,200-capacity warehouse, entering <code>50</code> for carrots and <code>50</code> for gears allows 600 of each. Apply grayed out? <a href="troubleshooting.html#t-apply-disabled">Here's why</a>.</p></li>
+        <li><h3>Find your goods</h3><p>Look in <strong>Storage Allocation</strong>, or use <strong>Search</strong>.</p></li>
+        <li><h3>Enter percentages</h3><p>Type a percentage for each good you want. Leave the rest at <strong>0%</strong>.</p></li>
+        <li><h3>Make it 100% and apply</h3><p>When the total is exactly 100%, click <strong>Apply 100%</strong>. In a 1,200-capacity warehouse, <code>50</code> carrots and <code>50</code> gears allow 600 of each. Apply grayed out? <a href="troubleshooting.html#t-apply-disabled">Here's why</a>.</p></li>
       </ol>
-      <p style="margin-top:16px;max-width:72ch">To make a building <strong>store nothing</strong>, set every good to 0% (for example with <strong>Clear all</strong>) and click <strong>Apply: store nothing</strong>. Stock already there is kept and can be hauled out.</p>
+      <p style="margin-top:16px;max-width:72ch">To make a building <strong>store nothing</strong>, set every good to 0% (<strong>Clear all</strong> does this) and click <strong>Apply: store nothing</strong>. Stock already there stays and can be hauled out.</p>
       <div class="panel panel--blue note note--info" style="margin-top:20px">
-        <p><strong>Edits are drafts until you click Apply.</strong> While pressing Apply would change the building, the button has an orange ring. The summary at the top keeps showing the applied settings and actual stock while you edit, search, or filter. Normal hauling rules decide when goods arrive.</p>
+        <p><strong>Edits are drafts until you click Apply.</strong> While Apply would change the building, it has an orange ring.</p>
       </div>
 
       <h3 style="margin-top:32px">The controls</h3>
@@ -123,26 +123,26 @@
         <table class="data wrapfirst">
           <thead><tr><th scope="col">Control</th><th scope="col">What it does</th></tr></thead>
           <tbody>
-            <tr><td>Max</td><td>Sets that good to 100% and all others to 0%. Click Apply to confirm.</td></tr>
-            <tr><td>&times; beside a percentage</td><td>Resets that good's draft percentage to 0%.</td></tr>
-            <tr><td>Clear all</td><td>Sets every draft percentage to 0%. Apply it to store nothing, or enter new percentages. Current allocations stay active until you click Apply.</td></tr>
-            <tr><td>Revert</td><td>Discards edits and restores the current settings.</td></tr>
-            <tr><td>Allocated goods only</td><td>Shows goods with a nonzero draft percentage.</td></tr>
-            <tr><td>Copy allocations</td><td>Copies a valid draft totaling 100%.</td></tr>
-            <tr><td>Paste allocations</td><td>Pastes copied percentages into another building's draft. Click Apply there to confirm.</td></tr>
+            <tr><td>Max</td><td>Sets that good to 100% and every other good to 0%.</td></tr>
+            <tr><td>&times; beside a percentage</td><td>Sets that good to 0%.</td></tr>
+            <tr><td>Clear all</td><td>Sets every good to 0%.</td></tr>
+            <tr><td>Revert</td><td>Discards your edits.</td></tr>
+            <tr><td>Allocated goods only</td><td>Shows only goods above 0%.</td></tr>
+            <tr><td>Copy allocations</td><td>Copies a valid 100% split.</td></tr>
+            <tr><td>Paste allocations</td><td>Pastes it into another building. Limits follow that building's capacity.</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="muted" style="margin-top:16px;max-width:74ch">Percentages allow two decimal places. Copy and paste adjusts item limits to the destination's capacity, and the destination must accept every copied good with a nonzero percentage. Stock, hauling mode, and hauler priority are not copied. Copied settings are kept until you close the game.</p>
+      <p class="muted" style="margin-top:16px;max-width:74ch">Percentages allow two decimal places. Paste works only if the building accepts every copied good. Stock, hauling mode and hauler priority aren't copied, and the copy is kept until you close the game.</p>
     </section>
 
     <section id="upgrading">
       <h2>Upgrading</h2>
       <div class="prose">
-        <p>With the game closed, replace the existing MixedStorage files with the new ones. Your allocations are kept. In co-op, everyone updates together.</p>
+        <p>With the game closed, replace the MixedStorage files with the new ones. Your allocations are kept. In co-op, everyone updates together.</p>
         <div class="panel panel--maroon note note--warn">
           <h3>Still have MixedStorage-BeaverBuddies?</h3>
-          <p>That old separate add-on is now built into MixedStorage, and leaving it enabled causes a startup error. Remove or disable it; keep BeaverBuddies itself if you play co-op.</p>
+          <p>MixedStorage includes what that old add-on did, and leaving it enabled causes a startup error. Remove or disable it, but keep BeaverBuddies itself for co-op.</p>
         </div>
       </div>
     </section>
@@ -151,20 +151,19 @@
       <h2>Multiplayer with BeaverBuddies</h2>
       <div class="prose">
         <ul>
-          <li>Co-op needs the <a href="https://timbermods.github.io/BeaverBuddies-Stability-Fork/" rel="noopener">BeaverBuddies Stability Fork</a>.</li>
-          <li>Every player installs the <strong>same version of MixedStorage</strong> (and the same Stability Fork build) and runs the <strong>same game version</strong>.</li>
-          <li>Enable the Stability Fork as usual. MixedStorage automatically turns on its bundled integration.</li>
-          <li>There is <strong>no separate MixedStorage multiplayer download</strong>.</li>
-          <li>After upgrading, restart every computer's game and start a fresh multiplayer session.</li>
+          <li>Co-op needs the latest <a href="https://timbermods.github.io/BeaverBuddies-Stability-Fork/" rel="noopener">BeaverBuddies Stability Fork</a> on every computer.</li>
+          <li>Every player needs the <strong>same MixedStorage version</strong>, Stability Fork build and <strong>game version</strong>.</li>
+          <li>There's <strong>no separate multiplayer download</strong>. Co-op support is built in and turns on by itself.</li>
+          <li>After upgrading, everyone restarts the game and starts a fresh session.</li>
         </ul>
-        <p class="muted">Install the latest Stability Fork on every computer. At startup MixedStorage checks the installed BeaverBuddies for everything it uses; if something is missing it turns co-op Apply off rather than risk players drifting out of step, and Player.log names what's missing. The original BeaverBuddies and Timber Together haven't been tested with MixedStorage.</p>
+        <p class="muted">Apply says multiplayer support could not start? <a href="troubleshooting.html#t-bb-incompatible">Here's why</a>.</p>
       </div>
     </section>
 
     <section id="removing">
       <h2>Removing MixedStorage</h2>
       <div class="prose">
-        <p>Close Timberborn, then disable MixedStorage in the mod manager or delete its folder. In saves that used it, each mixed building goes back to storing only its largest allocated good. As when you switch a warehouse to a different good in the base game, haulers empty out the other goods (and may move some of the kept good too) before the building fills with it again.</p>
+        <p>Close Timberborn, then disable MixedStorage in the mod manager or delete its folder. In saves that used it, each mixed building goes back to one good: the one with the largest share. Haulers move the other goods out, as when you change a warehouse's good in the base game.</p>
       </div>
     </section>
   </div>
@@ -193,7 +192,7 @@
           <li><a href="https://github.com/timbermods/MixedStorage/blob/main/CHANGELOG.md" rel="noopener">Changelog</a></li>
           <li><a href="https://github.com/timbermods/MixedStorage/issues" rel="noopener">Report a problem</a></li>
           <li><a href="https://github.com/timbermods/MixedStorage" rel="noopener">Source on GitHub</a></li>
-          <li><a href="https://github.com/timbermods/MixedStorage/blob/main/docs/DEVELOPMENT.md" rel="noopener">Developer notes</a></li>
+          <li><a href="https://github.com/timbermods/MixedStorage/blob/main/DEVELOPMENT.md" rel="noopener">Developer notes</a></li>
           <li><a href="https://timbermods.github.io/">More mods from Timbermods</a></li>
         </ul>
       </div>
